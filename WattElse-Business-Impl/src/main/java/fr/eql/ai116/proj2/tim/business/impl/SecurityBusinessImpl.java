@@ -1,12 +1,18 @@
-package fr.eql.ai116.proj2.tim.dao.impl;
+package fr.eql.ai116.proj2.tim.business.impl;
 
-import fr.eql.ai116.proj2.tim.dao.impl.dto.UserDto;
+import fr.eql.ai116.proj2.tim.business.AuthenticationException;
+import fr.eql.ai116.proj2.tim.business.AuthorizationException;
+import fr.eql.ai116.proj2.tim.business.SecurityBusiness;
+import fr.eql.ai116.proj2.tim.entity.Session;
+import fr.eql.ai116.proj2.tim.entity.User;
+import fr.eql.ai116.proj2.tim.dao.UserDao;
+import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
 
 import javax.ejb.EJB;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-public class SecurityBusinessImpl implements SecurityBusiness{
+public class SecurityBusinessImpl implements SecurityBusiness {
     private static final int SESSION_TIME = 30 * 60 * 1000;
 
     @EJB

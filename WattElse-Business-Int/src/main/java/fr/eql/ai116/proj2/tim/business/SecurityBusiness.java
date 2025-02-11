@@ -1,6 +1,6 @@
-package fr.eql.ai116.proj2.tim.dao.impl;
+package fr.eql.ai116.proj2.tim.business;
 
-import fr.eql.ai116.proj2.tim.dao.impl.dto.UserDto;
+import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
 
 public interface SecurityBusiness {
     UserDto authenticate(String login, String password) throws AuthenticationException;

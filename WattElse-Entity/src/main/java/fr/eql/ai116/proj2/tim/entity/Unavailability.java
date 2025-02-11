@@ -1,3 +1,3 @@
-package fr.eql.ai116.proj2.tim.dao.impl;
+package fr.eql.ai116.proj2.tim.entity;
 public class Unavailability {
 }

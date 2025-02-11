@@ -1,4 +1,4 @@
-package fr.eql.ai116.proj2.tim.dao.impl.dto;
+package fr.eql.ai116.proj2.tim.entity.dto;
 
 public class CarDto {
 }

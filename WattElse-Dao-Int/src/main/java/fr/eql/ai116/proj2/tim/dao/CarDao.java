@@ -1,4 +1,6 @@
-package fr.eql.ai116.proj2.tim.dao.impl;
+package fr.eql.ai116.proj2.tim.dao;
+
+import fr.eql.ai116.proj2.tim.entity.Car;
 
 import java.util.List;
 
