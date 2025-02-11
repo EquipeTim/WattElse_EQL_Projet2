@@ -1,4 +1,4 @@
-package fr.eql.ai116.proj2.tim;
+package fr.eql.ai116.proj2.tim.entity;
 // Horaire Ouverture
 public class OpeningHour {
 }
