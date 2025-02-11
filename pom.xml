@@ -17,7 +17,7 @@
         <plugin.compiler.version>3.6.0</plugin.compiler.version>
         <plugin.ear.version>2.10.1</plugin.ear.version>
         <plugin.ejb.version>2.5.1</plugin.ejb.version>
-        <plugin.war.version>3.0.0</plugin.war.version>
+        <plugin.war.version>3.0.0</plugin.war.version> <!-- 3.3.2-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
