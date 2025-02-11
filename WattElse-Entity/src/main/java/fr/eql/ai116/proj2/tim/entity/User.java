@@ -1,12 +1,19 @@
 package fr.eql.ai116.proj2.tim.entity;
 // Utilisateur
 public class User {
+    private long userId;
+    private String name;
+    private String surName;
+
     public long getId() {
+        return userId;
     }
 
-    public Object getName() {
+    public String getName() {
+        return name;
     }
 
-    public Object getSurname() {
+    public String getSurname() {
+        return surName;
     }
 }
