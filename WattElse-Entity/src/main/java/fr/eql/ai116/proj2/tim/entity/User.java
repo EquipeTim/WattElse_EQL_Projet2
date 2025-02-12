@@ -1,21 +1,42 @@
 package fr.eql.ai116.proj2.tim.entity;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
 // Utilisateur
-public class User {
+public class User implements Serializable {
     private long userId;
     private String name;
-    private String surName;
+    private String surname;
+    private final LocalDate birthdate;
     private String email;
     private String password;
+    private String address;
+    private String phone;
+    private String city;
+    private String postCode;
     private Role role;
 
-    public User(long userId, String name, String surName, String email, String password, Role role) {
+    public User(Long userId, String name, String surname,
+                LocalDate birthdate, String email,
+                String address, String city,
+                String postCode, String phone,
+                String password, Role role) {
         this.userId = userId;
         this.name = name;
-        this.surName = surName;
+        this.surname = surname;
+        this.birthdate = birthdate;
         this.email = email;
+        this.address = address;
+        this.city = city;
+        this.postCode = postCode;
+        this.phone = phone;
         this.password = password;
         this.role = role;
+
     }
+    /// SETTER ///
+    public void setUserId(long userId) {this.userId = userId;}
 
     ///  GETTERS ///
     public long getId() {
@@ -27,10 +48,20 @@ public class User {
     }
 
     public String getSurname() {
-        return surName;
+        return surname;
     }
 
-    public String getEmail() {return email;}
+    public String getCity() {return city;}
+
+    public String getPostCode() {return postCode;}
+
+    public LocalDate getBirthDate() {return birthdate;}
+
+    public String getPhoneNumber() {return phone;}
+
+    public String getEmail() { return email;}
 
     public String getPassword() {return password;}
+
+    public String getAddress() { return address;}
 }
