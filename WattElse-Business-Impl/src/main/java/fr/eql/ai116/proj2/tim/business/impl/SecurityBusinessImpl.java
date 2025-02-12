@@ -10,9 +10,13 @@ import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
 
 import javax.ejb.EJB;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+@Remote(SecurityBusiness.class)
+@Stateless
 public class SecurityBusinessImpl implements SecurityBusiness {
     private static final int SESSION_TIME = 30 * 60 * 1000;
 

@@ -1,7 +1,7 @@
 :: Adapter les valeurs des 3 variables.
 set jboss_root=C:\Servers\jboss-eap-7.4
-set ear_module_name=CatsClub-EAR
-set ear_archive_name=CatsClub-EAR-1.0.0.ear
+set ear_module_name=WattElse-EAR
+set ear_archive_name=WattElse-EAR-1.0.0.ear
 
 cd %jboss_root%\bin
 cmd /c jboss-cli.sh --connect command=:shutdown
