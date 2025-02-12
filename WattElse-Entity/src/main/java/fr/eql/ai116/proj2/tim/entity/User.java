@@ -8,7 +8,7 @@ public class User implements Serializable {
     private long userId;
     private String name;
     private String surname;
-    private final LocalDate birthdate;
+    private LocalDate birthdate;
     private String email;
     private String password;
     private String address;

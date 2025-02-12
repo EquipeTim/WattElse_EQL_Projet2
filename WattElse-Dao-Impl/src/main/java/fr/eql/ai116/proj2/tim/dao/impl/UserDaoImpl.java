@@ -118,7 +118,6 @@ public class UserDaoImpl implements UserDao {
             statement.setString(1, email);
             statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
-            logger.error("Connecté");
             if (resultSet.next()) {
                 user = new User(
                         resultSet.getLong("id_user"),
