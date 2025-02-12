@@ -1,9 +1,10 @@
 package fr.eql.ai116.proj2.tim.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 // Transaction
-public class Transaction {
+public class Transaction implements Serializable {
 
     private long idTransaction;
     private final LocalDate registrationReservationDate;
