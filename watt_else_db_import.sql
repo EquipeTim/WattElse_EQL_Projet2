@@ -332,14 +332,35 @@ CREATE TABLE IF NOT EXISTS `user` (
   `phone_number` varchar(254) DEFAULT NULL,
   `email` varchar(254) DEFAULT NULL,
   `password` varchar(254) DEFAULT NULL,
-  `closing_date_bank_account` datetime DEFAULT NULL,
+  `closing_date_account` datetime DEFAULT NULL,
   `address_user` varchar(254) DEFAULT NULL,
+  `role` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_user`),
   KEY `FK_demeurer` (`id_city`),
   KEY `FK_quitter` (`id_label_closing_account_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+DROP TABLE IF EXISTS `session`;
+CREATE TABLE IF NOT EXISTS `session` (
+  `id_session` int(11) NOT NULL AUTO_INCREMENT,
+  `token` varchar(50) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  `id_user` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_session`),
+  UNIQUE KEY `id_user` (`id_user`),
+  KEY `FK_session_user` (`id_user`),
+  CONSTRAINT `FK_session_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Les données exportées n'étaient pas sélectionnées.
+
+-- Ajouter les donnés intiales
+INSERT INTO `city` (`id_city`, `city`, `postal_code`) VALUES
+	(1, 'Paris', '75001');
+
+INSERT INTO `user` (`id_user`, `id_city`, `id_label_closing_account_user`, `inscription_date_user`, `firstname_user`, `lastname_user`, `birthdate`, `phone_number`, `email`, `password`, `closing_date_account`, `address_user`, `role`) VALUES
+	(1, 1, NULL, '2025-02-11 00:00:00', 'Admin', 'administrator', NULL, NULL, 'wattelseinc@proton.me', '-1402147925', NULL, NULL, '"ADMIN"');
+
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
