@@ -1,6 +1,9 @@
 package fr.eql.ai116.proj2.tim.entity;
+
+import java.io.Serializable;
+
 // Utilisateur
-public class User {
+public class User implements Serializable {
     private long userId;
     private String name;
     private String surName;

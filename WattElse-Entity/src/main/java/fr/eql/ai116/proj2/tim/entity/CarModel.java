@@ -1,6 +1,6 @@
 package fr.eql.ai116.proj2.tim.entity;
 // model
-enum CarModel {
+public enum CarModel {
 
 
     // Marques spécialisées dans les voitures électriques
