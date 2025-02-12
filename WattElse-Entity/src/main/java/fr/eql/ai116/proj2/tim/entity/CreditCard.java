@@ -1,9 +1,10 @@
 package fr.eql.ai116.proj2.tim.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 // Carte de Credit
-public class CreditCard {
+public class CreditCard implements Serializable {
 
     private long idCreditCard;
     private final long numberCard;

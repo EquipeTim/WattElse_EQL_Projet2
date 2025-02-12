@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 // Utilisateur
 public class User implements Serializable {
-    private long userId;
+    private Long userId;
     private String name;
     private String surname;
     private LocalDate birthdate;

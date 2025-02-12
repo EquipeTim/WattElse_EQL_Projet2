@@ -33,8 +33,9 @@ public class UserDaoImpl implements UserDao {
             "ON DUPLICATE KEY UPDATE token = ?, timestamp = ?";
     private static final String REQ_ROLE_BY_ID_USER = "SELECT role FROM owner WHERE id = ?";
     private static final String REQ_ADD_USER = "INSERT INTO user " +
-            "(inscription_date_user, firstname_user, lastname_user, birthdate, phone_number, email, password, address_user, id_city) VALUES (?,?,?)";
-    private static final String REQ_GET_CITY_ID = "SELECT id FROM city WHERE city = ? AND postal_code = ?";
+            "(inscription_date_user, firstname_user, lastname_user, birthdate, phone_number, email, password, address_user, id_city, role) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?)";
+    private static final String REQ_GET_CITY_ID = "SELECT id_city FROM city WHERE city = ? AND postal_code = ?";
     private static final String REQ_ADD_CITY = "INSERT INTO city (city, postal_code) VALUES (?,?)";
 
 
@@ -70,6 +71,7 @@ public class UserDaoImpl implements UserDao {
         statement.setString(7, user.getPassword());
         statement.setString(8, user.getAddress());
         statement.setLong(9, cityId);
+        statement.setString(10, "USER");
         int affectedRows = statement.executeUpdate();
         if (affectedRows > 0) {
             ResultSet resultSet = statement.getGeneratedKeys();
@@ -88,7 +90,7 @@ public class UserDaoImpl implements UserDao {
         statement.setString(2, user.getPostCode());
         ResultSet resultSet = statement.executeQuery();
         if (resultSet.next()) {
-            cityId = resultSet.getLong("id");
+            cityId = resultSet.getLong("id_city");
         } else {
             cityId = addCity(user, connection);
         }
