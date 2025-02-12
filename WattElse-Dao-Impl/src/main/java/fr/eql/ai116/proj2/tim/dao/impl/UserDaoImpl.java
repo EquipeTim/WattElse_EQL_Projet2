@@ -90,7 +90,7 @@ public class UserDaoImpl implements UserDao {
         statement.setString(2, user.getPostCode());
         ResultSet resultSet = statement.executeQuery();
         if (resultSet.next()) {
-            cityId = resultSet.getLong("id");
+            cityId = resultSet.getLong("id_city");
         } else {
             cityId = addCity(user, connection);
         }

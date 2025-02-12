@@ -27,8 +27,6 @@ public class RegistrationBusinessImpl implements RegistrationBusiness {
                 fullUserDto.getBirthdate(), fullUserDto.getEmail(), fullUserDto.getAddress(),
                 fullUserDto.getCity(), fullUserDto.getPostCode(), fullUserDto.getPhone(),
                 fullUserDto.getPassword(), Role.valueOf("USER"));
-        logger.error("After User creation");
-        logger.error(user.getName());
         userDao.registerUser(user);
 
     }
