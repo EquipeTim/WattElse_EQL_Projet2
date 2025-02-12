@@ -1,9 +1,10 @@
 package fr.eql.ai116.proj2.tim.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 // Borne
-public class ChargingStation {
+public class ChargingStation implements Serializable {
 
     private long idChargingStation;
     private final long PowerChargingStation;
