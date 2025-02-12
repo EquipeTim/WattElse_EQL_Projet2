@@ -134,6 +134,7 @@ public class UserDaoImpl implements UserDao {
                         Role.valueOf(resultSet.getString("role")
                         )
                 );
+                System.out.println(user);
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite " +
