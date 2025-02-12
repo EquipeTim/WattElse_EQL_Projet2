@@ -44,9 +44,8 @@ private final DataSource dataSource = new WattElseDataSource();
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
     }
-    private void carStatementExecution(Car car, CarModel carModel, long userId, Connection connection) throws SQLException {
+    private void carStatementExecution(Car car, long userId, Connection connection) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(REQ_INSERT_CAR, Statement.RETURN_GENERATED_KEYS);
-        statement.setString(1, carModel.name());
         statement.setLong(2,userId);
         statement.setLong(3,car.getLicensePlateNumber());
         statement.setDate(4, Date.valueOf(car.getRegistrationDateCar()));
