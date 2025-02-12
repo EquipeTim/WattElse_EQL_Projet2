@@ -8,6 +8,8 @@ import fr.eql.ai116.proj2.tim.entity.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,6 +18,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+@Remote(UserDao.class)
+@Stateless
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = LogManager.getLogger();
 
