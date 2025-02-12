@@ -6,7 +6,7 @@ public class CredentialsDto implements Serializable {
     private String email;
     private String password;
 
-    /// Constructeur vide (par défaut ici) nécessaire pour la réification ///
+    /// Constructeur vide (par défaut ici) nécessaire pour la réification /// (deserialization - convert to object)
 
     /// Getters ///
     public String getEmail() {
