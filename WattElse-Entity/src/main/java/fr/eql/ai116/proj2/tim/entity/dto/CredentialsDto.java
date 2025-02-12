@@ -17,7 +17,7 @@ public class CredentialsDto implements Serializable {
     }
 
     /// Setters (pour réifier) ///
-    public void setEmail(String login) {
+    public void setEmail(String email) {
         this.email = email;
     }
     public void setPassword(String password) {

@@ -44,7 +44,7 @@ public class SecurityBusinessImpl implements SecurityBusiness {
         if (Timestamp.from(Instant.now()).getTime() - session.getTimestamp().getTime() > SESSION_TIME) {
             throw new AuthorizationException("Session expirée.");
         }
-        Role ownerRole = userDao.findRoleByIdOwner(session.getUserId());
+        Role ownerRole = userDao.findRoleByIdUser(session.getUserId());
         checkRole(role, ownerRole);
     }
 
