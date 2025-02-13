@@ -5,6 +5,7 @@ import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.Role;
 import fr.eql.ai116.proj2.tim.entity.Session;
 import fr.eql.ai116.proj2.tim.entity.User;
+import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,7 +49,7 @@ public class UserDaoImpl implements UserDao {
     private static final String REQ_FIND_USER_BY_ID ="SELECT * FROM user JOIN city " +
             "ON user.id_city = city.id_city WHERE id_user = ?";
     /**
-     * REgisters user to database; Verifies if he does not exist, adds city if needed
+     * Registers user to database; Verifies if he does not exist, adds city if needed
      * @param user
      * @return true if user was added to DB
      */
@@ -131,8 +132,6 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean isAccountOwner(User user, String token) {
         boolean isAccountOwner = false;
-        logger.error("token : " +   token);
-        logger.error("user ID : " + user.getId());
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_IS_ACCOUNT_OWNER);
             statement.setLong(1, user.getId());
@@ -146,6 +145,21 @@ public class UserDaoImpl implements UserDao {
                     "lors de la consultation du chat en base de données", e);
         }
         return isAccountOwner;
+    }
+
+    @Override
+    public FullUserDto getUserData(Long userId) {
+        User user = getUserById(userId);
+        FullUserDto fullUserDto = new FullUserDto();
+        fullUserDto.setName(user.getName());
+        fullUserDto.setSurname(user.getSurname());
+        fullUserDto.setBirthdate(user.getBirthDate());
+        fullUserDto.setAddress(user.getAddress());
+        fullUserDto.setCity(user.getCity());
+        fullUserDto.setEmail(user.getEmail());
+        fullUserDto.setPhone_number(user.getPhoneNumber());
+        fullUserDto.setPostal_code(user.getPostCode());
+        return fullUserDto;
     }
 
 

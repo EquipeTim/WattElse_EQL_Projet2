@@ -35,11 +35,15 @@ public class UserBusinessImpl implements UserBusiness {
     public boolean closeUserAccount(UserCloseDto userCloseDto) {
         User user = userDao.getUserById(userCloseDto.getUserId());
         boolean isAccountOwner =userDao.isAccountOwner(user, userCloseDto.getToken());
-        logger.error("is account owner: " + isAccountOwner);
         if (isAccountOwner) {
             userDao.closeUserAccount(userCloseDto.getUserId(), userCloseDto.getReasonId());
             return true;
         }
         return false;
+    }
+
+    @Override
+    public FullUserDto getUserData(UserDto userDto) {
+        return userDao.getUserData(userDto.getUserId());
     }
 }

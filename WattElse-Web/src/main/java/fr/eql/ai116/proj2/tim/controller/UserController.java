@@ -8,9 +8,13 @@ import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -45,18 +49,37 @@ public class UserController {
     @POST
     @Path("/close")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response close(UserCloseDto userCloseDto) {
-        System.out.println(userCloseDto.getUserId() + " " + userCloseDto.getToken());
-
+    public Response close(@Context HttpHeaders headers, UserCloseDto userCloseDto) {
+        String authorizationHeader = headers.getHeaderString("Authorization");
+        String token = authorizationHeader.substring("Bearer ".length());
         try {
-            boolean isClosed = userBusiness.closeUserAccount(userCloseDto);
-            if (isClosed) {
-                return Response.ok().build();
-            } else {
-                return Response.status(Response.Status.FORBIDDEN).build();
+            if (token.equals(userCloseDto.getToken())){
+                    boolean isClosed = userBusiness.closeUserAccount(userCloseDto);
+                if (isClosed) {
+                    return Response.ok().build();
+                }
             }
+            return Response.status(Response.Status.FORBIDDEN).build();
         } catch (AuthenticationException e) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
+    @POST
+    @Path("/details")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response personalData(@Context HttpHeaders headers, UserDto userDto){
+        String authorizationHeader = headers.getHeaderString("Authorization");
+        String token = authorizationHeader.substring("Bearer ".length());
+        try {
+            if (token.equals(userDto.getToken())) {
+                FullUserDto user = userBusiness.getUserData(userDto);
+                return Response.ok(user).build();
+            }
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (AuthenticationException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+    }
+
 }
