@@ -27,6 +27,7 @@ public class UserDaoImpl implements UserDao {
 
     private static final String REQ_AUTH = " SELECT * FROM user INNER JOIN city " +
             "ON user.id_city = city.id_city WHERE email = ? AND password = ?";
+    private static final String REQ_USER_EXISTS = "SELECT * FROM user WHERE email = ?";
     private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ?";
     private static final String REQ_UPDATE_SESSION = "INSERT INTO session (token, timestamp, id_user) VALUES (?,?,?) " +
             "ON DUPLICATE KEY UPDATE token = ?, timestamp = ?";
@@ -40,25 +41,61 @@ public class UserDaoImpl implements UserDao {
 
     private final DataSource dataSource = new WattElseDataSource();
 
+    /**
+     * REgisters user to database; Verifies if he does not exist, adds city if needed
+     * @param user
+     * @return true if user was added to DB
+     */
     @Override
-    public void registerUser(User user) {
+    public boolean registerUser(User user) {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            try {
-                Long cityId = getCityId(user, connection);
-                addUser(user, cityId, connection);
-                connection.commit();
-                logger.info("{} a été inséré en base de données avec l'id {}", user.getName(), user.getId());
-            }
-            catch (SQLException e) {
-                connection.rollback();
-                logger.error("Une erreur s'est produite lors de l'insertion de utilisateur {}", user.getName(), e);
+            boolean exists = checkUserExists(user, connection);
+            if (exists) {
+                logger.info("Utilisateur avec email {} existe déjà", user.getEmail());
+                return false;
+            } else {
+                connection.setAutoCommit(false);
+                try {
+                    Long cityId = getCityId(user, connection);
+                    addUser(user, cityId, connection);
+                    connection.commit();
+                    logger.info("{} a été inséré en base de données avec l'id {}", user.getName(), user.getId());
+                    return true;
+                } catch (SQLException e) {
+                    connection.rollback();
+                    logger.error("Une erreur s'est produite lors de l'insertion de utilisateur {}", user.getName(), e);
+                }
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
+        return false;
     }
 
+    /**
+     * Checks if user exists in the databse
+     * @param user
+     * @param connection
+     * @return true if he exists in DB
+     */
+    private boolean checkUserExists(User user, Connection connection) throws SQLException{
+        PreparedStatement statement = connection.prepareStatement(REQ_USER_EXISTS);
+        statement.setString(1, user.getEmail());
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Adds user to Database
+     * @param user
+     * @param cityId
+     * @param connection
+     * @throws SQLException
+     */
     private void addUser(User user, Long cityId, Connection connection) throws SQLException{
         PreparedStatement statement = connection.prepareStatement(REQ_ADD_USER, Statement.RETURN_GENERATED_KEYS);
         statement.setTimestamp(1, Timestamp.from(Instant.now()));

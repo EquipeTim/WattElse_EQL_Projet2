@@ -11,5 +11,5 @@ public interface UserDao {
     Session findSession(String token);
     void updateSession(String token, long userId);
     Role findRoleByIdUser(long userId);
-    void registerUser(User user);
+    boolean registerUser(User user);
 }
