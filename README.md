@@ -19,15 +19,7 @@ POST: send credentials
 /registration/
 POST: Register user in the DB
 {
-"name":"myName",
-"surname":"mySillySurname",
-"birthdate":"1990-08-01",
-"email":"example@mail.mdr",
-"password":"theSecretWord",
-"address":"141 Boulevard Mortier",
-"phone_number":"123456-89",
-"city":"Paris",
-"postal_code":"75020"
+g
 }
 
 ### Architecture
