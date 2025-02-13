@@ -1,13 +1,11 @@
 package fr.eql.ai116.proj2.tim.business.impl;
 
-import fr.eql.ai116.proj2.tim.business.AuthenticationException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.entity.Role;
 import fr.eql.ai116.proj2.tim.entity.User;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserCloseDto;
-import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +39,15 @@ public class UserBusinessImpl implements UserBusiness {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean updateUser(FullUserDto fullUserDto, String token) {
+        User user = new User(null, fullUserDto.getName(), fullUserDto.getSurname(),
+                fullUserDto.getBirthdate(), fullUserDto.getEmail(), fullUserDto.getAddress(),
+                fullUserDto.getCity(), fullUserDto.getPostCode(), fullUserDto.getPhone(),
+                fullUserDto.getPassword(), Role.valueOf("USER"));
+        return userDao.modifyUser(user, token);
     }
 
     @Override

@@ -43,6 +43,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Closes tjhe user account in the database
+     * @param headers
+     * @param userCloseDto
+     * @return
+     */
     @POST
     @Path("/close")
     @Produces(MediaType.APPLICATION_JSON)
@@ -58,6 +64,12 @@ public class UserController {
         return Response.status(Response.Status.FORBIDDEN).build();
 
     }
+
+    /**
+     * Gets all the user personal details
+     * @param headers
+     * @return
+     */
     @GET
     @Path("/details")
     @Produces(MediaType.APPLICATION_JSON)
@@ -68,6 +80,20 @@ public class UserController {
         FullUserDto user = userBusiness.getUserData(token);
         if (user != null) {return Response.ok(user).build();}
         return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @POST
+    @Path("/modify")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response modify(@Context HttpHeaders headers, FullUserDto fullUserDto) {
+        String authorizationHeader = headers.getHeaderString("Authorization");
+        String token = authorizationHeader.substring("Bearer ".length());
+        boolean updated = userBusiness.updateUser(fullUserDto, token);
+        if (updated) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
     }
 
 }

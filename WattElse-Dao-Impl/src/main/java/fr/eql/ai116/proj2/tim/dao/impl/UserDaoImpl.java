@@ -48,6 +48,9 @@ public class UserDaoImpl implements UserDao {
 
     private static final String REQ_FIND_USER_BY_ID ="SELECT * FROM user JOIN city " +
             "ON user.id_city = city.id_city WHERE id_user = ?";
+
+    private static final String REQ_UPDATE_USER = "UPDATE user SET firstname_user = ?, lastname_user = ? , birthdate = ?, phone_number = ? , email = ?, password = ?, address_user = ?, id_city = ? WHERE id_user = ?";
+
     /**
      * Registers user to database; Verifies if he does not exist, adds city if needed
      * @param user
@@ -155,21 +158,59 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public FullUserDto getUserData(String token) {
+        FullUserDto fullUserDto = null;
         Session session = findSession(token);
         User user = getUserById(session.getUserId());
         if (user != null) {
-            FullUserDto fullUserDto = new FullUserDto();
-            fullUserDto.setName(user.getName());
-            fullUserDto.setSurname(user.getSurname());
-            fullUserDto.setBirthdate(user.getBirthDate());
-            fullUserDto.setAddress(user.getAddress());
-            fullUserDto.setCity(user.getCity());
-            fullUserDto.setEmail(user.getEmail());
-            fullUserDto.setPhone_number(user.getPhoneNumber());
-            fullUserDto.setPostal_code(user.getPostCode());
-            return fullUserDto;
+            fullUserDto = new FullUserDto(user.getName(),user.getSurname(),
+                    user.getBirthDate(),user.getEmail(),null, user.getAddress(),
+                user.getPhoneNumber(),user.getCity(),user.getPostCode());
         }
-        return null;
+        return fullUserDto;
+    }
+
+    /**
+     * Modifies user attributes within the DB
+     * @param user
+     * @param token
+     * @return
+     */
+    @Override
+    public boolean modifyUser(User user, String token) {
+        boolean success = false;
+        Session session = findSession(token);
+        logger.error(session.getUserId());
+        logger.error(user.getName());
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                Long cityId = getCityId(user, connection);
+                PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER, Statement.RETURN_GENERATED_KEYS);
+                statement.setString(1, user.getName());
+                statement.setString(2, user.getSurname());
+                statement.setDate(3, Date.valueOf(user.getBirthDate()));
+                statement.setString(4, user.getPhoneNumber());
+                statement.setString(5, user.getEmail());
+                statement.setString(6, String.valueOf(user.getPassword().hashCode()));
+                statement.setString(7, user.getAddress());
+                statement.setLong(8, cityId);
+                statement.setLong(9, session.getUserId());
+                int affectedRows = statement.executeUpdate();
+                logger.error(affectedRows);
+                if (affectedRows > 0) {
+                    ResultSet resultSet = statement.getGeneratedKeys();
+                    logger.error(resultSet.next());
+                    success =  true;
+                }
+            } catch (SQLException e) {
+                connection.rollback();
+                logger.error("Une erreur s'est produite lors de modification de utilisateur {}", user.getName(), e);
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite " +
+                    "lors de la consultation du chat en base de données", e);
+        }
+        return success;
     }
 
 

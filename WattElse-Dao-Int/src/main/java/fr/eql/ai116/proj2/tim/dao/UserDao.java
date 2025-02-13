@@ -17,4 +17,5 @@ public interface UserDao {
     User getUserById(Long userId);
     boolean isAccountOwner(User user, String token);
     FullUserDto getUserData(String token);
+    boolean modifyUser(User user, String token);
 }
