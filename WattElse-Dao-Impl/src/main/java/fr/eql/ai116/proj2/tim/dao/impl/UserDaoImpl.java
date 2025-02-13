@@ -25,7 +25,6 @@ import java.time.Instant;
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = LogManager.getLogger();
 
-    //private static final String REQ_AUTH = " SELECT * FROM user WHERE email = ? AND password = ?";
     private static final String REQ_AUTH = " SELECT * FROM user INNER JOIN city " +
             "ON user.id_city = city.id_city WHERE email = ? AND password = ?";
     private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ?";

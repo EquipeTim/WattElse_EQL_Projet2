@@ -63,5 +63,5 @@ public class SecurityBusinessImpl implements SecurityBusiness {
         }
     }
 
-    private String issueToken(String login) { return ("Tequila13_" + login);}
+    private String issueToken(String login) { return String.valueOf(("Tequila13_" + login).hashCode());}
 }
