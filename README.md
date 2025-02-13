@@ -6,6 +6,7 @@ Cyrine Said Ali
 
 
 ### ENDPOINTS:
+Starts by: /api/rest
 
 1. Authenticate using user already registered in the system (DB)
 /connection/authenticate
@@ -16,7 +17,7 @@ POST: send credentials
 }
 
 2. Register user in the system (DB)
-/registration/
+/user/registration
 POST: Register user in the DB
 {
 g

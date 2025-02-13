@@ -8,6 +8,8 @@ import fr.eql.ai116.proj2.tim.entity.Session;
 import fr.eql.ai116.proj2.tim.entity.User;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Remote;
@@ -15,10 +17,12 @@ import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+
 @Remote(SecurityBusiness.class)
 @Stateless
 public class SecurityBusinessImpl implements SecurityBusiness {
     private static final int SESSION_TIME = 30 * 60 * 1000;
+    private static final Logger logger = LogManager.getLogger();
 
     @EJB
     private UserDao userDao;
@@ -31,7 +35,7 @@ public class SecurityBusinessImpl implements SecurityBusiness {
         }
         String token = issueToken(login);
         userDao.updateSession(token, user.getId());
-        return new UserDto(user.getId(), user.getName(), user.getSurname(), token);
+        return new UserDto(user.getId(), user.getEmail(),token);
     }
 
     @Override
@@ -63,5 +67,5 @@ public class SecurityBusinessImpl implements SecurityBusiness {
         }
     }
 
-    private String issueToken(String login) { return ("Tequila13_" + login);}
+    private String issueToken(String login) { return String.valueOf(("Tequila13_" + login).hashCode());}
 }

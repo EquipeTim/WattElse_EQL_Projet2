@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS `bank_account` (
   `iban` bigint(20) NOT NULL,
   `cardholder_name` varchar(254) DEFAULT NULL,
   `bic_swift` bigint(20) DEFAULT NULL,
-  `start_date_registration_account` datetime DEFAULT NULL,
-  `closing_date_bank_account` datetime DEFAULT NULL,
+  `start_date_registration_account` timestamp DEFAULT NULL,
+  `closing_date_bank_account` timestamp DEFAULT NULL,
   PRIMARY KEY (`id_bank_account`),
   KEY `FK_avoir` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -160,6 +160,15 @@ CREATE TABLE IF NOT EXISTS `closing_account_user_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.closing_account_user_type : ~0 rows (environ)
+INSERT INTO `closing_account_user_type` (`id_label_closing_account_user`, `label_closing_account_user`) VALUES
+	(1, 'Je ne posséde plus de voiture électrique'),
+	(2, 'Je passe à un autre réseau de recharge'),
+	(3, 'Insatisfaction vis-à-vis du service'),
+	(4, 'Coût de recharge élevé'),
+	(5, 'Problèmes techniques'),
+	(6, 'Je passe à une voiture non électrique'),
+	(7, 'Difficultés financières'),
+	(8, 'Autre');
 
 -- Listage de la structure de table wattelse. credit_card
 CREATE TABLE IF NOT EXISTS `credit_card` (
@@ -169,8 +178,8 @@ CREATE TABLE IF NOT EXISTS `credit_card` (
   `cardholder_name` varchar(254) DEFAULT NULL,
   `expiration_date` date DEFAULT NULL,
   `cvv_number` int(11) DEFAULT NULL,
-  `registration_date_carte` datetime DEFAULT NULL,
-  `withdrawal_date_card` datetime DEFAULT NULL,
+  `registration_date_carte` timestamp DEFAULT NULL,
+  `withdrawal_date_card` timestamp DEFAULT NULL,
   PRIMARY KEY (`id_credit_card`),
   KEY `FK_posseder` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -461,17 +470,18 @@ CREATE TABLE IF NOT EXISTS `user` (
   `id_user` int(11) NOT NULL AUTO_INCREMENT,
   `id_city` int(11) NOT NULL,
   `id_label_closing_account_user` int(11) DEFAULT NULL,
-  `inscription_date_user` datetime DEFAULT NULL,
+  `inscription_date_user` timestamp DEFAULT NULL,
   `firstname_user` varchar(254) DEFAULT NULL,
   `lastname_user` varchar(254) DEFAULT NULL,
   `birthdate` date DEFAULT NULL,
   `phone_number` varchar(254) DEFAULT NULL,
   `email` varchar(254) DEFAULT NULL,
   `password` varchar(254) DEFAULT NULL,
-  `closing_date_account` datetime DEFAULT NULL,
+  `closing_date_account` timestamp DEFAULT NULL,
   `address_user` varchar(254) DEFAULT NULL,
   `role` varchar(255) DEFAULT '"USER"',
   PRIMARY KEY (`id_user`),
+  UNIQUE KEY `email` (`email`),
   KEY `FK_demeurer` (`id_city`),
   KEY `FK_quitter` (`id_label_closing_account_user`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
