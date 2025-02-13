@@ -87,13 +87,19 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean closeUserAccount(Long userId, Long closeReasonId) {
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(REQ_CLOSE_ACC);
-            statement.setTimestamp(1, Timestamp.from(Instant.now()));
-            statement.setLong(2, closeReasonId);
-            statement.setLong(3, userId);
-            statement.executeUpdate();
-            logger.info("La compte d'utilisateur {} a été fermé", userId);
-            return true;
+            Role role = findRoleByIdUser(userId);
+            if (role == Role.USER) {
+                PreparedStatement statement = connection.prepareStatement(REQ_CLOSE_ACC);
+                statement.setTimestamp(1, Timestamp.from(Instant.now()));
+                statement.setLong(2, closeReasonId);
+                statement.setLong(3, userId);
+                statement.executeUpdate();
+                logger.info("La compte d'utilisateur {} a été fermé", userId);
+                return true;
+            } else {
+                logger.info("Fermeture du compte admin pas permit");
+                return false;
+            }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
             return false;
@@ -148,18 +154,22 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public FullUserDto getUserData(Long userId) {
-        User user = getUserById(userId);
-        FullUserDto fullUserDto = new FullUserDto();
-        fullUserDto.setName(user.getName());
-        fullUserDto.setSurname(user.getSurname());
-        fullUserDto.setBirthdate(user.getBirthDate());
-        fullUserDto.setAddress(user.getAddress());
-        fullUserDto.setCity(user.getCity());
-        fullUserDto.setEmail(user.getEmail());
-        fullUserDto.setPhone_number(user.getPhoneNumber());
-        fullUserDto.setPostal_code(user.getPostCode());
-        return fullUserDto;
+    public FullUserDto getUserData(String token) {
+        Session session = findSession(token);
+        User user = getUserById(session.getUserId());
+        if (user != null) {
+            FullUserDto fullUserDto = new FullUserDto();
+            fullUserDto.setName(user.getName());
+            fullUserDto.setSurname(user.getSurname());
+            fullUserDto.setBirthdate(user.getBirthDate());
+            fullUserDto.setAddress(user.getAddress());
+            fullUserDto.setCity(user.getCity());
+            fullUserDto.setEmail(user.getEmail());
+            fullUserDto.setPhone_number(user.getPhoneNumber());
+            fullUserDto.setPostal_code(user.getPostCode());
+            return fullUserDto;
+        }
+        return null;
     }
 
 
@@ -195,7 +205,7 @@ public class UserDaoImpl implements UserDao {
         statement.setDate(4, Date.valueOf(user.getBirthDate()));
         statement.setString(5, user.getPhoneNumber());
         statement.setString(6, user.getEmail());
-        statement.setString(7, user.getPassword());
+        statement.setString(7, String.valueOf(user.getPassword().hashCode()));
         statement.setString(8, user.getAddress());
         statement.setLong(9, cityId);
         statement.setString(10, "USER");
@@ -244,10 +254,14 @@ public class UserDaoImpl implements UserDao {
         User user = null;
         try (Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement(REQ_AUTH);
+            logger.warn("--------------------------------------------");
+            logger.warn("statement prep userdaoimpl");
             statement.setString(1, email);
-            statement.setString(2, password);
+            statement.setString(2, String.valueOf(password.hashCode()));
+            logger.warn("statement exec userdaoimpl");
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+                logger.warn("recuperer des elems");
                 user = new User(
                         resultSet.getLong("id_user"),
                         resultSet.getString("firstname_user"),
@@ -268,6 +282,7 @@ public class UserDaoImpl implements UserDao {
             logger.error("Une erreur s'est produite " +
                     "lors de la consultation du propriétaire en base de données", e);
         }
+        logger.error(user);
         return user;
     }
 
@@ -280,10 +295,10 @@ public class UserDaoImpl implements UserDao {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 session = new Session(
-                        resultSet.getLong("id"),
+                        resultSet.getLong("id_session"),
                         resultSet.getString("token"),
                         resultSet.getTimestamp("timestamp"),
-                        resultSet.getLong("user_id")
+                        resultSet.getLong("id_user")
                 );
             }
         } catch (SQLException e) {

@@ -16,5 +16,5 @@ public interface UserDao {
     boolean closeUserAccount(Long userId, Long closeReasonId);
     User getUserById(Long userId);
     boolean isAccountOwner(User user, String token);
-    FullUserDto getUserData(Long userId);
+    FullUserDto getUserData(String token);
 }

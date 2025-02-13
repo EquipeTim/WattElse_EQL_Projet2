@@ -43,7 +43,7 @@ public class UserBusinessImpl implements UserBusiness {
     }
 
     @Override
-    public FullUserDto getUserData(UserDto userDto) {
-        return userDao.getUserData(userDto.getUserId());
+    public FullUserDto getUserData(String token) {
+        return userDao.getUserData(token);
     }
 }

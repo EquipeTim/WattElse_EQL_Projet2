@@ -54,7 +54,7 @@ public class UserController {
         String token = authorizationHeader.substring("Bearer ".length());
         try {
             if (token.equals(userCloseDto.getToken())){
-                    boolean isClosed = userBusiness.closeUserAccount(userCloseDto);
+                boolean isClosed = userBusiness.closeUserAccount(userCloseDto);
                 if (isClosed) {
                     return Response.ok().build();
                 }
@@ -64,18 +64,16 @@ public class UserController {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
-    @POST
+    @GET
     @Path("/details")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response personalData(@Context HttpHeaders headers, UserDto userDto){
+    public Response personalData(@Context HttpHeaders headers){
         String authorizationHeader = headers.getHeaderString("Authorization");
         String token = authorizationHeader.substring("Bearer ".length());
         try {
-            if (token.equals(userDto.getToken())) {
-                FullUserDto user = userBusiness.getUserData(userDto);
-                return Response.ok(user).build();
-            }
-            return Response.status(Response.Status.FORBIDDEN).build();
+            FullUserDto user = userBusiness.getUserData(token);
+            if (user != null) {return Response.ok(user).build();}
+            return Response.status(Response.Status.NOT_FOUND).build();
         } catch (AuthenticationException e) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
