@@ -33,7 +33,7 @@ public class UserDaoImpl implements UserDao {
     private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ?";
     private static final String REQ_UPDATE_SESSION = "INSERT INTO session (token, timestamp, id_user) VALUES (?,?,?) " +
             "ON DUPLICATE KEY UPDATE token = ?, timestamp = ?";
-    private static final String REQ_ROLE_BY_ID_USER = "SELECT role FROM user WHERE id = ?";
+    private static final String REQ_ROLE_BY_ID_USER = "SELECT role FROM user WHERE id_user = ?";
     private static final String REQ_ADD_USER = "INSERT INTO user " +
             "(inscription_date_user, firstname_user, lastname_user, birthdate, phone_number, email, password, address_user, id_city, role) " +
             "VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -254,14 +254,10 @@ public class UserDaoImpl implements UserDao {
         User user = null;
         try (Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement(REQ_AUTH);
-            logger.warn("--------------------------------------------");
-            logger.warn("statement prep userdaoimpl");
             statement.setString(1, email);
             statement.setString(2, String.valueOf(password.hashCode()));
-            logger.warn("statement exec userdaoimpl");
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                logger.warn("recuperer des elems");
                 user = new User(
                         resultSet.getLong("id_user"),
                         resultSet.getString("firstname_user"),
@@ -281,7 +277,6 @@ public class UserDaoImpl implements UserDao {
             logger.error("Une erreur s'est produite " +
                     "lors de la consultation du propriétaire en base de données", e);
         }
-        logger.error(user);
         return user;
     }
 

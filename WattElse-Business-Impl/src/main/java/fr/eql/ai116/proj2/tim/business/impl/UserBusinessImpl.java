@@ -1,5 +1,6 @@
 package fr.eql.ai116.proj2.tim.business.impl;
 
+import fr.eql.ai116.proj2.tim.business.AuthenticationException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.entity.Role;
@@ -32,7 +33,7 @@ public class UserBusinessImpl implements UserBusiness {
     }
 
     @Override
-    public boolean closeUserAccount(UserCloseDto userCloseDto) {
+    public boolean closeUserAccount(UserCloseDto userCloseDto){
         User user = userDao.getUserById(userCloseDto.getUserId());
         boolean isAccountOwner =userDao.isAccountOwner(user, userCloseDto.getToken());
         if (isAccountOwner) {

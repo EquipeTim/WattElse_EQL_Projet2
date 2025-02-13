@@ -488,7 +488,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 -- Listage des données de la table wattelse.user : ~0 rows (environ)
 INSERT INTO `user` (`id_user`, `id_city`, `id_label_closing_account_user`, `inscription_date_user`, `firstname_user`, `lastname_user`, `birthdate`, `phone_number`, `email`, `password`, `closing_date_account`, `address_user`, `role`) VALUES
-	(1, 1, NULL, '2025-02-11', 'Admin', 'administrator', '2025-02-12', '123456789', 'wattelseinc@proton.me', 'azerty', NULL, NULL, 'ADMIN');
+	(1, 1, NULL, '2025-02-11', 'Admin', 'administrator', '2025-02-12', '123456789', 'wattelseinc@proton.me', '-1402147925', NULL, NULL, 'ADMIN');
 
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;

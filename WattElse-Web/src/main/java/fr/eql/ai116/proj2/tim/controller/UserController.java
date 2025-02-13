@@ -1,5 +1,6 @@
 package fr.eql.ai116.proj2.tim.controller;
 
+
 import fr.eql.ai116.proj2.tim.business.AuthenticationException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
@@ -34,15 +35,11 @@ public class UserController {
     @Path("/registration")
     @Produces(MediaType.APPLICATION_JSON)
     public Response register(FullUserDto fullUserDto) {
-        try {
-            boolean added = userBusiness.registerUser(fullUserDto);
-            if (added) {
-                return Response.status(Response.Status.CREATED).build();
-            } else {
-                return Response.status(Response.Status.FOUND).build();
-            }
-        } catch (AuthenticationException e) {
-            return Response.status(Response.Status.FORBIDDEN).build();
+        boolean added = userBusiness.registerUser(fullUserDto);
+        if (added) {
+            return Response.status(Response.Status.CREATED).build();
+        } else {
+            return Response.status(Response.Status.FOUND).build();
         }
     }
 
@@ -52,17 +49,14 @@ public class UserController {
     public Response close(@Context HttpHeaders headers, UserCloseDto userCloseDto) {
         String authorizationHeader = headers.getHeaderString("Authorization");
         String token = authorizationHeader.substring("Bearer ".length());
-        try {
-            if (token.equals(userCloseDto.getToken())){
-                boolean isClosed = userBusiness.closeUserAccount(userCloseDto);
-                if (isClosed) {
-                    return Response.ok().build();
-                }
+        if (token.equals(userCloseDto.getToken())){
+            boolean isClosed = userBusiness.closeUserAccount(userCloseDto);
+            if (isClosed) {
+                return Response.ok().build();
             }
-            return Response.status(Response.Status.FORBIDDEN).build();
-        } catch (AuthenticationException e) {
-            return Response.status(Response.Status.FORBIDDEN).build();
         }
+        return Response.status(Response.Status.FORBIDDEN).build();
+
     }
     @GET
     @Path("/details")
@@ -70,14 +64,10 @@ public class UserController {
     public Response personalData(@Context HttpHeaders headers){
         String authorizationHeader = headers.getHeaderString("Authorization");
         String token = authorizationHeader.substring("Bearer ".length());
-        try {
-            FullUserDto user = userBusiness.getUserData(token);
-            if (user != null) {return Response.ok(user).build();}
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } catch (AuthenticationException e) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
 
+        FullUserDto user = userBusiness.getUserData(token);
+        if (user != null) {return Response.ok(user).build();}
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
 }
