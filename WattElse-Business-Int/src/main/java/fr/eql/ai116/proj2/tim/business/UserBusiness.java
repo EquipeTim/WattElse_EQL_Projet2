@@ -9,5 +9,5 @@ import jdk.nashorn.internal.parser.Token;
 public interface UserBusiness {
     boolean registerUser(FullUserDto fullUserDto);
     boolean closeUserAccount(UserCloseDto userCloseDto);
-    FullUserDto getUserData(UserDto userDto);
+    FullUserDto getUserData(String token);
 }
