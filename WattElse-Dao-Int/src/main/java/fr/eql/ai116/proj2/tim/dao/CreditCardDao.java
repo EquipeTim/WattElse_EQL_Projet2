@@ -6,7 +6,7 @@ import java.util.List;
 
 // Carte de Credit
 public interface CreditCardDao {
-    void addCreditCard(CreditCard creditCard, long userId);
+    void addCreditCard(CreditCard creditCard, Long userId);
     void closeCreditCard(CreditCard creditCard);
     void modifyCreditCard(CreditCard creditCard);
     List<CreditCard> getCreditCards(long userId);

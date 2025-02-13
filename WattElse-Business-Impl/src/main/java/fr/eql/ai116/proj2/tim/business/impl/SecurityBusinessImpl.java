@@ -31,7 +31,7 @@ public class SecurityBusinessImpl implements SecurityBusiness {
         }
         String token = issueToken(login);
         userDao.updateSession(token, user.getId());
-        return new UserDto(user.getId(), user.getName(), user.getSurname(), token);
+        return new UserDto(user.getId(), user.getName(), user.getSurname(), user.getEmail(), token);
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.time.Instant;
 @Stateless
 public class UserDaoImpl implements UserDao {
     private static final Logger logger = LogManager.getLogger();
+    private final DataSource dataSource = new WattElseDataSource();
 
     private static final String REQ_AUTH = " SELECT * FROM user INNER JOIN city " +
             "ON user.id_city = city.id_city WHERE email = ? AND password = ?";
@@ -31,16 +32,21 @@ public class UserDaoImpl implements UserDao {
     private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ?";
     private static final String REQ_UPDATE_SESSION = "INSERT INTO session (token, timestamp, id_user) VALUES (?,?,?) " +
             "ON DUPLICATE KEY UPDATE token = ?, timestamp = ?";
-    private static final String REQ_ROLE_BY_ID_USER = "SELECT role FROM owner WHERE id = ?";
+    private static final String REQ_ROLE_BY_ID_USER = "SELECT role FROM user WHERE id = ?";
     private static final String REQ_ADD_USER = "INSERT INTO user " +
             "(inscription_date_user, firstname_user, lastname_user, birthdate, phone_number, email, password, address_user, id_city, role) " +
             "VALUES (?,?,?,?,?,?,?,?,?,?)";
     private static final String REQ_GET_CITY_ID = "SELECT id_city FROM city WHERE city = ? AND postal_code = ?";
     private static final String REQ_ADD_CITY = "INSERT INTO city (city, postal_code) VALUES (?,?)";
 
+    private static final String REQ_CLOSE_ACC = "UPDATE user SET closing_date_account = ? , id_label_closing_account_user = ? " +
+            "WHERE id_user = ?";
 
-    private final DataSource dataSource = new WattElseDataSource();
+    private static final String REQ_IS_ACCOUNT_OWNER = "SELECT * FROM user u " +
+            "JOIN session s ON u.id_user = s.id_user WHERE u.id_user = ? AND s.token = ?";
 
+    private static final String REQ_FIND_USER_BY_ID ="SELECT * FROM user JOIN city " +
+            "ON user.id_city = city.id_city WHERE id_user = ?";
     /**
      * REgisters user to database; Verifies if he does not exist, adds city if needed
      * @param user
@@ -71,6 +77,77 @@ public class UserDaoImpl implements UserDao {
         }
         return false;
     }
+
+    /**
+     * Closes user account
+     * @param userId
+     * @return true if he if user closed successfully
+     */
+    @Override
+    public boolean closeUserAccount(Long userId, Long closeReasonId) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_CLOSE_ACC);
+            statement.setTimestamp(1, Timestamp.from(Instant.now()));
+            statement.setLong(2, closeReasonId);
+            statement.setLong(3, userId);
+            statement.executeUpdate();
+            logger.info("La compte d'utilisateur {} a été fermé", userId);
+            return true;
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+            return false;
+        }
+    }
+
+    @Override
+    public User getUserById(Long userId) {
+        User user= null;
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_FIND_USER_BY_ID);
+            statement.setLong(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                user = new User(
+                        resultSet.getLong("id_user"),
+                        resultSet.getString("firstname_user"),
+                        resultSet.getString("lastname_user"),
+                        resultSet.getDate("birthdate").toLocalDate(),
+                        resultSet.getString("email"),
+                        resultSet.getString("address_user"),
+                        resultSet.getString("city"),
+                        resultSet.getString("postal_code"),
+                        resultSet.getString("phone_number"),
+                        resultSet.getString("password"),
+                        Role.valueOf(resultSet.getString("role"))
+                );
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite " +
+                    "lors de la consultation du chat en base de données", e);
+        }
+        return user;
+    }
+
+    @Override
+    public boolean isAccountOwner(User user, String token) {
+        boolean isAccountOwner = false;
+        logger.error("token : " +   token);
+        logger.error("user ID : " + user.getId());
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_IS_ACCOUNT_OWNER);
+            statement.setLong(1, user.getId());
+            statement.setString(2, token);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                isAccountOwner = true;
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite " +
+                    "lors de la consultation du chat en base de données", e);
+        }
+        return isAccountOwner;
+    }
+
 
     /**
      * Checks if user exists in the databse

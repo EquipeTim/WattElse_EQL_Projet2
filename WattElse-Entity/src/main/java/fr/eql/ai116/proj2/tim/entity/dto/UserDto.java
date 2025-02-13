@@ -7,16 +7,18 @@ public class UserDto implements Serializable {
     private final long id;
     private final String name;
     private final String surname;
+    private final String email;
     private final String token;
 
-    public UserDto(long id, String name, String surname, String token) {
+    public UserDto(long id, String name, String surname, String email, String token) {
         this.id = id;
         this.name = name;
         this.surname = surname;
+        this.email = email;
         this.token = token;
     }
 
-    /// Getters (pour sérialiser) ///
+    /// Getters (used to Serialize) ///
     public long getId() {
         return id;
     }
@@ -26,5 +28,6 @@ public class UserDto implements Serializable {
     public String getSurname() {
         return surname;
     }
+    public String getEmail() {return surname;}
     public String getToken() {return token;}
 }

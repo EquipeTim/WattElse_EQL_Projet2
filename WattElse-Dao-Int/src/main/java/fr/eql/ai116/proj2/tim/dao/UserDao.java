@@ -12,4 +12,7 @@ public interface UserDao {
     void updateSession(String token, long userId);
     Role findRoleByIdUser(long userId);
     boolean registerUser(User user);
+    boolean closeUserAccount(Long userId, Long closeReasonId);
+    User getUserById(Long userId);
+    boolean isAccountOwner(User user, String token);
 }
