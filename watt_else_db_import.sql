@@ -23,11 +23,11 @@ USE `wattelse`;
 CREATE TABLE IF NOT EXISTS `bank_account` (
   `id_bank_account` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) NOT NULL,
-  `iban` bigint(20) NOT NULL,
-  `cardholder_name` varchar(254) DEFAULT NULL,
-  `bic_swift` bigint(20) DEFAULT NULL,
-  `start_date_registration_account` timestamp DEFAULT NULL,
-  `closing_date_bank_account` timestamp DEFAULT NULL,
+  `iban` varchar(254) NOT NULL,
+  `account_owner_name` varchar(254) DEFAULT NULL,
+  `bic_swift` varchar(254) DEFAULT NULL,
+  `account_registration_date` timestamp DEFAULT NULL,
+  `account_close_date` timestamp DEFAULT NULL,
   PRIMARY KEY (`id_bank_account`),
   KEY `FK_avoir` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
