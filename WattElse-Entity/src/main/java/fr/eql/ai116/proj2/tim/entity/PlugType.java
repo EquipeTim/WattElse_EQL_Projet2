@@ -11,7 +11,7 @@ public enum PlugType {
     NEMA_5_15_STANDARD_WALL_OUTLET("NEMA 5-15 Standard Wall Outlet"),
     NEMA_14_50("NEMA 14-50");
 
-    private final String label;
+    private  String label;
 
     PlugType(String label) {
         this.label = label;

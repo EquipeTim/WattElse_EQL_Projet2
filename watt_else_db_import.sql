@@ -352,15 +352,16 @@ CREATE TABLE IF NOT EXISTS `plug_type` (
 
 -- Listage des données de la table wattelse.plug_type : ~0 rows (environ)
 INSERT INTO `plug_type` (`id_plug_type`, `plug_type`) VALUES
-	(1, 'Type 1 SAE J1772'),
-	(2, 'Type 2 IEC 62196-2'),
-	(3, 'Type 3 IEC 62196-3'),
-	(4, 'CCS Combined Charging System'),
-	(5, 'Tesla Supercharger North America and Europe'),
-	(6, 'Type 4 IEC 62196-3'),
-	(7, 'Mennekes Plug'),
-	(8, 'NEMA 5-15 Standard Wall Outlet'),
-	(9, 'NEMA 14-50');
+    (1, 'TYPE_1_SAE_J1772'),
+	(2, 'TYPE_2_IEC_62196_2'),
+	(3, 'TYPE_3_IEC_62196_3'),
+	(4, 'CCS_COMBINED_CHARGING_SYSTEM'),
+	(5, 'TESLA_SUPERCHARGER_NORTH_AMERICA_AND_EUROPE'),
+	(6, 'TYPE_4_IEC_62196_3'),
+	(7, 'MENNEKES_PLUG'),
+	(8, 'NEMA_5_15_STANDARD_WALL_OUTLET'),
+	(9, 'NEMA_14_50');
+
 
 -- Listage de la structure de table wattelse. pricing
 CREATE TABLE IF NOT EXISTS `pricing` (

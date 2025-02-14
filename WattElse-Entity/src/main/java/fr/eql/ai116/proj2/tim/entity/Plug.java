@@ -1,50 +1,46 @@
 package fr.eql.ai116.proj2.tim.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Plug implements Serializable {
 
 
 
-        private long idModelCar;
-        private long IdChargingStation;
-        private String plugType;
+        private long idPlugType;
+        private PlugType plugType;
 
     /// Constructors////
-    public Plug(long idModelCar, long idChargingStation, String plugType) {
-        this.idModelCar = idModelCar;
-        IdChargingStation = idChargingStation;
+    public Plug(long idPlugType, PlugType plugType) {
+        this.idPlugType = idPlugType;
         this.plugType = plugType;
     }
 
 
-      /// Getters///
 
-        public long getIdModelCar() {
-            return idModelCar;
-        }
+    /// Getters///
 
-        public long getIdChargingStation() {
-            return IdChargingStation;
-        }
-
-        public String getPlugType() {
+        public long getIdPlugType() {
+        return idPlugType;
+    }
+        public PlugType getPlugType() {
             return plugType;
         }
 
-        /// Setter///
 
-        public void setIdModelCar(long idModelCar) {
-            this.idModelCar = idModelCar;
-        }
 
-        public void setIdChargingStation(long idChargingStation) {
-            IdChargingStation = idChargingStation;
-        }
+    /// Setter///
 
-        public void setPlugType(String plugType) {
-            this.plugType = plugType;
-        }
+    public void setIdPlugType(long idPlugType) {
+        this.idPlugType = idPlugType;
     }
 
+        public void setPlugType(PlugType plugType) {
+            this.plugType = plugType;
+        }
+
+
+
 }
+
+
