@@ -1,9 +1,11 @@
 package fr.eql.ai116.proj2.tim.dao.impl;
+
 import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.Car;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
@@ -12,8 +14,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -27,47 +34,20 @@ public class CarDaoImpl implements CarDao {
 private final DataSource dataSource = new WattElseDataSource();
 
     @Override
-    public void addCar(Car car, long userId, long idModelCar) {
+    public void addCar(Car car, long userId) {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            try {
-                carStatementExecution(car, idModelCar, userId, connection);
-                connection.commit();
-                logger.info("{} a été inséré en base de données avec l'id {}", car.getIdCar(), car.getIdCar());
-            } catch (SQLException e) {
-                connection.rollback();
-                logger.error("Une erreur s'est produite lors de l'insertion de {}", car.getIdCar(), e);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
+            PreparedStatement statement = connection.prepareStatement(REQ_INSERT_CAR);
+            statement.setLong(1, car.getIdModelCar());
+            statement.setLong(2, userId);
+            statement.setString(3, car.getLicensePlate());
+            statement.setTimestamp(4, Timestamp.from(Instant.now()));
+            statement.setLong(5, car.getMaxElectricPower());
+            statement.executeUpdate();
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
     }
 
-    private Long getIdModelCar(Car car, Connection connection) {
-        return null;
-    }
-
-    private void carStatementExecution(Car car, long idModelCar, long userId, Connection connection) throws SQLException, ParseException {
-        PreparedStatement statement = connection.prepareStatement(REQ_INSERT_CAR, Statement.RETURN_GENERATED_KEYS);
-        statement.setLong(1,idModelCar );
-        statement.setLong(2,userId);
-        statement.setLong(3,car.getIdCar());
-        statement.setTimestamp(4, car.getRegistrationDateCar());
-        statement.setTimestamp(5, car.getRemoveDateCar());;
-        statement.setLong(6, car.getMaxElectricPower());
-        int affectedRows = statement.executeUpdate();
-        if (affectedRows > 0) {
-            ResultSet resultSet = statement.getGeneratedKeys();
-            if (resultSet.next()) {
-                long id = resultSet.getLong(1);
-                car.setIdCar(id);
-            }
-        }
-
-
-    }
     @Override
     public boolean exists(Car car) {
         return false;
@@ -84,11 +64,6 @@ private final DataSource dataSource = new WattElseDataSource();
     }
 
     @Override
-    public int countByUser(long userId) {
-        return 0;
-    }
-
-    @Override
     public List<Car> findByUser(long userId) {
        List<Car> cars = new ArrayList<>();
        try(Connection connection = dataSource.getConnection()){
@@ -96,14 +71,13 @@ private final DataSource dataSource = new WattElseDataSource();
             statement.setLong(1, userId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()){
-                cars.add(new Car(
-                        resultSet.getLong())
-                )
+
             }
 
         } catch (SQLException e) {
            throw new RuntimeException(e);
        }
+       return null;
     }
 }
 //@Override

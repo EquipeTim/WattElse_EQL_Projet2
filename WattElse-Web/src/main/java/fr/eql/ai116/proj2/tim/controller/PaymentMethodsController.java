@@ -1,6 +1,8 @@
 package fr.eql.ai116.proj2.tim.controller;
 
+import fr.eql.ai116.proj2.tim.business.BankAccountBusiness;
 import fr.eql.ai116.proj2.tim.business.BankCardBusiness;
+import fr.eql.ai116.proj2.tim.entity.dto.BankAccountDto;
 import fr.eql.ai116.proj2.tim.entity.dto.BankCardDto;
 
 import javax.ejb.EJB;
@@ -18,11 +20,22 @@ public class PaymentMethodsController {
     @EJB
     BankCardBusiness bankCardBusiness;
 
+    @EJB
+    BankAccountBusiness bankAccountBusiness;
+
     @POST
     @Path("/card/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addCard(BankCardDto bankCardDto) {
         bankCardBusiness.addBankCard(bankCardDto);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/account/add")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addAccount(BankAccountDto bankAccountDto) {
+        bankAccountBusiness.addBankAccount(bankAccountDto);
         return Response.ok().build();
     }
 }

@@ -6,8 +6,8 @@ import java.util.List;
 
 // Compte bancaire
 public interface BankAccountDao {
-    void addBankAccount(BankAccount bankAccount, long userId);
+    void addBankAccount(BankAccount bankAccount, Long userId);
     void closeBankAccount(BankAccount bankAccount);
     void modifyBankAccount(BankAccount bankAccount);
-    List<BankAccount> getBankAccounts(long userId);
+    List<BankAccount> getBankAccounts(Long userId);
 }
