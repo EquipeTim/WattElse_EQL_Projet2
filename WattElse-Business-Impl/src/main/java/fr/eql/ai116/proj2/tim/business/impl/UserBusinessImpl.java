@@ -47,7 +47,7 @@ public class UserBusinessImpl implements UserBusiness {
 
     @Override
     public boolean updateUser(FullUserDto fullUserDto, String token) {
-        User user = new User(null, fullUserDto.getName(), fullUserDto.getSurname(),
+        User user = new User(fullUserDto.getId(), fullUserDto.getName(), fullUserDto.getSurname(),
                 fullUserDto.getBirthdate(), fullUserDto.getEmail(), fullUserDto.getAddress(),
                 fullUserDto.getCity(), fullUserDto.getPostCode(), fullUserDto.getPhone(),
                 fullUserDto.getPassword(), Role.valueOf("USER"));

@@ -1,5 +1,6 @@
 package fr.eql.ai116.proj2.tim.dao.impl;
 
+import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.Role;
@@ -30,8 +31,8 @@ public class UserDaoImpl implements UserDao {
 
     private static final String REQ_AUTH = " SELECT * FROM user INNER JOIN city " +
             "ON user.id_city = city.id_city WHERE email = ? AND password = ? AND closing_date_account IS NULL";
-    private static final String REQ_USER_EXISTS = "SELECT * FROM user WHERE email = ?";
-    private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ?";
+    private static final String REQ_USER_EXISTS = "SELECT * FROM user WHERE email = ? and closing_date_account IS NULL";
+    private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ? ORDER BY timestamp DESC";
     private static final String REQ_UPDATE_SESSION = "INSERT INTO session (token, timestamp, id_user) VALUES (?,?,?) " +
             "ON DUPLICATE KEY UPDATE token = ?, timestamp = ?";
     private static final String REQ_ROLE_BY_ID_USER = "SELECT role FROM user WHERE id_user = ?";
@@ -49,24 +50,33 @@ public class UserDaoImpl implements UserDao {
             "ON user.id_city = city.id_city WHERE id_user = ?";
     private static final String REQ_UPDATE_USER = "UPDATE user SET firstname_user = ?, lastname_user = ? , birthdate = ?" +
             ", phone_number = ? , email = ?, password = ?, address_user = ?, id_city = ? WHERE id_user = ?";
-    private static  final String REQ_ACCOUNT_LOCKED = "SELECT * FROM user WHERE email =  ? " +
+    private static  final String REQ_ACCOUNT_LOCKED_BY_ID = "SELECT * FROM user WHERE id_user =  ? " +
+            "AND closing_date_account IS NOT NULL";
+    private static  final String REQ_ACCOUNT_LOCKED_BY_EMAIL = "SELECT * FROM user WHERE email =  ? " +
             "AND closing_date_account IS NOT NULL";
 
     /**
-     * Checks if the account is locked (closed) according to user email
+     * Checks if the account is locked (closed) according to user ID; If user ID is null, check by e-mail
      * @param user
      * @return true if account associated to this email is closed
      */
     private boolean checkAccountLocked(User user, Connection connection) throws SQLException{
         boolean accountLocked = false;
-        PreparedStatement statement = connection.prepareStatement(REQ_ACCOUNT_LOCKED);
-        statement.setString(1, user.getEmail());
+        PreparedStatement statement;
+        if (user.getId() == null) {
+            statement = connection.prepareStatement(REQ_ACCOUNT_LOCKED_BY_EMAIL);
+            statement.setString(1, user.getEmail());
+        } else {
+            statement = connection.prepareStatement(REQ_ACCOUNT_LOCKED_BY_ID);
+            statement.setLong(1, user.getId());
+        }
         ResultSet resultSet = statement.executeQuery();
         if (resultSet.next()) {
             accountLocked = true;
         }
         return accountLocked;
     }
+
 
     /**
      * Registers user to database; Verifies if he does not exist, adds city if needed
@@ -76,9 +86,8 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean registerUser(User user) {
         try (Connection connection = dataSource.getConnection()) {
-            boolean exists = checkUserExists(user, connection);
-            boolean accountLocked = checkAccountLocked(user, connection);
-            if (exists & !accountLocked) {
+            boolean allowToRegister = checkUserExists(user, connection);
+            if (allowToRegister) {
                 logger.info("Utilisateur avec email {} existe déjà", user.getEmail());
                 return false;
             } else {
@@ -99,6 +108,7 @@ public class UserDaoImpl implements UserDao {
         }
         return false;
     }
+
 
     /**
      * Closes user account
@@ -206,9 +216,10 @@ public class UserDaoImpl implements UserDao {
             try (Connection connection = dataSource.getConnection()) {
                 connection.setAutoCommit(false);
                 try {
-                    if (checkAccountLocked(oldUser, connection) &
-                                (Objects.equals(oldUser.getEmail(), newUser.getEmail()) ||
-                                checkAccountLocked(newUser, connection) )) {
+                    newUser.setUserId(null); // needed in case to modify email to verify that new email was not used
+                    if (Objects.equals(oldUser.getEmail(), newUser.getEmail()) ||
+                            (!checkUserExists(newUser, connection)) ||
+                        (checkUserExists(newUser, connection) && checkAccountLocked(newUser, connection) )) {
                         Long cityId = getCityId(newUser);
                         PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER);
                         statement.setString(1, newUser.getName());
