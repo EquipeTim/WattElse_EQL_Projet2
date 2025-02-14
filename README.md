@@ -5,7 +5,7 @@ Miroslava Castillo
 Cyrine Said Ali
 
 
-### ENDPOINTS:
+## ENDPOINTS:
 Starts by: /api/rest
 
 1. Authenticate using user already registered in the system (DB)
@@ -16,9 +16,9 @@ POST: send credentials
 "password":"mysecretWord"
 }
 
-2. Register user in the system (DB)
+2.1 Register user in the system (DB)
 /user/registration
-POST: Register user in the DB
+POST: 
 {
 "name":"myName",
 "surname":"mySillySurname",
@@ -30,6 +30,47 @@ POST: Register user in the DB
 "city":"Paris",
 "postal_code":"75020"
 }
+2.2 Close the User Account
+*Header must contain token
+/user/close
+POST:
+{
+"userId":15,
+"token":"4802895",
+"reasonId":1
+}
+2.3 Modify user details
+*Header must contain token
+/user/modify
+POST
+{
+"id":54,
+"name":"GRator",
+"surname":"travaillor",
+"birthdate":"2050-08-01",
+"email":"normoi@mail.mdr",
+"password":"a",
+"address":"BRRRAAAA",
+"phone_number":"00000-00000",
+"city":"Lyon",
+"postal_code":"85"
+}
+2.4 GET user details
+*Header must contain token
+/user/details
+GET
+
+3.1 Add credit card to DB
+/payment_methods/card/add
+POST
+{
+"numberCard":"1234-4321-5689-1312",
+"cardHolderName" : "Chipmunk Le great",
+"expirationDate" : "2025-10-12",
+"cvvNumber" : 666,
+"userId":55
+}
+
 
 ### Architecture
 
