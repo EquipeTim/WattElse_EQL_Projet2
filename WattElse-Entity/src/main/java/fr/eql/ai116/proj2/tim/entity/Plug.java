@@ -45,6 +45,6 @@ public class Plug implements Serializable {
         public void setPlugType(String plugType) {
             this.plugType = plugType;
         }
-    }
+
 
 }
