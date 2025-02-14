@@ -4,27 +4,35 @@ import java.io.Serializable;
 
 public class UserDto implements Serializable {
 
-    private final long id;
-    private final String name;
-    private final String surname;
-    private final String token;
+    private Long userId;
+    private String name;
+    private String surname;
+    private String email;
+    private String token;
 
-    public UserDto(long id, String name, String surname, String token) {
-        this.id = id;
-        this.name = name;
-        this.surname = surname;
+    public UserDto(){}
+
+    public UserDto(Long userId, String name, String surname, String email, String token) {
+        this.userId = userId;
+        this.email = email;
         this.token = token;
     }
 
-    /// Getters (pour sérialiser) ///
-    public long getId() {
-        return id;
-    }
-    public String getName() {
-        return name;
-    }
-    public String getSurname() {
-        return surname;
-    }
+    ///  Setters ///
+    public void setUserId(Long userId) {this.userId = userId;}
+
+    public void setEmail(String email) {this.email = email;}
+
+    public void setToken(String token) {this.token = token;}
+
+    public void setName(String name) {this.name = name;}
+
+    public void setSurname(String surname) {this.surname = surname;}
+
+    /// Getters (used to Serialize) ///
+    public Long getUserId() {return userId;}
+    public String getEmail() {return email;}
     public String getToken() {return token;}
+    public String getName() {return name;}
+    public String getSurname() {return surname;}
 }
