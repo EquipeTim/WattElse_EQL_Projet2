@@ -29,7 +29,7 @@ public class UserDaoImpl implements UserDao {
     private final DataSource dataSource = new WattElseDataSource();
 
     private static final String REQ_AUTH = " SELECT * FROM user INNER JOIN city " +
-            "ON user.id_city = city.id_city WHERE email = ? AND password = ?";
+            "ON user.id_city = city.id_city WHERE email = ? AND password = ? AND closing_date_account IS NULL";
     private static final String REQ_USER_EXISTS = "SELECT * FROM user WHERE email = ?";
     private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ?";
     private static final String REQ_UPDATE_SESSION = "INSERT INTO session (token, timestamp, id_user) VALUES (?,?,?) " +
@@ -41,16 +41,32 @@ public class UserDaoImpl implements UserDao {
     private static final String REQ_GET_CITY_ID = "SELECT id_city FROM city WHERE city = ? AND postal_code = ?";
     private static final String REQ_ADD_CITY = "INSERT INTO city (city, postal_code) VALUES (?,?)";
 
-    private static final String REQ_CLOSE_ACC = "UPDATE user SET closing_date_account = ? , id_label_closing_account_user = ? " +
-            "WHERE id_user = ?";
-
+    private static final String REQ_CLOSE_ACC = "UPDATE user SET closing_date_account = ? ," +
+            " id_label_closing_account_user = ? WHERE id_user = ?";
     private static final String REQ_IS_ACCOUNT_OWNER = "SELECT * FROM user u " +
             "JOIN session s ON u.id_user = s.id_user WHERE u.id_user = ? AND s.token = ?";
-
     private static final String REQ_FIND_USER_BY_ID ="SELECT * FROM user JOIN city " +
             "ON user.id_city = city.id_city WHERE id_user = ?";
+    private static final String REQ_UPDATE_USER = "UPDATE user SET firstname_user = ?, lastname_user = ? , birthdate = ?" +
+            ", phone_number = ? , email = ?, password = ?, address_user = ?, id_city = ? WHERE id_user = ?";
+    private static  final String REQ_ACCOUNT_LOCKED = "SELECT * FROM user WHERE email =  ? " +
+            "AND closing_date_account IS NOT NULL";
 
-    private static final String REQ_UPDATE_USER = "UPDATE user SET firstname_user = ?, lastname_user = ? , birthdate = ?, phone_number = ? , email = ?, password = ?, address_user = ?, id_city = ? WHERE id_user = ?";
+    /**
+     * Checks if the account is locked (closed) according to user email
+     * @param user
+     * @return true if account associated to this email is closed
+     */
+    private boolean checkAccountLocked(User user, Connection connection) throws SQLException{
+        boolean accountLocked = false;
+        PreparedStatement statement = connection.prepareStatement(REQ_ACCOUNT_LOCKED);
+        statement.setString(1, user.getEmail());
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            accountLocked = true;
+        }
+        return accountLocked;
+    }
 
     /**
      * Registers user to database; Verifies if he does not exist, adds city if needed
@@ -61,7 +77,8 @@ public class UserDaoImpl implements UserDao {
     public boolean registerUser(User user) {
         try (Connection connection = dataSource.getConnection()) {
             boolean exists = checkUserExists(user, connection);
-            if (exists) {
+            boolean accountLocked = checkAccountLocked(user, connection);
+            if (exists & !accountLocked) {
                 logger.info("Utilisateur avec email {} existe déjà", user.getEmail());
                 return false;
             } else {
@@ -161,8 +178,8 @@ public class UserDaoImpl implements UserDao {
     public FullUserDto getUserData(String token) {
         FullUserDto fullUserDto = null;
         Session session = findSession(token);
-        User user = getUserById(session.getUserId());
-        if (user != null) {
+        if (session != null){
+            User user = getUserById(session.getUserId());
             fullUserDto = new FullUserDto(user.getName(),user.getSurname(),
                     user.getBirthDate(),user.getEmail(),null, user.getAddress(),
                 user.getPhoneNumber(),user.getCity(),user.getPostCode());
@@ -173,46 +190,51 @@ public class UserDaoImpl implements UserDao {
 
     /**
      * Modifies user attributes within the DB
-     * Allowed if email does not change OR new email is not registered
-     * @param user
+     * Allowed if Account is not locked and email does not change
+     * OR
+     * Account not Locked and the new email is not registered to Active user
+     * @param newUser
      * @param token
      * @return
      */
     @Override
-    public boolean modifyUser(User user, String token) {
+    public boolean modifyUser(User newUser, String token) {
         boolean success = false;
         Session session = findSession(token);
-        User oldUser = getUserById(session.getUserId());
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            try {
-                if (Objects.equals(oldUser.getEmail(), user.getEmail()) ||
-                    !checkUserExists(user, connection)) {
-                    Long cityId = getCityId(user);
-                    PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER);
-                    statement.setString(1, user.getName());
-                    statement.setString(2, user.getSurname());
-                    statement.setDate(3, Date.valueOf(user.getBirthDate()));
-                    statement.setString(4, user.getPhoneNumber());
-                    statement.setString(5, user.getEmail());
-                    statement.setString(6, String.valueOf(user.getPassword().hashCode()));
-                    statement.setString(7, user.getAddress());
-                    statement.setLong(8, cityId);
-                    statement.setLong(9, session.getUserId());
-                    int affectedRows = statement.executeUpdate();
-                    connection.commit();
-                    if (affectedRows > 0) {
-                        success = true;
+        if (session != null){
+            User oldUser = getUserById(session.getUserId());
+            try (Connection connection = dataSource.getConnection()) {
+                connection.setAutoCommit(false);
+                try {
+                    if (checkAccountLocked(oldUser, connection) &
+                                (Objects.equals(oldUser.getEmail(), newUser.getEmail()) ||
+                                checkAccountLocked(newUser, connection) )) {
+                        Long cityId = getCityId(newUser);
+                        PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER);
+                        statement.setString(1, newUser.getName());
+                        statement.setString(2, newUser.getSurname());
+                        statement.setDate(3, Date.valueOf(newUser.getBirthDate()));
+                        statement.setString(4, newUser.getPhoneNumber());
+                        statement.setString(5, newUser.getEmail());
+                        statement.setString(6, String.valueOf(newUser.getPassword().hashCode()));
+                        statement.setString(7, newUser.getAddress());
+                        statement.setLong(8, cityId);
+                        statement.setLong(9, session.getUserId());
+                        int affectedRows = statement.executeUpdate();
+                        connection.commit();
+                        if (affectedRows > 0) {
+                            success = true;
+                        }
+                        logger.info("Les données d'utilisateur avec id {} a été bien modifié", session.getUserId());
                     }
-                    logger.info("Les données d'utilisateur avec id {} a été bien modifié", session.getUserId());
+                } catch (SQLException e) {
+                    connection.rollback();
+                    logger.error("Une erreur s'est produite lors de modification de utilisateur {}", newUser.getName(), e);
                 }
             } catch (SQLException e) {
-                connection.rollback();
-                logger.error("Une erreur s'est produite lors de modification de utilisateur {}", user.getName(), e);
+                logger.error("Une erreur s'est produite " +
+                        "lors de la consultation du chat en base de données", e);
             }
-        } catch (SQLException e) {
-            logger.error("Une erreur s'est produite " +
-                    "lors de la consultation du chat en base de données", e);
         }
         return success;
     }

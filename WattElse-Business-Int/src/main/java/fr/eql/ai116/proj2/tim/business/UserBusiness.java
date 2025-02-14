@@ -7,5 +7,5 @@ public interface UserBusiness {
     boolean registerUser(FullUserDto fullUserDto);
     boolean closeUserAccount(UserCloseDto userCloseDto);
     boolean updateUser(FullUserDto fullUserDto, String token);
-    FullUserDto getUserData(String token);
+    FullUserDto getUserData(String token) throws SessionNotFoundException;
 }

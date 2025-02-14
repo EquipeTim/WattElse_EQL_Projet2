@@ -1,5 +1,7 @@
 package fr.eql.ai116.proj2.tim.business.impl;
 
+import fr.eql.ai116.proj2.tim.business.AuthenticationException;
+import fr.eql.ai116.proj2.tim.business.SessionNotFoundException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.entity.Role;
@@ -33,10 +35,12 @@ public class UserBusinessImpl implements UserBusiness {
     @Override
     public boolean closeUserAccount(UserCloseDto userCloseDto){
         User user = userDao.getUserById(userCloseDto.getUserId());
-        boolean isAccountOwner =userDao.isAccountOwner(user, userCloseDto.getToken());
-        if (isAccountOwner) {
-            userDao.closeUserAccount(userCloseDto.getUserId(), userCloseDto.getReasonId());
-            return true;
+        if (user != null) {
+            boolean isAccountOwner = userDao.isAccountOwner(user, userCloseDto.getToken());
+            if (isAccountOwner) {
+                userDao.closeUserAccount(userCloseDto.getUserId(), userCloseDto.getReasonId());
+                return true;
+            }
         }
         return false;
     }
@@ -51,7 +55,11 @@ public class UserBusinessImpl implements UserBusiness {
     }
 
     @Override
-    public FullUserDto getUserData(String token) {
-        return userDao.getUserData(token);
+    public FullUserDto getUserData(String token) throws SessionNotFoundException {
+        FullUserDto userData = userDao.getUserData(token);
+        if (userData == null){
+            throw new SessionNotFoundException("Session non trouvée");
+        }
+        return userData;
     }
 }

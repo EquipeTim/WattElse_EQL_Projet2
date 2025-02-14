@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.controller;
 
 
 import fr.eql.ai116.proj2.tim.business.AuthenticationException;
+import fr.eql.ai116.proj2.tim.business.SessionNotFoundException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserCloseDto;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.SortedMap;
 
 @Stateless
 @Path("/user")
@@ -76,10 +78,12 @@ public class UserController {
     public Response personalData(@Context HttpHeaders headers){
         String authorizationHeader = headers.getHeaderString("Authorization");
         String token = authorizationHeader.substring("Bearer ".length());
-
-        FullUserDto user = userBusiness.getUserData(token);
-        if (user != null) {return Response.ok(user).build();}
-        return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            FullUserDto user = userBusiness.getUserData(token);
+            return Response.ok(user).build();
+        } catch (SessionNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @POST
