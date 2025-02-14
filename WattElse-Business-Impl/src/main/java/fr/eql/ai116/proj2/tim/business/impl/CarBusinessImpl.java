@@ -28,7 +28,7 @@ public class CarBusinessImpl implements CarBusiness{
     public void addCar(CarDto newCarDto) {
       Car car = new Car(null, newCarDto.getCarModel(),
               newCarDto.getBrand(), newCarDto.getMaxElectricPower(),
-              newCarDto.getLicensePlateNumber());
+              newCarDto.getLicensePlateNumber(), newCarDto.getPlug());
       carDao.addCar(car, newCarDto.getUserId());
     }
 
@@ -43,8 +43,8 @@ public class CarBusinessImpl implements CarBusiness{
     }
 
     @Override
-    public List<Car> findUserCar(long userid) {
-        return carDao.findByUser(userid);
+    public List<Car> findUserCar(String token) {
+        return carDao.findByUser(token);
     }
 }
 

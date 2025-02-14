@@ -27,7 +27,10 @@ public class CarDaoImpl implements CarDao {
     private static final String REQ_INSERT_CAR = "INSERT INTO car (id_model_car, id_user, " +
             "license_plate_number, registration_date_car, max_electric_power) " +
             "VALUES (?,?,?,?,?)";
-    private static final String REQ_FIND_BY_USER = "SELECT * FROM car c WHERE c.id_user = ?";
+    private static final String REQ_FIND_BY_USER = "SELECT * FROM car c JOIN model_car mc ON " +
+            "c.id_model_car = mc.id_model_car JOIN brand_car bc ON mc.id_brand = bc.id_brand " +
+            "JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type JOIN session s ON " +
+            "c.id_user = s.id_user WHERE s.token = ?";
     private static final String REQ_GET_MODEL_ID = "SELECT * FROM model_car mc JOIN brand_CAR bc " +
             "ON mc.id_brand = bc.id_brand WHERE brand_label = ? AND car_model_label = ?";
 
@@ -93,41 +96,23 @@ private final DataSource dataSource = new WattElseDataSource();
     }
 
     @Override
-    public List<Car> findByUser(long userId) {
+    public List<Car> findByUser(String token) {
        List<Car> cars = new ArrayList<>();
        try(Connection connection = dataSource.getConnection()){
             PreparedStatement statement = connection.prepareStatement(REQ_FIND_BY_USER);
-            statement.setLong(1, userId);
+            statement.setString(1, token);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()){
-
+            cars.add(new Car(resultSet.getLong("id_car"),
+                    resultSet.getString("car_model_label"),
+                    resultSet.getString("brand_label"),
+                    resultSet.getLong("max_electric_power"),
+                    resultSet.getString("license_plate_number"),
+                    resultSet.getString("plug_type")));
             }
-
         } catch (SQLException e) {
            throw new RuntimeException(e);
        }
-       return null;
+       return cars;
     }
 }
-//@Override
-//	public List<Cat> findByOwner(long ownerId) {
-//		List<Cat> cats = new ArrayList<>();
-//		try (Connection connection = dataSource.getConnection()) {
-//			PreparedStatement statement = connection.prepareStatement(REQ_FIND_BY_OWNER);
-//			statement.setLong(1, ownerId);
-//			ResultSet resultSet = statement.executeQuery();
-//			while(resultSet.next()) {
-//				cats.add(new Cat(
-//						resultSet.getLong("id"),
-//						resultSet.getString("name"),
-//						CatBreed.valueOf(resultSet.getString("breed")),
-//						resultSet.getDate("birthdate").toLocalDate(),
-//						resultSet.getString("picture")
-//						)
-//				);
-//			}
-//		} catch (SQLException e) {
-//			logger.error("Une erreur s'est produite lors de la consultation des chats en base de données", e);
-//		}
-//		return cats;
-//	}

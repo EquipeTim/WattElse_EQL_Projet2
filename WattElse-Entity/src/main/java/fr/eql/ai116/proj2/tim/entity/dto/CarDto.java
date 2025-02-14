@@ -13,6 +13,7 @@ public class CarDto implements Serializable {
     private Long maxElectricPower;
     private String brand;
     private String carModel;
+    private String plug;
 
     public Long getMaxElectricPower() {
         return maxElectricPower;
@@ -38,8 +39,16 @@ public class CarDto implements Serializable {
         return carModel;
     }
 
+    public String getPlug() {
+        return plug;
+    }
+
     //Setter///
 
+
+    public void setPlug(String plug) {
+        this.plug = plug;
+    }
 
     public void setMaxElectricPower(Long maxElectricPower) {
         this.maxElectricPower = maxElectricPower;

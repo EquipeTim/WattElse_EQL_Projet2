@@ -10,7 +10,7 @@ public interface CarDao {
     boolean exists(Car car);
     void removeCar(Car car);
     void modifyCar(Car car);
-    List<Car> findByUser(long userId);
+    List<Car> findByUser(String token);
 
 
 }

@@ -303,7 +303,7 @@ INSERT INTO `model_car` (`id_model_car`, `id_plug_type`, `id_brand`, `car_model_
 	(68, 5, 34, 'E6'),
 	(69, 6, 35, 'P7'),
 	(70, 7, 35, 'XPENG'),
-	(71, 8, 36, 'Autre');
+	(71, 10, 36, 'Autre');
 
 -- Listage de la structure de table wattelse. opening_hour
 CREATE TABLE IF NOT EXISTS `opening_hour` (
@@ -361,7 +361,8 @@ INSERT INTO `plug_type` (`id_plug_type`, `plug_type`) VALUES
 	(6, 'TYPE_4_IEC_62196_3'),
 	(7, 'MENNEKES_PLUG'),
 	(8, 'NEMA_5_15_STANDARD_WALL_OUTLET'),
-	(9, 'NEMA_14_50');
+	(9, 'NEMA_14_50'),
+	(10, 'Autre');
 
 
 -- Listage de la structure de table wattelse. pricing

@@ -7,7 +7,7 @@ Cyrine Said Ali
 
 ## ENDPOINTS:
 Starts by: /api/rest
-
+## Authentification
 1. Authenticate using user already registered in the system (DB)
 /connection/authenticate
 POST: send credentials
@@ -15,7 +15,7 @@ POST: send credentials
 "email":"example@email.eql",
 "password":"mysecretWord"
 }
-
+## User details
 2.1 Register user in the system (DB)
 /user/registration
 POST: 
@@ -59,7 +59,7 @@ POST
 *Header must contain token
 /user/details
 GET
-
+## Bank Card
 3.1 Add credit card to DB
 /payment_methods/card/add
 POST
@@ -70,7 +70,7 @@ POST
 "cvvNumber" : 666,
 "userId":55
 }
-
+## Bank Account
 4.1 Add Bank Account to DB
 /payment_methods/account/add
 POST
@@ -81,7 +81,7 @@ POST
 "cvvNumber" : 666,
 "userId":55
 }
-
+## CARS
 5.1 Add Car to DB
 /car/add
 POST
@@ -92,6 +92,11 @@ POST
 "licensePlateNumber" : "999999",
 "maxElectricPower" : 15
 }
+
+5.2 Get all user cars
+*Header must contain token
+/car/get/all
+GET
 
 
 ### Architecture
