@@ -71,6 +71,28 @@ POST
 "userId":55
 }
 
+4.1 Add Bank Account to DB
+/payment_methods/account/add
+POST
+{
+"numberCard":"1234-4321-5689-1312",
+"cardHolderName" : "Chipmunk Le great",
+"expirationDate" : "2025-10-12",
+"cvvNumber" : 666,
+"userId":55
+}
+
+5.1 Add Car to DB
+/car/add
+POST
+{
+"brand":"Tesla",
+"carModel":"MODEL S",
+"userId":55,
+"licensePlateNumber" : "999999",
+"maxElectricPower" : 15
+}
+
 
 ### Architecture
 

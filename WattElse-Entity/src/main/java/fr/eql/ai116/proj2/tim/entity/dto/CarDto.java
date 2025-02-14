@@ -1,5 +1,8 @@
 package fr.eql.ai116.proj2.tim.entity.dto;
 
+import fr.eql.ai116.proj2.tim.entity.CarBrand;
+import fr.eql.ai116.proj2.tim.entity.CarModel;
+
 import java.io.Serializable;
 
 public class CarDto implements Serializable {
@@ -7,9 +10,11 @@ public class CarDto implements Serializable {
     private Long idModelCar;
     private Long userId;
     private String licensePlateNumber;
-    private long maxElectricPower;
+    private Long maxElectricPower;
+    private String brand;
+    private String carModel;
 
-    public long getMaxElectricPower() {
+    public Long getMaxElectricPower() {
         return maxElectricPower;
     }
 
@@ -17,18 +22,26 @@ public class CarDto implements Serializable {
         return licensePlateNumber;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public long getIdModelCar() {
+    public Long getIdModelCar() {
         return idModelCar;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getCarModel() {
+        return carModel;
     }
 
     //Setter///
 
 
-    public void setMaxElectricPower(long maxElectricPower) {
+    public void setMaxElectricPower(Long maxElectricPower) {
         this.maxElectricPower = maxElectricPower;
     }
 
@@ -44,4 +57,11 @@ public class CarDto implements Serializable {
         this.idModelCar = idModelCar;
     }
 
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public void setCarModel(String carModel) {
+        this.carModel = carModel;
+    }
 }

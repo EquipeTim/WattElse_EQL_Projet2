@@ -8,29 +8,41 @@ public class Car implements Serializable {
     private Long idCar;
     private String licensePlate;
     private Long maxElectricPower;
-    private Long idModelCar;
+    private String brand;
+    private String carModel;
 
-
-    public Car(Long idCar, Long idModelCar, String licensePlate,  Long maxElectricPower) {
+    public Car(Long idCar, String carModel, String brand,
+               Long maxElectricPower, String licensePlate) {
         this.idCar = idCar;
+        this.carModel = carModel;
+        this.brand = brand;
         this.maxElectricPower = maxElectricPower;
         this.licensePlate = licensePlate;
-        this.idModelCar = idModelCar;
     }
 
-    //getters////
 
-    public long getIdCar() {
+    ///getters///
+
+    public Long getIdCar() {
         return idCar;
     }
 
-    public long getMaxElectricPower() {
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public Long getMaxElectricPower() {
         return maxElectricPower;
     }
 
-    public String getLicensePlate() {return licensePlate;}
 
-    public Long getIdModelCar() {return idModelCar;}
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getCarModel() {
+        return carModel;
+    }
 
     ///Setter//
 

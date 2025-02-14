@@ -10,6 +10,8 @@ public class BankAccountDto implements Serializable {
     private String swift;
     private Long userId;
 
+    
+
     public Long getIdAccount() {return idAccount;}
 
     public void setIdAccount(long idAccount) {this.idAccount = idAccount;}
