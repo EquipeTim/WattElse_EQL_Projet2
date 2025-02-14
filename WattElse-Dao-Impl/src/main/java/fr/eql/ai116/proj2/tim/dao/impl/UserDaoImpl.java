@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 @Remote(UserDao.class)
 @Stateless
@@ -66,7 +67,7 @@ public class UserDaoImpl implements UserDao {
             } else {
                 connection.setAutoCommit(false);
                 try {
-                    Long cityId = getCityId(user, connection);
+                    Long cityId = getCityId(user);
                     addUser(user, cityId, connection);
                     connection.commit();
                     logger.info("{} a été inséré en base de données avec l'id {}", user.getName(), user.getId());
@@ -169,8 +170,10 @@ public class UserDaoImpl implements UserDao {
         return fullUserDto;
     }
 
+
     /**
      * Modifies user attributes within the DB
+     * Allowed if email does not change OR new email is not registered
      * @param user
      * @param token
      * @return
@@ -179,28 +182,29 @@ public class UserDaoImpl implements UserDao {
     public boolean modifyUser(User user, String token) {
         boolean success = false;
         Session session = findSession(token);
-        logger.error(session.getUserId());
-        logger.error(user.getName());
+        User oldUser = getUserById(session.getUserId());
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                Long cityId = getCityId(user, connection);
-                PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER, Statement.RETURN_GENERATED_KEYS);
-                statement.setString(1, user.getName());
-                statement.setString(2, user.getSurname());
-                statement.setDate(3, Date.valueOf(user.getBirthDate()));
-                statement.setString(4, user.getPhoneNumber());
-                statement.setString(5, user.getEmail());
-                statement.setString(6, String.valueOf(user.getPassword().hashCode()));
-                statement.setString(7, user.getAddress());
-                statement.setLong(8, cityId);
-                statement.setLong(9, session.getUserId());
-                int affectedRows = statement.executeUpdate();
-                logger.error(affectedRows);
-                if (affectedRows > 0) {
-                    ResultSet resultSet = statement.getGeneratedKeys();
-                    logger.error(resultSet.next());
-                    success =  true;
+                if (Objects.equals(oldUser.getEmail(), user.getEmail()) ||
+                    !checkUserExists(user, connection)) {
+                    Long cityId = getCityId(user);
+                    PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER);
+                    statement.setString(1, user.getName());
+                    statement.setString(2, user.getSurname());
+                    statement.setDate(3, Date.valueOf(user.getBirthDate()));
+                    statement.setString(4, user.getPhoneNumber());
+                    statement.setString(5, user.getEmail());
+                    statement.setString(6, String.valueOf(user.getPassword().hashCode()));
+                    statement.setString(7, user.getAddress());
+                    statement.setLong(8, cityId);
+                    statement.setLong(9, session.getUserId());
+                    int affectedRows = statement.executeUpdate();
+                    connection.commit();
+                    if (affectedRows > 0) {
+                        success = true;
+                    }
+                    logger.info("Les données d'utilisateur avec id {} a été bien modifié", session.getUserId());
                 }
             } catch (SQLException e) {
                 connection.rollback();
@@ -215,7 +219,7 @@ public class UserDaoImpl implements UserDao {
 
 
     /**
-     * Checks if user exists in the databse
+     * Checks if user exists in the databse according to his email
      * @param user
      * @param connection
      * @return true if he exists in DB
@@ -261,17 +265,23 @@ public class UserDaoImpl implements UserDao {
         logger.info("Utilisateur ajouté dans la base de données");
     }
 
-    private Long getCityId(User user, Connection connection) throws SQLException{
+    private Long getCityId(User user){
         Long cityId = null;
-        PreparedStatement statement = connection.prepareStatement(REQ_GET_CITY_ID);
-        statement.setString(1, user.getCity());
-        statement.setString(2, user.getPostCode());
-        ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next()) {
-            cityId = resultSet.getLong("id_city");
-        } else {
-            cityId = addCity(user, connection);
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_CITY_ID);
+            statement.setString(1, user.getCity());
+            statement.setString(2, user.getPostCode());
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                cityId = resultSet.getLong("id_city");
+            } else {
+                cityId = addCity(user, connection);
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite " +
+                    "lors de la consultation des villes en base de données", e);
         }
+
         return cityId;
     }
 
