@@ -24,9 +24,9 @@ public class CarBusinessImpl implements CarBusiness{
 
     @Override
     public void addCar(CarDto newCarDto) {
-      Car car = new Car(newCarDto.getUserId(),newCarDto.getIdModelCar(), newCarDto.getLicensePlateNumber(), Timestamp.valueOf(newCarDto.getRegistrationDateCar()), Timestamp.valueOf(newCarDto.getRemoveDateCar()),newCarDto.getMaxElectricPower());
-      carDao.addCar(car, newCarDto.getUserId(), newCarDto.getIdModelCar());
-
+      Car car = new Car(null, newCarDto.getIdModelCar(),
+              newCarDto.getLicensePlateNumber(), newCarDto.getMaxElectricPower());
+      carDao.addCar(car, newCarDto.getUserId());
     }
 
     @Override

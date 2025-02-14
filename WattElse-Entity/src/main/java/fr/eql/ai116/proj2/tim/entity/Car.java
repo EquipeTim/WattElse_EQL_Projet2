@@ -7,21 +7,17 @@ import java.sql.Timestamp;
 // Vehicule
 public class Car implements Serializable {
 
-    private long idCar;
+    private Long idCar;
+    private String licensePlate;
+    private Long maxElectricPower;
+    private Long idModelCar;
 
-    private  Timestamp registrationDateCar;
-    private  Timestamp removeDateCar;
-    private  long maxElectricPower;
 
-    public Car() {
-    }
-
-    public Car(long userId, long idModelCar, long idCar, Timestamp registrationDateCar, Timestamp removeDateCar, long maxElectricPower) {
+    public Car(Long idCar, Long idModelCar, String licensePlate,  Long maxElectricPower) {
         this.idCar = idCar;
-
-        this.registrationDateCar = registrationDateCar;
-        this.removeDateCar = removeDateCar;
         this.maxElectricPower = maxElectricPower;
+        this.licensePlate = licensePlate;
+        this.idModelCar = idModelCar;
     }
 
     //getters////
@@ -30,18 +26,13 @@ public class Car implements Serializable {
         return idCar;
     }
 
-
-    public Timestamp getRegistrationDateCar() {
-        return registrationDateCar;
-    }
-
-    public Timestamp getRemoveDateCar() {
-        return removeDateCar;
-    }
-
     public long getMaxElectricPower() {
         return maxElectricPower;
     }
+
+    public String getLicensePlate() {return licensePlate;}
+
+    public Long getIdModelCar() {return idModelCar;}
 
     ///Setter//
 
@@ -49,15 +40,8 @@ public class Car implements Serializable {
         this.idCar = idCar;
     }
 
-    public void setRegistrationDateCar(Timestamp registrationDateCar) {
-        this.registrationDateCar = registrationDateCar;
-    }
-
     public void setMaxElectricPower(long maxElectricPower) {
         this.maxElectricPower = maxElectricPower;
     }
 
-    public void setRemoveDateCar(Timestamp removeDateCar) {
-        this.removeDateCar = removeDateCar;
-    }
 }

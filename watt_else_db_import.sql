@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `car` (
   `id_car` int(11) NOT NULL AUTO_INCREMENT,
   `id_model_car` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `license_plate_number` int(11) DEFAULT NULL,
+  `license_plate_number` varchar(254) DEFAULT NULL,
   `registration_date_car` timestamp DEFAULT NULL,
   `remove_date_car` timestamp DEFAULT NULL,
   `max_electric_power` int(11) DEFAULT NULL,

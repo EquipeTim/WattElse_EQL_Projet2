@@ -38,7 +38,6 @@ public class CarController {
         @Path("/add")
         @Consumes(MediaType.APPLICATION_JSON)
         public Response addCar(CarDto carDto) {
-            System.out.println(carDto);
             carBusiness.addCar(carDto);
             return Response.ok().build();
         }
