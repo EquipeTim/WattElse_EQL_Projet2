@@ -23,7 +23,7 @@ public class CarDaoImpl implements CarDao {
     private static final Logger logger= LogManager.getLogger();
 
     private static final String REQ_INSERT_CAR = "INSERT INTO car (id_model_car, id_user, license_plate_number, remove_date_car, registration_date_car, max_electric_power) VALUES (?,?,?,?,?,?)";
-    private static final String REQ_FIND_BY_USER = "SELECT * FROM car c WHERE c.id_user = ?";
+    private static final String REQ_FIND_BY_USER = "SELECT * FROM car c JOIN model_car mc ON c.id_model_car = mc.id_model_car JOIN brand_car bc ON mc.id_brand = bc.id_brand WHERE c.id_user = ?";
 private final DataSource dataSource = new WattElseDataSource();
 
     @Override
@@ -96,35 +96,12 @@ private final DataSource dataSource = new WattElseDataSource();
             statement.setLong(1, userId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()){
-                cars.add(new Car(
-                        resultSet.getLong())
-                )
+
             }
 
         } catch (SQLException e) {
-           throw new RuntimeException(e);
+           logger.error("Une erreur s'est produite lors de la consultation des voitures  en base de données", e);
        }
+        return cars;
     }
 }
-//@Override
-//	public List<Cat> findByOwner(long ownerId) {
-//		List<Cat> cats = new ArrayList<>();
-//		try (Connection connection = dataSource.getConnection()) {
-//			PreparedStatement statement = connection.prepareStatement(REQ_FIND_BY_OWNER);
-//			statement.setLong(1, ownerId);
-//			ResultSet resultSet = statement.executeQuery();
-//			while(resultSet.next()) {
-//				cats.add(new Cat(
-//						resultSet.getLong("id"),
-//						resultSet.getString("name"),
-//						CatBreed.valueOf(resultSet.getString("breed")),
-//						resultSet.getDate("birthdate").toLocalDate(),
-//						resultSet.getString("picture")
-//						)
-//				);
-//			}
-//		} catch (SQLException e) {
-//			logger.error("Une erreur s'est produite lors de la consultation des chats en base de données", e);
-//		}
-//		return cats;
-//	}
