@@ -1,22 +1,24 @@
 package fr.eql.ai116.proj2.tim.entity;
 
-import com.sun.prism.shader.AlphaOne_Color_AlphaTest_Loader;
-
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.sql.Timestamp;
+
 
 // Vehicule
 public class Car implements Serializable {
 
     private long idCar;
-    private final long licensePlateNumber;
-    private final LocalDate registrationDateCar;
-    private final LocalDate removeDateCar;
-    private final long maxElectricPower;
 
-    public Car(long idCar, long licensePlateNumber, LocalDate registrationDateCar, LocalDate removeDateCar, long maxElectricPower) {
+    private  Timestamp registrationDateCar;
+    private  Timestamp removeDateCar;
+    private  long maxElectricPower;
+
+    public Car() {
+    }
+
+    public Car(long userId, long idModelCar, long idCar, Timestamp registrationDateCar, Timestamp removeDateCar, long maxElectricPower) {
         this.idCar = idCar;
-        this.licensePlateNumber = licensePlateNumber;
+
         this.registrationDateCar = registrationDateCar;
         this.removeDateCar = removeDateCar;
         this.maxElectricPower = maxElectricPower;
@@ -28,15 +30,12 @@ public class Car implements Serializable {
         return idCar;
     }
 
-    public long getLicensePlateNumber() {
-        return licensePlateNumber;
-    }
 
-    public LocalDate getRegistrationDateCar() {
+    public Timestamp getRegistrationDateCar() {
         return registrationDateCar;
     }
 
-    public LocalDate getRemoveDateCar() {
+    public Timestamp getRemoveDateCar() {
         return removeDateCar;
     }
 
@@ -48,5 +47,17 @@ public class Car implements Serializable {
 
     public void setIdCar(long idCar) {
         this.idCar = idCar;
+    }
+
+    public void setRegistrationDateCar(Timestamp registrationDateCar) {
+        this.registrationDateCar = registrationDateCar;
+    }
+
+    public void setMaxElectricPower(long maxElectricPower) {
+        this.maxElectricPower = maxElectricPower;
+    }
+
+    public void setRemoveDateCar(Timestamp removeDateCar) {
+        this.removeDateCar = removeDateCar;
     }
 }
