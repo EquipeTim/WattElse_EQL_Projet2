@@ -1,5 +1,6 @@
 package fr.eql.ai116.proj2.tim.dao.impl;
 
+import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.Role;
@@ -20,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Objects;
 
 @Remote(UserDao.class)
 @Stateless
@@ -28,9 +30,9 @@ public class UserDaoImpl implements UserDao {
     private final DataSource dataSource = new WattElseDataSource();
 
     private static final String REQ_AUTH = " SELECT * FROM user INNER JOIN city " +
-            "ON user.id_city = city.id_city WHERE email = ? AND password = ?";
-    private static final String REQ_USER_EXISTS = "SELECT * FROM user WHERE email = ?";
-    private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ?";
+            "ON user.id_city = city.id_city WHERE email = ? AND password = ? AND closing_date_account IS NULL";
+    private static final String REQ_USER_EXISTS = "SELECT * FROM user WHERE email = ? and closing_date_account IS NULL";
+    private static final String REQ_FIND_SESSION = "SELECT * FROM session WHERE token = ? ORDER BY timestamp DESC";
     private static final String REQ_UPDATE_SESSION = "INSERT INTO session (token, timestamp, id_user) VALUES (?,?,?) " +
             "ON DUPLICATE KEY UPDATE token = ?, timestamp = ?";
     private static final String REQ_ROLE_BY_ID_USER = "SELECT role FROM user WHERE id_user = ?";
@@ -40,14 +42,42 @@ public class UserDaoImpl implements UserDao {
     private static final String REQ_GET_CITY_ID = "SELECT id_city FROM city WHERE city = ? AND postal_code = ?";
     private static final String REQ_ADD_CITY = "INSERT INTO city (city, postal_code) VALUES (?,?)";
 
-    private static final String REQ_CLOSE_ACC = "UPDATE user SET closing_date_account = ? , id_label_closing_account_user = ? " +
-            "WHERE id_user = ?";
-
+    private static final String REQ_CLOSE_ACC = "UPDATE user SET closing_date_account = ? ," +
+            " id_label_closing_account_user = ? WHERE id_user = ?";
     private static final String REQ_IS_ACCOUNT_OWNER = "SELECT * FROM user u " +
             "JOIN session s ON u.id_user = s.id_user WHERE u.id_user = ? AND s.token = ?";
-
     private static final String REQ_FIND_USER_BY_ID ="SELECT * FROM user JOIN city " +
             "ON user.id_city = city.id_city WHERE id_user = ?";
+    private static final String REQ_UPDATE_USER = "UPDATE user SET firstname_user = ?, lastname_user = ? , birthdate = ?" +
+            ", phone_number = ? , email = ?, password = ?, address_user = ?, id_city = ? WHERE id_user = ?";
+    private static  final String REQ_ACCOUNT_LOCKED_BY_ID = "SELECT * FROM user WHERE id_user =  ? " +
+            "AND closing_date_account IS NOT NULL";
+    private static  final String REQ_ACCOUNT_LOCKED_BY_EMAIL = "SELECT * FROM user WHERE email =  ? " +
+            "AND closing_date_account IS NOT NULL";
+
+    /**
+     * Checks if the account is locked (closed) according to user ID; If user ID is null, check by e-mail
+     * @param user
+     * @return true if account associated to this email is closed
+     */
+    private boolean checkAccountLocked(User user, Connection connection) throws SQLException{
+        boolean accountLocked = false;
+        PreparedStatement statement;
+        if (user.getId() == null) {
+            statement = connection.prepareStatement(REQ_ACCOUNT_LOCKED_BY_EMAIL);
+            statement.setString(1, user.getEmail());
+        } else {
+            statement = connection.prepareStatement(REQ_ACCOUNT_LOCKED_BY_ID);
+            statement.setLong(1, user.getId());
+        }
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            accountLocked = true;
+        }
+        return accountLocked;
+    }
+
+
     /**
      * Registers user to database; Verifies if he does not exist, adds city if needed
      * @param user
@@ -56,14 +86,14 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean registerUser(User user) {
         try (Connection connection = dataSource.getConnection()) {
-            boolean exists = checkUserExists(user, connection);
-            if (exists) {
+            boolean allowToRegister = checkUserExists(user, connection);
+            if (allowToRegister) {
                 logger.info("Utilisateur avec email {} existe déjà", user.getEmail());
                 return false;
             } else {
                 connection.setAutoCommit(false);
                 try {
-                    Long cityId = getCityId(user, connection);
+                    Long cityId = getCityId(user);
                     addUser(user, cityId, connection);
                     connection.commit();
                     logger.info("{} a été inséré en base de données avec l'id {}", user.getName(), user.getId());
@@ -78,6 +108,7 @@ public class UserDaoImpl implements UserDao {
         }
         return false;
     }
+
 
     /**
      * Closes user account
@@ -155,26 +186,73 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public FullUserDto getUserData(String token) {
+        FullUserDto fullUserDto = null;
         Session session = findSession(token);
-        User user = getUserById(session.getUserId());
-        if (user != null) {
-            FullUserDto fullUserDto = new FullUserDto();
-            fullUserDto.setName(user.getName());
-            fullUserDto.setSurname(user.getSurname());
-            fullUserDto.setBirthdate(user.getBirthDate());
-            fullUserDto.setAddress(user.getAddress());
-            fullUserDto.setCity(user.getCity());
-            fullUserDto.setEmail(user.getEmail());
-            fullUserDto.setPhone_number(user.getPhoneNumber());
-            fullUserDto.setPostal_code(user.getPostCode());
-            return fullUserDto;
+        if (session != null){
+            User user = getUserById(session.getUserId());
+            fullUserDto = new FullUserDto(user.getName(),user.getSurname(),
+                    user.getBirthDate(),user.getEmail(),null, user.getAddress(),
+                user.getPhoneNumber(),user.getCity(),user.getPostCode());
         }
-        return null;
+        return fullUserDto;
     }
 
 
     /**
-     * Checks if user exists in the databse
+     * Modifies user attributes within the DB
+     * Allowed if Account is not locked and email does not change
+     * OR
+     * Account not Locked and the new email is not registered to Active user
+     * @param newUser
+     * @param token
+     * @return
+     */
+    @Override
+    public boolean modifyUser(User newUser, String token) {
+        boolean success = false;
+        Session session = findSession(token);
+        if (session != null){
+            User oldUser = getUserById(session.getUserId());
+            try (Connection connection = dataSource.getConnection()) {
+                connection.setAutoCommit(false);
+                try {
+                    newUser.setUserId(null); // needed in case to modify email to verify that new email was not used
+                    if (Objects.equals(oldUser.getEmail(), newUser.getEmail()) ||
+                            (!checkUserExists(newUser, connection)) ||
+                        (checkUserExists(newUser, connection) && checkAccountLocked(newUser, connection) )) {
+                        Long cityId = getCityId(newUser);
+                        PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER);
+                        statement.setString(1, newUser.getName());
+                        statement.setString(2, newUser.getSurname());
+                        statement.setDate(3, Date.valueOf(newUser.getBirthDate()));
+                        statement.setString(4, newUser.getPhoneNumber());
+                        statement.setString(5, newUser.getEmail());
+                        statement.setString(6, String.valueOf(newUser.getPassword().hashCode()));
+                        statement.setString(7, newUser.getAddress());
+                        statement.setLong(8, cityId);
+                        statement.setLong(9, session.getUserId());
+                        int affectedRows = statement.executeUpdate();
+                        connection.commit();
+                        if (affectedRows > 0) {
+                            success = true;
+                        }
+                        logger.info("Les données d'utilisateur avec id {} a été bien modifié", session.getUserId());
+                    }
+                } catch (SQLException e) {
+                    connection.rollback();
+                    logger.error("Une erreur s'est produite lors de modification de utilisateur {}", newUser.getName(), e);
+                }
+            } catch (SQLException e) {
+                logger.error("Une erreur s'est produite " +
+                        "lors de la consultation du chat en base de données", e);
+            }
+        }
+        return success;
+    }
+
+
+    /**
+     * Checks if user exists in the databse according to his email
      * @param user
      * @param connection
      * @return true if he exists in DB
@@ -220,17 +298,23 @@ public class UserDaoImpl implements UserDao {
         logger.info("Utilisateur ajouté dans la base de données");
     }
 
-    private Long getCityId(User user, Connection connection) throws SQLException{
+    private Long getCityId(User user){
         Long cityId = null;
-        PreparedStatement statement = connection.prepareStatement(REQ_GET_CITY_ID);
-        statement.setString(1, user.getCity());
-        statement.setString(2, user.getPostCode());
-        ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next()) {
-            cityId = resultSet.getLong("id_city");
-        } else {
-            cityId = addCity(user, connection);
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_CITY_ID);
+            statement.setString(1, user.getCity());
+            statement.setString(2, user.getPostCode());
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                cityId = resultSet.getLong("id_city");
+            } else {
+                cityId = addCity(user, connection);
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite " +
+                    "lors de la consultation des villes en base de données", e);
         }
+
         return cityId;
     }
 
