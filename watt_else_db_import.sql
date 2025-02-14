@@ -482,7 +482,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   `address_user` varchar(254) DEFAULT NULL,
   `role` varchar(255) DEFAULT '"USER"',
   PRIMARY KEY (`id_user`),
-  UNIQUE KEY `email` (`email`),
   KEY `FK_demeurer` (`id_city`),
   KEY `FK_quitter` (`id_label_closing_account_user`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;

@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.controller;
 
 
 import fr.eql.ai116.proj2.tim.business.AuthenticationException;
+import fr.eql.ai116.proj2.tim.business.SessionNotFoundException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserCloseDto;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.SortedMap;
 
 @Stateless
 @Path("/user")
@@ -43,6 +45,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Closes tjhe user account in the database
+     * @param headers
+     * @param userCloseDto
+     * @return
+     */
     @POST
     @Path("/close")
     @Produces(MediaType.APPLICATION_JSON)
@@ -58,16 +66,38 @@ public class UserController {
         return Response.status(Response.Status.FORBIDDEN).build();
 
     }
+
+    /**
+     * Gets all the user personal details
+     * @param headers
+     * @return
+     */
     @GET
     @Path("/details")
     @Produces(MediaType.APPLICATION_JSON)
     public Response personalData(@Context HttpHeaders headers){
         String authorizationHeader = headers.getHeaderString("Authorization");
         String token = authorizationHeader.substring("Bearer ".length());
+        try {
+            FullUserDto user = userBusiness.getUserData(token);
+            return Response.ok(user).build();
+        } catch (SessionNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
-        FullUserDto user = userBusiness.getUserData(token);
-        if (user != null) {return Response.ok(user).build();}
-        return Response.status(Response.Status.NOT_FOUND).build();
+    @POST
+    @Path("/modify")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response modify(@Context HttpHeaders headers, FullUserDto fullUserDto) {
+        String authorizationHeader = headers.getHeaderString("Authorization");
+        String token = authorizationHeader.substring("Bearer ".length());
+        boolean updated = userBusiness.updateUser(fullUserDto, token);
+        if (updated) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
     }
 
 }
