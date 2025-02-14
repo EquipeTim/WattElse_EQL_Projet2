@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 // Carte de Credit
-public class CreditCard implements Serializable {
+public class BankCard implements Serializable {
 
-    private long idCreditCard;
-    private final long numberCard;
+    private Long bankCardId;
+    private final String numberCard;
     private final String cardHolderName;
     private final LocalDate expirationDate;
     private final int cvvNumber;
@@ -15,22 +15,22 @@ public class CreditCard implements Serializable {
     //Constructor///
 
 
-    public CreditCard(long numberCard, String cardHolderName, LocalDate expirationDate,
-                      int cvvNumber, long idCreditCard) {
+    public BankCard(String numberCard, String cardHolderName, LocalDate expirationDate,
+                    int cvvNumber, Long idCreditCard) {
         this.numberCard = numberCard;
         this.cardHolderName = cardHolderName;
         this.expirationDate = expirationDate;
         this.cvvNumber = cvvNumber;
-        this.idCreditCard = idCreditCard;
+        this.bankCardId = idCreditCard;
     }
 
     /// Getters////
 
-    public long getIdCreditCard() {
-        return idCreditCard;
+    public long getBankCardId() {
+        return bankCardId;
     }
 
-    public long getNumberCard() {
+    public String getNumberCard() {
         return numberCard;
     }
 

@@ -40,8 +40,8 @@ public class SecurityFilter implements ContainerRequestFilter, ContainerResponse
         String authorisation = requestContext.getHeaders().getFirst("Authorization");
         try {
             if (
-                    Pattern.compile("/space/.*").matcher(resource).find() ||
-                            Pattern.compile("/gallery/.*").matcher(resource).find()
+                    Pattern.compile("/payment_methods/.*").matcher(resource).find()
+                     || Pattern.compile("/gallery/.*").matcher(resource).find()
             ) {
                 securityBusiness.authorize(authorisation, Role.USER);
             }

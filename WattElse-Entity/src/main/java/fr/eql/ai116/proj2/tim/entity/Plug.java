@@ -3,9 +3,6 @@ package fr.eql.ai116.proj2.tim.entity;
 import java.io.Serializable;
 
 public class Plug implements Serializable {
-
-
-
         private long idModelCar;
         private long IdChargingStation;
         private String plugType;
@@ -42,9 +39,5 @@ public class Plug implements Serializable {
             IdChargingStation = idChargingStation;
         }
 
-        public void setPlugType(String plugType) {
-            this.plugType = plugType;
-        }
-    }
-
+        public void setPlugType(String plugType) {this.plugType = plugType;}
 }
