@@ -1,6 +1,5 @@
 package fr.eql.ai116.proj2.tim.business.impl;
 
-import fr.eql.ai116.proj2.tim.business.AuthenticationException;
 import fr.eql.ai116.proj2.tim.business.SessionNotFoundException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.dao.UserDao;

@@ -6,6 +6,7 @@ import java.util.List;
 
 //Borne
 public interface ChargingStationDao {
+    List<ChargingStation> findChargingStation();
     void addChargingStation(ChargingStation chargingStation, long userId);
     void removeChargingStation(ChargingStation chargingStation);
     void modifyChargingStation(ChargingStation chargingStation);
