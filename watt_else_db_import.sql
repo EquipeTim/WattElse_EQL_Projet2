@@ -233,6 +233,7 @@ CREATE TABLE IF NOT EXISTS `model_car` (
 -- Listage des données de la table wattelse.model_car : ~0 rows (environ)
 -- Listage des données de la table wattelse.model_car : ~71 rows (environ)
 INSERT INTO `model_car` (`id_model_car`, `id_plug_type`, `id_brand`, `car_model_label`) VALUES
+	(0, 8, 36, 'Autre'),
 	(1, 1, 1, 'MODEL S'),
 	(2, 2, 1, 'MODEL 3'),
 	(3, 3, 1, 'MODEL X'),
@@ -303,7 +304,16 @@ INSERT INTO `model_car` (`id_model_car`, `id_plug_type`, `id_brand`, `car_model_
 	(68, 5, 34, 'E6'),
 	(69, 6, 35, 'P7'),
 	(70, 7, 35, 'XPENG'),
-	(71, 10, 36, 'Autre');
+	(71, 10, 36, 'Autre'),
+	(72, 9, 36, 'Autre'),
+	(73, 8, 36, 'Autre'),
+	(74, 7, 36, 'Autre'),
+	(75, 6, 36, 'Autre'),
+	(76, 5, 36, 'Autre'),
+	(77, 4, 36, 'Autre'),
+	(78, 3, 36, 'Autre'),
+	(79, 2, 36, 'Autre'),
+	(80, 1, 36, 'Autre');
 
 -- Listage de la structure de table wattelse. opening_hour
 CREATE TABLE IF NOT EXISTS `opening_hour` (

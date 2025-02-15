@@ -6,7 +6,7 @@ import java.util.List;
 
 //Vehicule
 public interface CarDao {
-    void addCar(Car car, long userId);
+    boolean addCar(Car car, long userId);
     boolean exists(Car car);
     void removeCar(Car car);
     void modifyCar(Car car);

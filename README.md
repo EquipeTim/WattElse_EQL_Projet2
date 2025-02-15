@@ -12,8 +12,8 @@ Starts by: /api/rest
 /connection/authenticate
 POST: send credentials
 {
-"email":"example@email.eql",
-"password":"mysecretWord"
+"email":"example@mail.mdr",
+"password":"theSecretWord"
 }
 ## User details
 2.1 Register user in the system (DB)\
@@ -83,14 +83,16 @@ POST\
 }\
 ## CARS
 5.1 Add Car to DB\
+Detect plug type by "brand" and "carModel". If one or both are missing uses "plug"
 /car/add\
 POST\
 {
 "brand":"Tesla",
 "carModel":"MODEL S",
-"userId":55,
+"userId":3,
 "licensePlateNumber" : "999999",
-"maxElectricPower" : 15
+"maxElectricPower" : 15,
+"plug" : "TYPE_1_SAE_J1772"
 }\
 
 5.2 Get all user cars\

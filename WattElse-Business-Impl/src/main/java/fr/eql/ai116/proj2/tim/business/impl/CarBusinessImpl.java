@@ -25,11 +25,11 @@ public class CarBusinessImpl implements CarBusiness{
 
 
     @Override
-    public void addCar(CarDto newCarDto) {
+    public boolean addCar(CarDto newCarDto) {
       Car car = new Car(null, newCarDto.getCarModel(),
               newCarDto.getBrand(), newCarDto.getMaxElectricPower(),
               newCarDto.getLicensePlateNumber(), newCarDto.getPlug());
-      carDao.addCar(car, newCarDto.getUserId());
+      return carDao.addCar(car, newCarDto.getUserId());
     }
 
     @Override

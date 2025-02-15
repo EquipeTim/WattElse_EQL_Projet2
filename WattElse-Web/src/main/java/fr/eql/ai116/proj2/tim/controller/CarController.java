@@ -39,7 +39,10 @@ public class CarController {
         @Path("/add")
         @Consumes(MediaType.APPLICATION_JSON)
         public Response addCar(CarDto carDto) {
-            carBusiness.addCar(carDto);
-            return Response.ok().build();
+            boolean success = carBusiness.addCar(carDto);
+            if (success){
+                return Response.ok().build();
+            }
+            return Response.status(Response.Status.FOUND).build();
         }
 }
