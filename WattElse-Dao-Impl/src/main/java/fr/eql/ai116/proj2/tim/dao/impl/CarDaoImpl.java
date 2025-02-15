@@ -2,7 +2,7 @@ package fr.eql.ai116.proj2.tim.dao.impl;
 
 import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
-import fr.eql.ai116.proj2.tim.entity.Car;
+import fr.eql.ai116.proj2.tim.entity.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,11 +10,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 import java.security.cert.CertificateRevokedException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +36,16 @@ public class CarDaoImpl implements CarDao {
     private static final String REQ_GET_MODEL_ID_PLUG_ONLY = "SELECT * FROM model_car mc " +
             "JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type WHERE pt.plug_type = ? AND car_model_label = 'Autre'";
 
-private final DataSource dataSource = new WattElseDataSource();
+    private static final String REQ_EMPTY_CAR_BRANDS = "DELETE FROM brand_car";
+    private static final String REQ_RESET_CAR_BRANDS = "ALTER TABLE brand_car AUTO_INCREMENT = 1";
+    private static final String REQ_INSERT_CAR_BRANDS = "INSERT INTO brand_car (brand_label) VALUES (?)";
+
+    private static final String REQ_EMPTY_CAR_MODELS = "DELETE FROM model_car";
+    private static final String REQ_RESET_CAR_MODELS = "ALTER TABLE model_car AUTO_INCREMENT = 1";
+    private static final String REQ_INSERT_CAR_MODELS = "INSERT INTO model_car (id_plug_type, id_brand, car_model_label)" +
+            " VALUES (?,?,?)";
+
+    private final DataSource dataSource = new WattElseDataSource();
 
     @Override
     public boolean addCar(Car car, long userId) {
@@ -185,5 +190,67 @@ private final DataSource dataSource = new WattElseDataSource();
            throw new RuntimeException(e);
        }
        return cars;
+    }
+
+    /**
+     * Load Car Brands into DB
+     */
+    @Override
+    public void loadCarBrandsIntoDatabase() {
+        try(Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(REQ_EMPTY_CAR_BRANDS);
+                statement.executeUpdate(REQ_RESET_CAR_BRANDS);
+                PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_CAR_BRANDS);
+                for (CarBrand brand : CarBrand.values()) {
+                    insertStatement.setString(1, brand.name());
+                    insertStatement.executeUpdate();
+                }
+                connection.commit();
+                logger.info("Les Marques a été bien enregistrés");
+            } catch(SQLException e){
+                connection.rollback();
+                logger.error("Une erreur s'est produite lors de ajout des marques");
+            }
+        } catch (SQLException e) {
+            logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
+        }
+    }
+
+    /**
+     * Loads car models into the Database
+     */
+    @Override
+    public void loadCarModelsIntoDatabase() {
+        try(Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(REQ_EMPTY_CAR_MODELS);
+                statement.executeUpdate(REQ_RESET_CAR_MODELS);
+                PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_CAR_MODELS);
+                //(id_plug_type, id_brand, car_model_label)
+                for (CarModel model : CarModel.values()) {
+                    insertStatement.setLong(1, model.getPlugType().ordinal()+1);
+                    insertStatement.setLong(2, model.getCarBrand().ordinal()+1);
+                    insertStatement.setString(3, model.getLabel());
+                    insertStatement.executeUpdate();
+                    if (model.getSecondaryPlugType() != null) {
+                        insertStatement.setLong(1, model.getSecondaryPlugType().ordinal()+1);
+                        insertStatement.executeUpdate();
+                    }
+                }
+                connection.commit();
+                logger.info("Les Modeles a été bien enregistrés");
+            } catch(SQLException e){
+                connection.rollback();
+                logger.error("Une erreur s'est produite lors de ajout de modeles de voitures");
+            }
+
+        } catch (SQLException e) {
+            logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
+        }
     }
 }

@@ -17,11 +17,8 @@ import java.util.List;
 
 public class ComponentsBusinessImpl implements ComponentsBusiness {
 
-
     private static final Logger logger = LogManager.getLogger();
 
-    private static final int CONNECT_TIMEOUT = 15000;
-    private static final int READ_TIMEOUT = 60000;
 
     @EJB
     private ComponentsDao componentsDao;
@@ -40,6 +37,12 @@ public class ComponentsBusinessImpl implements ComponentsBusiness {
     public List<Plug> getAllPlug() {
         return componentsDao.getAllPlug();
     }
+
+    @Override
+    public void loadPlugsIntoDatabase() {
+        componentsDao.loadPlugsIntoDatabase();
+    }
+
 
 }
 

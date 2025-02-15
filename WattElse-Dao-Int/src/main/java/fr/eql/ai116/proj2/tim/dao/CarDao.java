@@ -11,6 +11,7 @@ public interface CarDao {
     void removeCar(Car car);
     void modifyCar(Car car);
     List<Car> findByUser(String token);
-
+    void loadCarBrandsIntoDatabase();
+    void loadCarModelsIntoDatabase();
 
 }

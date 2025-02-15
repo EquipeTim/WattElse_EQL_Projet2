@@ -46,6 +46,16 @@ public class CarBusinessImpl implements CarBusiness{
     public List<Car> findUserCar(String token) {
         return carDao.findByUser(token);
     }
+
+    @Override
+    public void loadCarBrandsIntoDatabase() {
+        carDao.loadCarBrandsIntoDatabase();
+    }
+
+    @Override
+    public void loadCarModelsIntoDatabase() {
+        carDao.loadCarModelsIntoDatabase();
+    }
 }
 
 

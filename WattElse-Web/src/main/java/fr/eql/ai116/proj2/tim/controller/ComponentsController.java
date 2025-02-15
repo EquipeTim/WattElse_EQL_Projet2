@@ -21,9 +21,8 @@ public class ComponentsController {
     @EJB
     private ComponentsBusiness componentsBusiness;
 
-    // Endpoint pour récupérer tous les plugs
     @GET
-    @Path("/plug_type")
+    @Path("/plugs")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPlugs() {
         try {

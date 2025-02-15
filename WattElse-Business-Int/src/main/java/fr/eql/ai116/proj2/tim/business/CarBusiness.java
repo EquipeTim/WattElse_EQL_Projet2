@@ -11,7 +11,7 @@ public interface CarBusiness {
     void removeCar(CarDto car);
     void modifyCar(CarDto car);
     List<Car> findUserCar(String token);
-
-
+    void loadCarBrandsIntoDatabase();
+    void loadCarModelsIntoDatabase();
 
 }

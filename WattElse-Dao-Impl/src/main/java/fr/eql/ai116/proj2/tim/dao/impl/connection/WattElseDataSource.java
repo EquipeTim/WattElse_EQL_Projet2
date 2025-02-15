@@ -1,5 +1,6 @@
 package fr.eql.ai116.proj2.tim.dao.impl.connection;
 
+import fr.eql.ai116.proj2.tim.entity.PlugType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,6 +12,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class WattElseDataSource implements DataSource {
@@ -43,6 +45,7 @@ public class WattElseDataSource implements DataSource {
             logger.error("Une erreur s'est produite lors de la lecture " +
                     "du fichier properties de la base de données.", e);
         }
+
     }
 
     @Override

@@ -42,44 +42,7 @@ CREATE TABLE IF NOT EXISTS `brand_car` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.brand_car : ~0 rows (environ)
-INSERT INTO `brand_car` (`id_brand`, `brand_label`) VALUES
-	(1, 'Tesla'),
-	(2, 'Riviaj'),
-	(3, 'Lucid Motors'),
-	(4, 'Byton'),
-	(5, 'NIO'),
-	(6, 'Polestar'),
-	(7, 'Fisker'),
-	(8, 'Bollinger Motors'),
-	(9, 'Lordstown Motors'),
-	(10, 'Faraday Future'),
-	(11, 'Canoo'),
-	(12, 'Audi'),
-	(13, 'BMW'),
-	(14, 'Volkswagen'),
-	(15, 'Mercedes-Benz'),
-	(16, 'Porsche'),
-	(17, 'Ford'),
-	(18, 'Chevrolet'),
-	(19, 'Hyundai'),
-	(20, 'Kia'),
-	(21, 'Nissan'),
-	(22, 'Volvo'),
-	(23, 'Peugeot'),
-	(24, 'Renault'),
-	(25, 'Jaguar'),
-	(26, 'Land Rover'),
-	(27, 'Mini'),
-	(28, 'Mazda'),
-	(29, 'Fiat'),
-	(30, 'Honda'),
-	(31, 'Toyota'),
-	(32, 'Lexus'),
-	(33, 'GMC'),
-	(34, 'Mitsubishi'),
-	(35, 'Smart'),
-	(36, 'Subaru'),
-	(37, 'Autre');
+
 
 -- Listage de la structure de table wattelse. cancellation_type
 CREATE TABLE IF NOT EXISTS `cancellation_type` (
@@ -160,15 +123,6 @@ CREATE TABLE IF NOT EXISTS `closing_account_user_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.closing_account_user_type : ~0 rows (environ)
-INSERT INTO `closing_account_user_type` (`id_label_closing_account_user`, `label_closing_account_user`) VALUES
-	(1, 'Je ne posséde plus de voiture électrique'),
-	(2, 'Je passe à un autre réseau de recharge'),
-	(3, 'Insatisfaction vis-à-vis du service'),
-	(4, 'Coût de recharge élevé'),
-	(5, 'Problèmes techniques'),
-	(6, 'Je passe à une voiture non électrique'),
-	(7, 'Difficultés financières'),
-	(8, 'Autre');
 
 -- Listage de la structure de table wattelse. credit_card
 CREATE TABLE IF NOT EXISTS `credit_card` (
@@ -221,7 +175,7 @@ CREATE TABLE IF NOT EXISTS `evaluation_type` (
 
 -- Listage de la structure de table wattelse. model_car
 CREATE TABLE IF NOT EXISTS `model_car` (
-  `id_model_car` int(11) NOT NULL,
+  `id_model_car` int(11) NOT NULL AUTO_INCREMENT,
   `id_plug_type` int(11) NOT NULL,
   `id_brand` int(11) NOT NULL,
   `car_model_label` varchar(254) DEFAULT NULL,
@@ -233,7 +187,6 @@ CREATE TABLE IF NOT EXISTS `model_car` (
 -- Listage des données de la table wattelse.model_car : ~0 rows (environ)
 -- Listage des données de la table wattelse.model_car : ~71 rows (environ)
 INSERT INTO `model_car` (`id_model_car`, `id_plug_type`, `id_brand`, `car_model_label`) VALUES
-	(0, 8, 36, 'Autre'),
 	(1, 1, 1, 'MODEL S'),
 	(2, 2, 1, 'MODEL 3'),
 	(3, 3, 1, 'MODEL X'),
@@ -362,18 +315,6 @@ CREATE TABLE IF NOT EXISTS `plug_type` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.plug_type : ~0 rows (environ)
-INSERT INTO `plug_type` (`id_plug_type`, `plug_type`) VALUES
-    (1, 'TYPE_1_SAE_J1772'),
-	(2, 'TYPE_2_IEC_62196_2'),
-	(3, 'TYPE_3_IEC_62196_3'),
-	(4, 'CCS_COMBINED_CHARGING_SYSTEM'),
-	(5, 'TESLA_SUPERCHARGER_NORTH_AMERICA_AND_EUROPE'),
-	(6, 'TYPE_4_IEC_62196_3'),
-	(7, 'MENNEKES_PLUG'),
-	(8, 'NEMA_5_15_STANDARD_WALL_OUTLET'),
-	(9, 'NEMA_14_50'),
-	(10, 'Autre');
-
 
 -- Listage de la structure de table wattelse. pricing
 CREATE TABLE IF NOT EXISTS `pricing` (

@@ -3,9 +3,7 @@ package fr.eql.ai116.proj2.tim.dao.impl;
 import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
-import fr.eql.ai116.proj2.tim.entity.Role;
-import fr.eql.ai116.proj2.tim.entity.Session;
-import fr.eql.ai116.proj2.tim.entity.User;
+import fr.eql.ai116.proj2.tim.entity.*;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +52,11 @@ public class UserDaoImpl implements UserDao {
             "AND closing_date_account IS NOT NULL";
     private static  final String REQ_ACCOUNT_LOCKED_BY_EMAIL = "SELECT * FROM user WHERE email =  ? " +
             "AND closing_date_account IS NOT NULL";
+
+    private static final String REQ_EMPTY_CLOSE_REASONS = "DELETE FROM closing_account_user_type";
+    private static final String REQ_RESET_CLOSE_REASONS = "ALTER TABLE closing_account_user_type AUTO_INCREMENT = 1";
+    private static final String REQ_INSERT_CLOSE_REASONS = "INSERT INTO closing_account_user_type (label_closing_account_user) VALUES (?)";
+
 
     /**
      * Checks if the account is locked (closed) according to user ID; If user ID is null, check by e-mail
@@ -248,6 +251,33 @@ public class UserDaoImpl implements UserDao {
             }
         }
         return success;
+    }
+
+    /**
+     * Loads account closing reasons to Database
+     */
+    @Override
+    public void loadClosingReasonsIntoDatabase() {
+        try(Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(REQ_EMPTY_CLOSE_REASONS);
+                statement.executeUpdate(REQ_RESET_CLOSE_REASONS);
+                PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_CLOSE_REASONS);
+                for (AccountCloseType reason : AccountCloseType.values()) {
+                    insertStatement.setString(1, reason.name());
+                    insertStatement.executeUpdate();
+                }
+                connection.commit();
+                logger.info("Raisons pour fermer la compte a été bien enregistrés");
+            } catch(SQLException e){
+                connection.rollback();
+                logger.error("Une erreur s'est produite lors de ajout de valeurs de raison a fermer");
+            }
+        } catch (SQLException e) {
+            logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
+        }
     }
 
 

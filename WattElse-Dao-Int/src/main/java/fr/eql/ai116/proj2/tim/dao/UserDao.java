@@ -18,4 +18,5 @@ public interface UserDao {
     boolean isAccountOwner(User user, String token);
     FullUserDto getUserData(String token);
     boolean modifyUser(User user, String token);
+    void loadClosingReasonsIntoDatabase();
 }

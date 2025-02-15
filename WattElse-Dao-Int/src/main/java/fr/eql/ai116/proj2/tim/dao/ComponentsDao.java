@@ -8,16 +8,13 @@ import java.util.List;
 
 public interface ComponentsDao {
 
-
     //Prise ///
     List<Plug> getAllPlug();
     List<String> findByModel(CarDto cardto);
 
-
-
-    ///  motif retraction voiture - CarWithdrawalType /// enum cree mais pas de classe ou classe dto
     List<String> getAllCarWithdrawalType(String carWithdrawalType);
 
+    void loadPlugsIntoDatabase();
 
 
 }

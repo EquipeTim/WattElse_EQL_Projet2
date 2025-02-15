@@ -11,10 +11,8 @@ import org.apache.logging.log4j.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.security.cert.CertificateRevokedException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,33 +20,25 @@ import java.util.List;
 @Stateless
 
 public class ComponentsDaoImpl implements ComponentsDao {
-
+    private static final DataSource dataSource= new WattElseDataSource();
     private static final Logger logger = LogManager.getLogger();
-
-    //Obtenir toutes les prises /////
 
     private static final String REQ_SELECT_PLUG = "SELECT * FROM plug_type ";
 
-//DataSource object to get a connection to database///
-
-    private static final DataSource dataSource= new WattElseDataSource();
+    private static final String REQ_EMPTY_PLUG_TYPE = "DELETE FROM plug_type";
+    private static final String REQ_RESET_PLUG_TYPE = "ALTER TABLE plug_type AUTO_INCREMENT = 1";
+    private static final String REQ_INSERT_PLUG_TYPE = "INSERT INTO plug_type (plug_type) VALUES (?)";
 
 
     @Override
     public List<Plug> getAllPlug() {
-        // créer une liste vide de nom plug_type
         List<Plug> plug_type = new ArrayList<>();
-        logger.error("arrivejusqua ici");
         try(Connection connection = dataSource.getConnection()) {
-            // on crée un objet Statement qui permet d'executer les requettes sql sur la bd.
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(REQ_SELECT_PLUG);
-
             while(resultSet.next()){
-                //resultSet.getString("plug_type"): obtenir la valeur de la colonne plug_type de type string, cette valeur s'ajoute
-                // à la liste
-                logger.error(resultSet.getString("plug_type"));
-                Plug plug = new Plug(resultSet.getLong("id_plug_type"), PlugType.valueOf(resultSet.getString("plug_type")));
+                Plug plug = new Plug(resultSet.getLong("id_plug_type"),
+                        PlugType.valueOf(resultSet.getString("plug_type")));
                 plug_type.add(plug);
             }
 
@@ -66,5 +56,32 @@ public class ComponentsDaoImpl implements ComponentsDao {
     @Override
     public List<String> getAllCarWithdrawalType(String carWithdrawalType) {
         return null;
+    }
+
+    /**
+     * Loads plug types to DB
+     */
+    @Override
+    public void loadPlugsIntoDatabase() {
+        try(Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                Statement statement = connection.createStatement();
+                statement.executeUpdate(REQ_EMPTY_PLUG_TYPE);
+                statement.executeUpdate(REQ_RESET_PLUG_TYPE);
+                PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_PLUG_TYPE);
+                for (PlugType plugType : PlugType.values()) {
+                    insertStatement.setString(1, plugType.name());
+                    insertStatement.executeUpdate();
+                }
+                connection.commit();
+                logger.info("Les valeurs de plug-type a été bien enregistrés ");
+            } catch(SQLException e){
+                connection.rollback();
+                logger.error("Une erreur s'est produite lors de ajout de valeurs d'enum Plug-Types");
+            }
+        } catch (SQLException e) {
+            logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
+        }
     }
 }
