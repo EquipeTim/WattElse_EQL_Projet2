@@ -4,7 +4,6 @@ import fr.eql.ai116.proj2.tim.business.ComponentsBusiness;
 import fr.eql.ai116.proj2.tim.dao.ComponentsDao;
 import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.Plug;
-import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +45,11 @@ public class ComponentsBusinessImpl implements ComponentsBusiness {
     @Override
     public List<String> getAccountCloseReasons() {
         return null;
+    }
+
+    @Override
+    public List<String> getCarBrands() {
+        return componentsDao.getCarBrands();
     }
 
 

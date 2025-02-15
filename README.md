@@ -92,7 +92,7 @@ POST\
 "userId":3,
 "licensePlateNumber" : "999999",
 "maxElectricPower" : 15,
-"plug" : "TYPE_1_SAE_J1772"
+"plug" : "NACS"
 }\
 
 5.2 Get all user cars\

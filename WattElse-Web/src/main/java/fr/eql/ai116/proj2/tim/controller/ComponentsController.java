@@ -28,6 +28,14 @@ public class ComponentsController {
     }
 
     @GET
+    @Path("/brands")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCarBrands() {
+        List<String> brands = componentsBusiness.getCarBrands();
+        return Response.ok(brands).build();
+    }
+
+    @GET
     @Path("/accountCloseReasons")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAccountCloseReasons() {
