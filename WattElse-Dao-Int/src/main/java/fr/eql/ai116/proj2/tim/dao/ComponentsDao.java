@@ -12,6 +12,7 @@ public interface ComponentsDao {
     List<Plug> getAllPlug();
     List<Plug> findByModel(Car car);
     void loadPlugsIntoDatabase();
-
+    List<String> getCarBrands();
+    List<String> getCarModels(String brand);
 
 }

@@ -92,7 +92,7 @@ POST\
 "userId":3,
 "licensePlateNumber" : "999999",
 "maxElectricPower" : 15,
-"plug" : "TYPE_1_SAE_J1772"
+"plug" : "NACS"
 }\
 
 5.2 Get all user cars\
@@ -112,6 +112,14 @@ POST\
 "brand": "Tesla",
 "carModel" : "MODEL 3"
 }\
+
+6.3 Get all brands registered in the system\
+/components/brands\
+GET\
+
+6.4 Get all models registered under a brand\
+/components/brands/{brand}\
+GET\
 
 ## TERMINALS
 7.1 Find charging stations\
