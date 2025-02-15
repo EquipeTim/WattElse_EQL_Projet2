@@ -16,9 +16,9 @@ POST: send credentials
 "password":"mysecretWord"
 }
 ## User details
-2.1 Register user in the system (DB)
-/user/registration
-POST: 
+2.1 Register user in the system (DB)\
+/user/registration\
+POST:\
 {
 "name":"myName",
 "surname":"mySillySurname",
@@ -29,20 +29,20 @@ POST:
 "phone_number":"123456-89",
 "city":"Paris",
 "postal_code":"75020"
-}
-2.2 Close the User Account
-*Header must contain token
-/user/close
-POST:
+}\
+2.2 Close the User Account\
+*Header must contain token\
+/user/close\
+POST:\
 {
 "userId":15,
 "token":"4802895",
 "reasonId":1
-}
-2.3 Modify user details
-*Header must contain token
-/user/modify
-POST
+}\
+2.3 Modify user details\
+*Header must contain token\
+/user/modify\
+POST\
 {
 "id":54,
 "name":"GRator",
@@ -54,49 +54,49 @@ POST
 "phone_number":"00000-00000",
 "city":"Lyon",
 "postal_code":"85"
-}
-2.4 GET user details
-*Header must contain token
-/user/details
-GET
+}\
+2.4 GET user details\
+*Header must contain token\
+/user/details\
+GET\
 ## Bank Card
-3.1 Add credit card to DB
-/payment_methods/card/add
-POST
+3.1 Add credit card to DB\
+/payment_methods/card/add\
+POST\
 {
 "numberCard":"1234-4321-5689-1312",
 "cardHolderName" : "Chipmunk Le great",
 "expirationDate" : "2025-10-12",
 "cvvNumber" : 666,
 "userId":55
-}
+}\
 ## Bank Account
-4.1 Add Bank Account to DB
-/payment_methods/account/add
-POST
+4.1 Add Bank Account to DB\
+/payment_methods/account/add\
+POST\
 {
 "numberCard":"1234-4321-5689-1312",
 "cardHolderName" : "Chipmunk Le great",
 "expirationDate" : "2025-10-12",
 "cvvNumber" : 666,
 "userId":55
-}
+}\
 ## CARS
-5.1 Add Car to DB
-/car/add
-POST
+5.1 Add Car to DB\
+/car/add\
+POST\
 {
 "brand":"Tesla",
 "carModel":"MODEL S",
 "userId":55,
 "licensePlateNumber" : "999999",
 "maxElectricPower" : 15
-}
+}\
 
-5.2 Get all user cars
-*Header must contain token
-/car/get/all
-GET
+5.2 Get all user cars\
+*Header must contain token\
+/car/get/all\
+GET\
 
 
 ### Architecture
