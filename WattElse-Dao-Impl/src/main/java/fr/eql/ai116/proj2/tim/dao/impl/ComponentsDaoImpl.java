@@ -36,6 +36,8 @@ public class ComponentsDaoImpl implements ComponentsDao {
             "ON mc.id_brand = bc.id_brand JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type " +
             "WHERE bc.brand_label = ? AND mc.car_model_label = ?";
     private static final String REQ_GET_CAR_BRANDS = "SELECT * FROM brand_CAR";
+    private static final String REQ_GET_MODELS = "SELECT * FROM model_car mc JOIN brand_CAR bc " +
+            "ON mc.id_brand = bc.id_brand WHERE bc.brand_label = ?";
 
     /**
      * Returns list of all plugs registered in DB
@@ -126,6 +128,27 @@ public class ComponentsDaoImpl implements ComponentsDao {
             logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
         }
         return brands;
+    }
+
+    /**
+     * GEt registered models in the DB associated to the brand
+     * @param brand
+     * @return
+     */
+    @Override
+    public List<String> getCarModels(String brand) {
+        List<String> models = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_MODELS);
+            statement.setString(1, brand);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                models.add(resultSet.getString("car_model_label"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return models;
     }
 
     /**

@@ -52,6 +52,11 @@ public class ComponentsBusinessImpl implements ComponentsBusiness {
         return componentsDao.getCarBrands();
     }
 
+    @Override
+    public List<String> getCarModels(String brand) {
+        return componentsDao.getCarModels(brand);
+    }
+
 
 }
 

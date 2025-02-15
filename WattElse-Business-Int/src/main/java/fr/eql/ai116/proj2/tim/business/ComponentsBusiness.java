@@ -12,4 +12,5 @@ public interface ComponentsBusiness {
     void loadPlugsIntoDatabase();
     List<String> getAccountCloseReasons();
     List<String> getCarBrands();
+    List<String> getCarModels(String brand);
 }

@@ -113,7 +113,13 @@ POST\
 "carModel" : "MODEL 3"
 }\
 
+6.3 Get all brands registered in the system\
+/components/brands\
+GET\
 
+6.4 Get all models registered under a brand\
+/components/brands/{brand}\
+GET\
 
 
 ### Architecture

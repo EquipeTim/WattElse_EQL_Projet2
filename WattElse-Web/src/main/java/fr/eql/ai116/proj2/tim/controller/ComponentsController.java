@@ -36,6 +36,14 @@ public class ComponentsController {
     }
 
     @GET
+    @Path("/model/{brand}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getModels(@PathParam("brand") String brand) {
+        List<String> models = componentsBusiness.getCarModels(brand);
+        return Response.ok(models).build();
+    }
+
+    @GET
     @Path("/accountCloseReasons")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAccountCloseReasons() {
