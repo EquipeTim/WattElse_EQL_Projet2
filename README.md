@@ -106,15 +106,23 @@ GET\
 GET\
 
 6.2 Get plugs used by specific car model\
-/components/plugs/by_car
+/components/plugs/by_car\
 POST\
 {
 "brand": "Tesla",
 "carModel" : "MODEL 3"
 }\
 
-
-
+## TERMINALS
+7.1 Find charging stations\
+/terminals/find\
+POST\
+{
+"searchRadius":5,
+"startingLat":48.81633462767654,
+"startingLong": 2.327039836437512,
+"plugType" : "NACS"
+}
 
 ### Architecture
 

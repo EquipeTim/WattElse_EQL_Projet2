@@ -6,18 +6,18 @@ import java.io.Serializable;
 public class ChargingStation implements Serializable {
 
     private long idChargingStation;
-    private long PowerChargingStation;
+    private long power;
     private String addressChargingStation;
     private long longitude;
     private long latitude;
     private String emergencyPhone;
     private PlugType plugType;
 
-    public ChargingStation(long idChargingStation, long powerChargingStation,
+    public ChargingStation(long idChargingStation, long power,
                            String addressChargingStation, long longitude, long latitude,
                            String emergencyPhone, PlugType plugType) {
         this.idChargingStation = idChargingStation;
-        PowerChargingStation = powerChargingStation;
+        this.power = power;
         this.addressChargingStation = addressChargingStation;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -33,8 +33,8 @@ public class ChargingStation implements Serializable {
 
     /// Getters
 
-    public long getPowerChargingStation() {
-        return PowerChargingStation;
+    public long getPower() {
+        return power;
     }
 
     public String getAddressChargingStation() {
