@@ -1,6 +1,7 @@
 package fr.eql.ai116.proj2.tim.entity;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 // Vehicule
 public class Car implements Serializable {
@@ -22,6 +23,11 @@ public class Car implements Serializable {
         this.plug = plug;
     }
 
+    public Car(String brand, String carModel, String plug) {
+        this.brand = brand;
+        this.carModel = carModel;
+        this.plug = plug;
+    }
 
     ///getters///
 
@@ -60,4 +66,15 @@ public class Car implements Serializable {
         this.maxElectricPower = maxElectricPower;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return Objects.equals(brand, car.brand) && Objects.equals(carModel, car.carModel) && Objects.equals(plug, car.plug);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(brand, carModel, plug);
+    }
 }

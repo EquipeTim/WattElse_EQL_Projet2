@@ -5,6 +5,7 @@ import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.CarBrand;
 import fr.eql.ai116.proj2.tim.entity.CarModel;
+import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,7 @@ public class CarBusinessImpl implements CarBusiness{
 
     @EJB
     private CarDao carDao;
+
 
 
     @Override

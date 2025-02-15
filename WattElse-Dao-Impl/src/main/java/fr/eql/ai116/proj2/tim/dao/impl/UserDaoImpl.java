@@ -19,7 +19,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Remote(UserDao.class)
 @Stateless
@@ -53,9 +55,10 @@ public class UserDaoImpl implements UserDao {
     private static  final String REQ_ACCOUNT_LOCKED_BY_EMAIL = "SELECT * FROM user WHERE email =  ? " +
             "AND closing_date_account IS NOT NULL";
 
-    private static final String REQ_EMPTY_CLOSE_REASONS = "DELETE FROM closing_account_user_type";
-    private static final String REQ_RESET_CLOSE_REASONS = "ALTER TABLE closing_account_user_type AUTO_INCREMENT = 1";
-    private static final String REQ_INSERT_CLOSE_REASONS = "INSERT INTO closing_account_user_type (label_closing_account_user) VALUES (?)";
+    private static final String REQ_GET_ALL_CLOSE_REASONS =
+            "SELECT label_closing_account_user FROM closing_account_user_type";
+    private static final String REQ_INSERT_CLOSE_REASONS =
+            "INSERT INTO closing_account_user_type (label_closing_account_user) VALUES (?)";
 
 
     /**
@@ -259,25 +262,48 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void loadClosingReasonsIntoDatabase() {
         try(Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            try {
-                Statement statement = connection.createStatement();
-                statement.executeUpdate(REQ_EMPTY_CLOSE_REASONS);
-                statement.executeUpdate(REQ_RESET_CLOSE_REASONS);
-                PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_CLOSE_REASONS);
-                for (AccountCloseType reason : AccountCloseType.values()) {
-                    insertStatement.setString(1, reason.name());
-                    insertStatement.executeUpdate();
+            Set<String> missingReasons = getMissingClosingReasons(connection);
+            if (!missingReasons.isEmpty()) {
+                connection.setAutoCommit(false);
+                try {
+                    PreparedStatement statement = connection.prepareStatement(REQ_INSERT_CLOSE_REASONS);
+                    for (String reason : missingReasons) {
+                        statement.setString(1, reason);
+                        statement.executeUpdate();
+                    }
+                    connection.commit();
+                    logger.info("Raisons pour fermer la compte a été bien enregistrés");
+                } catch (SQLException e) {
+                    connection.rollback();
+                    logger.error("Une erreur s'est produite lors de ajout de valeurs de raison a fermer");
                 }
-                connection.commit();
-                logger.info("Raisons pour fermer la compte a été bien enregistrés");
-            } catch(SQLException e){
-                connection.rollback();
-                logger.error("Une erreur s'est produite lors de ajout de valeurs de raison a fermer");
+            } else {
+            logger.info("Aucune nouvelle raison de fermeture n'était pas ajouté");
             }
         } catch (SQLException e) {
             logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
         }
+    }
+
+    /**
+     * Checks if new closing reasons need to be added to DB
+     * @param connection
+     * @return
+     */
+    private Set<String> getMissingClosingReasons(Connection connection) throws SQLException{
+        Set<String> dbReasons = new HashSet<>();
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(REQ_GET_ALL_CLOSE_REASONS);
+        while (resultSet.next()) {
+            dbReasons.add(resultSet.getString("label_closing_account_user"));
+        }
+        Set<String> enumReasons = new HashSet<>();
+        for (AccountCloseType reason : AccountCloseType.values()) {
+            enumReasons.add(reason.name());
+        }
+        Set<String> missingReasons = new HashSet<>(enumReasons);
+        missingReasons.removeAll(dbReasons);
+        return missingReasons;
     }
 
 

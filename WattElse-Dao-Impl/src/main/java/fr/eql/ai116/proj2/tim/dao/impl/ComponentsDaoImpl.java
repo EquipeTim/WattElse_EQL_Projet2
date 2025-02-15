@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.dao.impl;
 
 import fr.eql.ai116.proj2.tim.dao.ComponentsDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
+import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.Plug;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
@@ -14,7 +15,9 @@ import javax.sql.DataSource;
 import java.security.cert.CertificateRevokedException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Remote(ComponentsDao.class)
 @Stateless
@@ -25,10 +28,12 @@ public class ComponentsDaoImpl implements ComponentsDao {
 
     private static final String REQ_SELECT_PLUG = "SELECT * FROM plug_type ";
 
-    private static final String REQ_EMPTY_PLUG_TYPE = "DELETE FROM plug_type";
-    private static final String REQ_RESET_PLUG_TYPE = "ALTER TABLE plug_type AUTO_INCREMENT = 1";
+    private static final String REQ_GET_ALL_PLUG_TYPES = "SELECT plug_type FROM plug_type";
     private static final String REQ_INSERT_PLUG_TYPE = "INSERT INTO plug_type (plug_type) VALUES (?)";
 
+    private static final String REQ_GET_CAR_PLUGS = "SELECT * FROM model_car mc JOIN brand_CAR bc " +
+            "ON mc.id_brand = bc.id_brand JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type " +
+            "WHERE bc.brand_label = ? AND mc.car_model_label = ?";
 
     @Override
     public List<Plug> getAllPlug() {
@@ -41,21 +46,33 @@ public class ComponentsDaoImpl implements ComponentsDao {
                         PlugType.valueOf(resultSet.getString("plug_type")));
                 plug_type.add(plug);
             }
-
         } catch (SQLException e) {
             logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
         }
         return plug_type;
     }
 
+    /**
+     * Get plugs for this type of car
+     * @param car
+     * @return
+     */
     @Override
-    public List<String> findByModel(CarDto carDto) {
-        return null;
-    }
-
-    @Override
-    public List<String> getAllCarWithdrawalType(String carWithdrawalType) {
-        return null;
+    public List<Plug> findByModel(Car car) {
+        List<Plug> carPlugs = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_CAR_PLUGS);
+            statement.setString(1, car.getBrand());
+            statement.setString(2, car.getCarModel());
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                carPlugs.add(new Plug(resultSet.getLong("id_plug_type"),
+                        PlugType.valueOf(resultSet.getString("plug_type"))));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return carPlugs;
     }
 
     /**
@@ -64,24 +81,49 @@ public class ComponentsDaoImpl implements ComponentsDao {
     @Override
     public void loadPlugsIntoDatabase() {
         try(Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(false);
-            try {
-                Statement statement = connection.createStatement();
-                statement.executeUpdate(REQ_EMPTY_PLUG_TYPE);
-                statement.executeUpdate(REQ_RESET_PLUG_TYPE);
-                PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_PLUG_TYPE);
-                for (PlugType plugType : PlugType.values()) {
-                    insertStatement.setString(1, plugType.name());
-                    insertStatement.executeUpdate();
+            Set<String> missingPlugs = getMissingPlugTypes(connection);
+            if (!missingPlugs.isEmpty()) {
+                connection.setAutoCommit(false);
+                try {
+                    PreparedStatement statement = connection.prepareStatement(REQ_INSERT_PLUG_TYPE);
+                    for (String plugLabel : missingPlugs) {
+                        statement.setString(1, plugLabel);
+                        statement.executeUpdate();
+                    }
+                    connection.commit();
+                    logger.info("Les valeurs de plug-type a été bien enregistrés ");
+                } catch (SQLException e) {
+                    connection.rollback();
+                    logger.error("Une erreur s'est produite lors de ajout de valeurs d'enum Plug-Types");
                 }
-                connection.commit();
-                logger.info("Les valeurs de plug-type a été bien enregistrés ");
-            } catch(SQLException e){
-                connection.rollback();
-                logger.error("Une erreur s'est produite lors de ajout de valeurs d'enum Plug-Types");
+            } else {
+                logger.info("Aucune plug n'était pas ajouté");
             }
         } catch (SQLException e) {
             logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
         }
     }
+
+    /**
+     * Checks if there are new plugs to add to DB
+     * @param connection
+     * @return
+     */
+    private Set<String> getMissingPlugTypes(Connection connection) throws SQLException{
+        Set<String> dbPlugs = new HashSet<>();
+        Statement selectStatement = connection.createStatement();
+        ResultSet resultSet = selectStatement.executeQuery(REQ_GET_ALL_PLUG_TYPES);
+        while (resultSet.next()) {
+            dbPlugs.add(resultSet.getString("plug_type"));
+        }
+        Set<String> enumPlugs = new HashSet<>();
+        for (PlugType plug : PlugType.values()) {
+            enumPlugs.add(plug.name());
+        }
+        Set<String> missingPlugs = new HashSet<>(enumPlugs);
+        missingPlugs.removeAll(dbPlugs);
+        return missingPlugs;
+    }
+
+
 }

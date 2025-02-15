@@ -97,8 +97,23 @@ POST\
 
 5.2 Get all user cars\
 *Header must contain token\
-/car/get/all\
+/car/get/all
 GET\
+
+## COMPONENTS
+6.1 Recover all plug types recorded in system\
+/components/plugs/all\
+GET\
+
+6.2 Get plugs used by specific car model\
+/components/plugs/by_car
+POST\
+{
+"brand": "Tesla",
+"carModel" : "MODEL 3"
+}\
+
+
 
 
 ### Architecture

@@ -40,7 +40,12 @@ public class SecurityBusinessImpl implements SecurityBusiness {
 
     @Override
     public void authorize(String authorization, Role role) throws AuthorizationException {
-        String token = authorization.substring(7);
+        String token;
+        try{
+            token = authorization.substring(7);
+        } catch (NullPointerException e){
+            throw new AuthorizationException("Pas de token dans la requette");
+        }
         Session session = userDao.findSession(token);
         if (session == null) {
             throw new AuthorizationException("Pas de session correspondant au token fourni.");

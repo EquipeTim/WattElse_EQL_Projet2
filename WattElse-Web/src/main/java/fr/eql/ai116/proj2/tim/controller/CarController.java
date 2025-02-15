@@ -1,7 +1,9 @@
 package fr.eql.ai116.proj2.tim.controller;
 
+import fr.eql.ai116.proj2.tim.business.AuthorizationException;
 import fr.eql.ai116.proj2.tim.business.CarBusiness;
 import fr.eql.ai116.proj2.tim.entity.Car;
+import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
 
 import javax.ejb.EJB;
@@ -31,8 +33,12 @@ public class CarController {
         public Response fetchUserCars(@Context HttpHeaders headers) {
             String authorizationHeader = headers.getHeaderString("Authorization");
             String token = authorizationHeader.substring("Bearer ".length());
-            List<Car> cars = carBusiness.findUserCar(token);
-            return Response.ok(cars).build();
+            if (token != null){
+                List<Car> cars = carBusiness.findUserCar(token);
+                return Response.ok(cars).build();
+            } else {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
         }
 
 
@@ -46,4 +52,5 @@ public class CarController {
             }
             return Response.status(Response.Status.FOUND).build();
         }
+
 }

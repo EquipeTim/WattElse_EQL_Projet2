@@ -80,7 +80,14 @@ public enum CarModel {
     LI_AUTO_LI_ONE("Li One", CarBrand.LI_AUTO, PlugType.GB_T), // Verify - Often GB/T (if PHEV, charging might be less of a focus)
     WELTMEISTER_EX5("EX5", CarBrand.WELTMEISTER, PlugType.GB_T), // Verify - Often GB/T
     WELTMEISTER_EX6("EX6", CarBrand.WELTMEISTER, PlugType.GB_T), // Verify - Often GB/T
-    HONGQI_E_HS9("E-HS9", CarBrand.HONGQI, PlugType.GB_T);
+    HONGQI_E_HS9("E-HS9", CarBrand.HONGQI, PlugType.GB_T),
+    AUTRE1("Autre", CarBrand.AUTRE, PlugType.NACS),
+    AUTRE2("Autre", CarBrand.AUTRE, PlugType.TYPE_2),
+    AUTRE3("Autre", CarBrand.AUTRE, PlugType.TESLA_SUPERCHARGER),
+    AUTRE4("Autre", CarBrand.AUTRE, PlugType.CCS),
+    AUTRE5("Autre", CarBrand.AUTRE, PlugType.CHADEMO),
+    AUTRE6("Autre", CarBrand.AUTRE, PlugType.GB_T),
+    AUTRE7("Autre", CarBrand.AUTRE, PlugType.AUTRE);
 
     private final String label;
     private final CarBrand carBrand;
