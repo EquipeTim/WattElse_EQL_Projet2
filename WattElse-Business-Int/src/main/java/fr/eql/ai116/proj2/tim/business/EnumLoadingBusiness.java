@@ -11,5 +11,7 @@ public interface EnumLoadingBusiness {
     void loadPricingTypesIntoDatabase();
     void loadReservationCancelTypesIntoDatabase();
     void loadStationClosingReasonsIntoDatabase();
+    void loadStationUnavailabilityTypesIntoDatabase();
+    void loadWeekdaysIntoDatabase();
 
 }

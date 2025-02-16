@@ -36,5 +36,7 @@ public class StartUpServlet extends HttpServlet {
         enumLoadingBusiness.loadPricingTypesIntoDatabase();
         enumLoadingBusiness.loadReservationCancelTypesIntoDatabase();
         enumLoadingBusiness.loadStationClosingReasonsIntoDatabase();
+        enumLoadingBusiness.loadStationUnavailabilityTypesIntoDatabase();
+        enumLoadingBusiness.loadWeekdaysIntoDatabase();
     }
 }

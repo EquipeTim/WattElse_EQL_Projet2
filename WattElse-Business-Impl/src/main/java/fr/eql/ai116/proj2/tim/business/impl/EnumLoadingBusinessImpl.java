@@ -61,4 +61,14 @@ public class EnumLoadingBusinessImpl implements EnumLoadingBusiness {
     public void loadStationClosingReasonsIntoDatabase() {
         enumLoadingDao.loadStationClosingReasonsIntoDatabase();
     }
+
+    @Override
+    public void loadStationUnavailabilityTypesIntoDatabase() {
+        enumLoadingDao.loadStationUnavailabilityTypesIntoDatabase();
+    }
+
+    @Override
+    public void loadWeekdaysIntoDatabase() {
+        enumLoadingDao.loadWeekdaysIntoDatabase();
+    }
 }
