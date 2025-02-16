@@ -1,10 +1,7 @@
 package fr.eql.ai116.proj2.tim.controller;
 
-import fr.eql.ai116.proj2.tim.business.ComponentsBusiness;
 import fr.eql.ai116.proj2.tim.business.TerminalBusiness;
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
-import fr.eql.ai116.proj2.tim.entity.Plug;
-import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
 import javax.ejb.EJB;

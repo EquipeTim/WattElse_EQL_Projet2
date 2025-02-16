@@ -68,13 +68,13 @@ public class EnumLoadingDaoImpl implements EnumLoadingDao {
     private <T extends Enum<T>> void stringLoading(String checkReq, String columnLabelForCheck,
                                String addReq, String statusLabel, Class<T> myEnum){
         try(Connection connection = dataSource.getConnection()) {
-            Set<String> missingRefusalTypes =
+            Set<String> missingElements =
                     getMissingStrings(checkReq, columnLabelForCheck, connection, myEnum);
-            if (!missingRefusalTypes.isEmpty()) {
+            if (!missingElements.isEmpty()) {
                 connection.setAutoCommit(false);
                 try {
                     PreparedStatement statement = connection.prepareStatement(addReq);
-                    for (String type : missingRefusalTypes) {
+                    for (String type : missingElements) {
                         statement.setString(1, type);
                         statement.executeUpdate();
                     }

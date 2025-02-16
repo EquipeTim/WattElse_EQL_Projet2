@@ -121,6 +121,22 @@ GET\
 /components/brands/{brand}\
 GET\
 
+6.5 Get account closing reasons\
+components/reasons/accountClose\
+GET\
+
+6.6 Get car withdrawal reasons\
+components/reasons/car_withdrawal\
+GET\
+
+6.7 Get transaction evaluation criteria\
+components/evaluation_types\
+GET\
+
+6.8 Get payment refusal reasons\
+components/reasons/payment_refusal\
+GET\
+
 ## TERMINALS
 7.1 Find charging stations\
 /terminals/find\
