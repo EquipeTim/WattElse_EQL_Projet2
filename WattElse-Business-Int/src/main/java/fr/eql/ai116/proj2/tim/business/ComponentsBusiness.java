@@ -9,7 +9,6 @@ import java.util.List;
 public interface ComponentsBusiness {
     List<Plug> findPlug(CarDto carDto);
     List<Plug> getAllPlug();
-    void loadPlugsIntoDatabase();
     List<String> getAccountCloseReasons();
     List<String> getCarBrands();
     List<String> getCarModels(String brand);

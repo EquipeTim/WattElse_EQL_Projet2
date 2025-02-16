@@ -8,5 +8,4 @@ public interface UserBusiness {
     boolean closeUserAccount(UserCloseDto userCloseDto);
     boolean updateUser(FullUserDto fullUserDto, String token);
     FullUserDto getUserData(String token) throws SessionNotFoundException;
-    void loadClosingReasonsIntoDatabase();
 }

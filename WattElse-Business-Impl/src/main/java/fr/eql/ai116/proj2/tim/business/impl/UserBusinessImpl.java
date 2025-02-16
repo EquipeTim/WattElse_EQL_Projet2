@@ -62,8 +62,4 @@ public class UserBusinessImpl implements UserBusiness {
         return userData;
     }
 
-    @Override
-    public void loadClosingReasonsIntoDatabase() {
-        userDao.loadClosingReasonsIntoDatabase();
-    }
 }

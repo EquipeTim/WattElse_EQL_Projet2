@@ -37,10 +37,6 @@ public class ComponentsBusinessImpl implements ComponentsBusiness {
         return componentsDao.getAllPlug();
     }
 
-    @Override
-    public void loadPlugsIntoDatabase() {
-        componentsDao.loadPlugsIntoDatabase();
-    }
 
     @Override
     public List<String> getAccountCloseReasons() {

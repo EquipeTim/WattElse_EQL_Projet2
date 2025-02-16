@@ -12,9 +12,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Remote(CarDao.class)
@@ -40,16 +38,7 @@ public class CarDaoImpl implements CarDao {
             "JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type WHERE pt.plug_type = ? " +
             "AND car_model_label = 'Autre'";
 
-    private static final String REQ_GET_ALL_CAR_BRANDS = "SELECT brand_label FROM brand_car";
-    private static final String REQ_INSERT_CAR_BRANDS = "INSERT INTO brand_car (brand_label) VALUES (?)";
 
-    private static final String REQ_SELECT_ALL_CARS_MODELS =
-            "SELECT * FROM model_car mc JOIN brand_car bc ON mc.id_brand = bc.id_brand JOIN plug_type " +
-                    "pt ON mc.id_plug_type = pt.id_plug_type";
-    private static final String REQ_INSERT_CAR_MODELS =
-            "INSERT INTO model_car (id_plug_type, id_brand, car_model_label) VALUES (?,?,?)";
-    private static final String REQ_GET_PLUG_ID = "SELECT * FROM plug_type WHERE plug_type = ?";
-    private static final String REQ_GET_BRAND_ID = "SELECT * FROM brand_car WHERE brand_label = ?";
 
     @Override
     public boolean addCar(Car car, long userId) {
@@ -203,161 +192,5 @@ public class CarDaoImpl implements CarDao {
         }
         return cars;
     }
-
-
-    /**
-     * Load Car Brands into DB
-     */
-    @Override
-    public void loadCarBrandsIntoDatabase() {
-        try (Connection connection = dataSource.getConnection()) {
-            Set<String> missingBrands = getMissingCarBrands(connection);
-            if (!missingBrands.isEmpty()) {
-                connection.setAutoCommit(false);
-                try {
-                    PreparedStatement statement = connection.prepareStatement(REQ_INSERT_CAR_BRANDS);
-                    for (String brandLabel : missingBrands) {
-                        statement.setString(1, brandLabel);
-                        statement.executeUpdate();
-                    }
-                    connection.commit();
-                    logger.info("Les Marques a été bien enregistrés");
-                } catch (SQLException e) {
-                    connection.rollback();
-                    logger.error("Une erreur s'est produite lors de ajout des marques");
-                }
-            } else {
-                logger.info("Aucune marque n'était pas ajouté");
-            }
-        } catch (SQLException e) {
-            logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
-        }
-    }
-
-    /**
-     * Checks if new cars have to be added to DB
-     *
-     * @param connection
-     * @return
-     */
-    private Set<String> getMissingCarBrands(Connection connection) throws SQLException {
-        Set<String> dbBrands = new HashSet<>();
-        Statement selectStatement = connection.createStatement();
-        ResultSet resultSet = selectStatement.executeQuery(REQ_GET_ALL_CAR_BRANDS);
-        while (resultSet.next()) {
-            dbBrands.add(resultSet.getString("brand_label"));
-        }
-        Set<String> enumBrands = new HashSet<>();
-        for (CarBrand brand : CarBrand.values()) {
-            enumBrands.add(brand.name());
-        }
-        Set<String> missingBrands = new HashSet<>(enumBrands);
-        missingBrands.removeAll(dbBrands);
-        return missingBrands;
-    }
-
-
-    /**
-     * Loads car models into the Database
-     */
-    @Override
-    public void loadCarModelsIntoDatabase() {
-        try (Connection connection = dataSource.getConnection()) {
-            Set<Car> existingCarModels = getExistingCarModels(connection);
-            connection.setAutoCommit(false);
-            boolean added = false;
-            try {
-                for (CarModel model : CarModel.values()) {
-                    Car carToCheck = new Car(model.getCarBrand().toString(), model.getLabel(),
-                            model.getPlugType().toString());
-                    if (!existingCarModels.contains(carToCheck)) {
-                        added = true;
-                        PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_CAR_MODELS);
-                        Long plugId = getPlugId(model.getPlugType(), connection);
-                        Long brandId = getBrandId(model.getCarBrand(), connection);
-                        insertStatement.setLong(1, plugId);
-                        insertStatement.setLong(2, brandId);
-                        insertStatement.setString(3, model.getLabel());
-                        insertStatement.executeUpdate();
-                        if (model.getSecondaryPlugType() != null) {
-                            carToCheck = new Car(model.getCarBrand().toString(), model.getLabel(),
-                                    model.getSecondaryPlugType().toString());
-                            if (!existingCarModels.contains(carToCheck)) {
-                                plugId = getPlugId(model.getSecondaryPlugType(), connection);
-                                insertStatement.setLong(1, plugId);
-                                insertStatement.executeUpdate();
-                        }}
-                    }}
-                connection.commit();
-                if (added){
-                    logger.info("Les Nouveles Modeles a été bien enregistrés");
-                } else {
-                    logger.info("Aucun modele n'été pas enregistrés");
-                }
-            } catch (SQLException e) {
-                connection.rollback();
-                logger.error("Une erreur s'est produite lors de ajout de modeles de voitures");
-            }
-        } catch (SQLException e) {
-            logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
-        }
-    }
-
-    /** Get Car models recorded in Database
-     * @param connection
-     * @return
-     */
-    private Set<Car> getExistingCarModels(Connection connection) throws SQLException {
-        Set<Car> existingCars = new HashSet<>();
-        Statement selectStatement = connection.createStatement();
-        ResultSet resultSet = selectStatement.executeQuery(REQ_SELECT_ALL_CARS_MODELS);
-        while (resultSet.next()) {
-            String brand = resultSet.getString("brand_label");
-            String carModel = resultSet.getString("car_model_label");
-            String plug = resultSet.getString("plug_type");
-            existingCars.add(new Car(brand, carModel, plug));
-        }
-        return existingCars;
-    }
-
-    /**
-     * Get brand id from brand
-     * @param carBrand
-     * @param connection
-     * @return
-     */
-    private Long getBrandId(CarBrand carBrand, Connection connection) throws SQLException{
-        Long brandId;
-        PreparedStatement statement = connection.prepareStatement(REQ_GET_BRAND_ID);
-        statement.setString(1, carBrand.name());
-        ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next()) {
-            brandId = resultSet.getLong("id_brand");
-        } else {
-            brandId = getPlugId(PlugType.AUTRE, connection);
-        }
-        return brandId;
-    }
-
-    /**
-     * Get plug ID from plug name
-     * @param plug
-     * @param connection
-     * @return
-     */
-    private Long getPlugId(PlugType plug, Connection connection) throws SQLException {
-        Long plugId;
-        PreparedStatement statement = connection.prepareStatement(REQ_GET_PLUG_ID);
-        statement.setString(1, plug.name());
-        ResultSet resultSet = statement.executeQuery();
-        if (resultSet.next()) {
-            plugId = resultSet.getLong("id_plug_type");
-        } else {
-            plugId = getPlugId(PlugType.AUTRE, connection);
-        }
-        return plugId;
-    }
-
-
 
 }

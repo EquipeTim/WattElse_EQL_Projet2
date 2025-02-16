@@ -1,6 +1,5 @@
 package fr.eql.ai116.proj2.tim.dao.impl;
 
-import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.*;
@@ -54,12 +53,6 @@ public class UserDaoImpl implements UserDao {
             "AND closing_date_account IS NOT NULL";
     private static  final String REQ_ACCOUNT_LOCKED_BY_EMAIL = "SELECT * FROM user WHERE email =  ? " +
             "AND closing_date_account IS NOT NULL";
-
-    private static final String REQ_GET_ALL_CLOSE_REASONS =
-            "SELECT label_closing_account_user FROM closing_account_user_type";
-    private static final String REQ_INSERT_CLOSE_REASONS =
-            "INSERT INTO closing_account_user_type (label_closing_account_user) VALUES (?)";
-
 
     /**
      * Checks if the account is locked (closed) according to user ID; If user ID is null, check by e-mail
@@ -256,55 +249,7 @@ public class UserDaoImpl implements UserDao {
         return success;
     }
 
-    /**
-     * Loads account closing reasons to Database
-     */
-    @Override
-    public void loadClosingReasonsIntoDatabase() {
-        try(Connection connection = dataSource.getConnection()) {
-            Set<String> missingReasons = getMissingClosingReasons(connection);
-            if (!missingReasons.isEmpty()) {
-                connection.setAutoCommit(false);
-                try {
-                    PreparedStatement statement = connection.prepareStatement(REQ_INSERT_CLOSE_REASONS);
-                    for (String reason : missingReasons) {
-                        statement.setString(1, reason);
-                        statement.executeUpdate();
-                    }
-                    connection.commit();
-                    logger.info("Raisons pour fermer la compte a été bien enregistrés");
-                } catch (SQLException e) {
-                    connection.rollback();
-                    logger.error("Une erreur s'est produite lors de ajout de valeurs de raison a fermer");
-                }
-            } else {
-            logger.info("Aucune nouvelle raison de fermeture n'était pas ajouté");
-            }
-        } catch (SQLException e) {
-            logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
-        }
-    }
 
-    /**
-     * Checks if new closing reasons need to be added to DB
-     * @param connection
-     * @return
-     */
-    private Set<String> getMissingClosingReasons(Connection connection) throws SQLException{
-        Set<String> dbReasons = new HashSet<>();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(REQ_GET_ALL_CLOSE_REASONS);
-        while (resultSet.next()) {
-            dbReasons.add(resultSet.getString("label_closing_account_user"));
-        }
-        Set<String> enumReasons = new HashSet<>();
-        for (AccountCloseType reason : AccountCloseType.values()) {
-            enumReasons.add(reason.name());
-        }
-        Set<String> missingReasons = new HashSet<>(enumReasons);
-        missingReasons.removeAll(dbReasons);
-        return missingReasons;
-    }
 
 
     /**

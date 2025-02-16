@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS `brand_car` (
 
 
 -- Listage de la structure de table wattelse. cancellation_type
-CREATE TABLE IF NOT EXISTS `cancellation_type` (
+CREATE TABLE IF NOT EXISTS `reservation_cancellation_type` (
   `id_cancellation_type` int(11) NOT NULL AUTO_INCREMENT,
-  `cancellation_type_` varchar(254) DEFAULT NULL,
+  `cancellation_label` varchar(254) DEFAULT NULL,
   PRIMARY KEY (`id_cancellation_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
