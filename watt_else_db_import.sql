@@ -58,24 +58,24 @@ CREATE TABLE IF NOT EXISTS `car` (
   `id_car` int(11) NOT NULL AUTO_INCREMENT,
   `id_model_car` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
+  `id_car_withdrawal` int(11) NULL,
   `license_plate_number` varchar(254) DEFAULT NULL,
   `registration_date_car` timestamp DEFAULT NULL,
   `remove_date_car` timestamp DEFAULT NULL,
   `max_electric_power` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_car`),
   KEY `FK_conduire` (`id_user`),
-  KEY `FK_definir` (`id_model_car`)
+  KEY `FK_definir` (`id_model_car`),
+  KEY `FK_withdraw` (`id_car_withdrawal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.car : ~0 rows (environ)
 
 -- Listage de la structure de table wattelse. car_withdrawal_reason
 CREATE TABLE IF NOT EXISTS `car_withdrawal_reason` (
-  `id_retraction_vehicule` int(11) NOT NULL AUTO_INCREMENT,
-  `id_car` int(11) NOT NULL,
-  `retraction_vehicule` varchar(254) DEFAULT NULL,
-  PRIMARY KEY (`id_retraction_vehicule`),
-  KEY `FK_retirer` (`id_car`)
+  `id_car_withdrawal` int(11) NOT NULL AUTO_INCREMENT,
+  `car_withdrawal_label` varchar(254) DEFAULT NULL,
+  PRIMARY KEY (`id_car_withdrawal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.car_withdrawal_reason : ~0 rows (environ)
@@ -189,88 +189,6 @@ CREATE TABLE IF NOT EXISTS `model_car` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.model_car : ~0 rows (environ)
--- Listage des données de la table wattelse.model_car : ~71 rows (environ)
-INSERT INTO `model_car` (`id_model_car`, `id_plug_type`, `id_brand`, `car_model_label`) VALUES
-	(1, 1, 1, 'MODEL S'),
-	(2, 2, 1, 'MODEL 3'),
-	(3, 3, 1, 'MODEL X'),
-	(4, 4, 1, 'MODEL Y'),
-	(5, 5, 1, 'CYBERTRUCK'),
-	(6, 6, 1, 'SEMI'),
-	(7, 7, 2, 'R1T'),
-	(8, 8, 2, 'R1S'),
-	(9, 9, 3, 'AIR'),
-	(10, 1, 4, 'M_BYTE'),
-	(11, 2, 5, 'ES8'),
-	(12, 3, 5, 'ES6'),
-	(13, 4, 5, 'EC6'),
-	(14, 5, 5, 'ET7'),
-	(15, 6, 6, '1'),
-	(16, 7, 6, '2'),
-	(17, 8, 6, '3'),
-	(18, 9, 7, 'OCEAN'),
-	(19, 1, 7, 'EMOTION'),
-	(20, 2, 8, 'B1'),
-	(21, 3, 8, 'B2'),
-	(22, 4, 9, 'ENDURANCE'),
-	(23, 5, 10, 'FF 91'),
-	(24, 6, 11, 'EV'),
-	(25, 7, 12, 'ETRON'),
-	(26, 8, 12, 'ETRON GT'),
-	(27, 9, 12, 'Q4 ETRON'),
-	(28, 1, 13, 'I3'),
-	(29, 2, 13, 'I4'),
-	(30, 3, 13, 'IX3'),
-	(31, 4, 13, 'IX'),
-	(32, 5, 14, 'ID 3'),
-	(33, 6, 14, 'ID 4'),
-	(34, 7, 14, 'ID BUZZ'),
-	(35, 8, 15, 'EQC'),
-	(36, 9, 15, 'EQS'),
-	(37, 1, 15, 'EQB'),
-	(38, 2, 16, 'TAYCAN'),
-	(39, 3, 16, 'TAYCAN CROSS TURISMO'),
-	(40, 4, 17, 'MUSTANG MACH E'),
-	(41, 5, 17, 'F 150 LIGHTNING'),
-	(42, 6, 18, 'BOLT EV'),
-	(43, 7, 18, 'BOLT EUV'),
-	(44, 8, 19, 'IONIQ 5'),
-	(45, 9, 19, 'KONA ELECTRIC'),
-	(46, 1, 20, 'SOUL EV'),
-	(47, 2, 20, 'NIRO EV'),
-	(48, 3, 21, 'LEAF'),
-	(49, 4, 21, 'ARIYA'),
-	(50, 5, 22, 'XC40 RECHARGE'),
-	(51, 6, 22, 'C40 RECHARGE'),
-	(52, 7, 23, 'E 208'),
-	(53, 8, 23, 'E 2008'),
-	(54, 9, 24, 'ZOE'),
-	(55, 1, 24, 'MEGANE E TECH ELECTRIC'),
-	(56, 2, 25, 'I PACE'),
-	(57, 3, 26, 'DEFENDER EV'),
-	(58, 4, 26, 'EV'),
-	(59, 5, 27, 'MINI ELECTRIC'),
-	(60, 6, 28, 'MX 30'),
-	(61, 7, 29, '500 ELECTRIC'),
-	(62, 8, 30, 'E'),
-	(63, 9, 31, 'BZ4X'),
-	(64, 1, 32, 'EQ FORTWO'),
-	(65, 2, 33, 'SOLTERRA'),
-	(66, 3, 34, 'TANG EV'),
-	(67, 4, 34, 'QIN EV'),
-	(68, 5, 34, 'E6'),
-	(69, 6, 35, 'P7'),
-	(70, 7, 35, 'XPENG'),
-	(71, 10, 36, 'Autre'),
-	(72, 9, 36, 'Autre'),
-	(73, 8, 36, 'Autre'),
-	(74, 7, 36, 'Autre'),
-	(75, 6, 36, 'Autre'),
-	(76, 5, 36, 'Autre'),
-	(77, 4, 36, 'Autre'),
-	(78, 3, 36, 'Autre'),
-	(79, 2, 36, 'Autre'),
-	(80, 1, 36, 'Autre');
 
 -- Listage de la structure de table wattelse. opening_hour
 CREATE TABLE IF NOT EXISTS `opening_hour` (

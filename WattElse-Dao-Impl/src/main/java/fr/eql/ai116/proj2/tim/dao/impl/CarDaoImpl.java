@@ -48,6 +48,8 @@ public class CarDaoImpl implements CarDao {
                     "pt ON mc.id_plug_type = pt.id_plug_type";
     private static final String REQ_INSERT_CAR_MODELS =
             "INSERT INTO model_car (id_plug_type, id_brand, car_model_label) VALUES (?,?,?)";
+    private static final String REQ_GET_PLUG_ID = "SELECT * FROM plug_type WHERE plug_type = ?";
+    private static final String REQ_GET_BRAND_ID = "SELECT * FROM brand_car WHERE brand_label = ?";
 
     @Override
     public boolean addCar(Car car, long userId) {
@@ -271,20 +273,21 @@ public class CarDaoImpl implements CarDao {
                     if (!existingCarModels.contains(carToCheck)) {
                         added = true;
                         PreparedStatement insertStatement = connection.prepareStatement(REQ_INSERT_CAR_MODELS);
-                        insertStatement.setLong(1, model.getPlugType().ordinal() + 1);
-                        insertStatement.setLong(2, model.getCarBrand().ordinal() + 1);
+                        Long plugId = getPlugId(model.getPlugType(), connection);
+                        Long brandId = getBrandId(model.getCarBrand(), connection);
+                        insertStatement.setLong(1, plugId);
+                        insertStatement.setLong(2, brandId);
                         insertStatement.setString(3, model.getLabel());
                         insertStatement.executeUpdate();
                         if (model.getSecondaryPlugType() != null) {
                             carToCheck = new Car(model.getCarBrand().toString(), model.getLabel(),
                                     model.getSecondaryPlugType().toString());
                             if (!existingCarModels.contains(carToCheck)) {
-                                insertStatement.setLong(1, model.getSecondaryPlugType().ordinal() + 1);
+                                plugId = getPlugId(model.getSecondaryPlugType(), connection);
+                                insertStatement.setLong(1, plugId);
                                 insertStatement.executeUpdate();
-                            }
-                        }
-                    }
-                }
+                        }}
+                    }}
                 connection.commit();
                 if (added){
                     logger.info("Les Nouveles Modeles a été bien enregistrés");
@@ -300,26 +303,61 @@ public class CarDaoImpl implements CarDao {
         }
     }
 
-    /**
-     * Get Car models recorded in Database
-     *
+    /** Get Car models recorded in Database
      * @param connection
      * @return
      */
     private Set<Car> getExistingCarModels(Connection connection) throws SQLException {
         Set<Car> existingCars = new HashSet<>();
-        try (Statement selectStatement = connection.createStatement();
-             ResultSet resultSet = selectStatement.executeQuery(REQ_SELECT_ALL_CARS_MODELS)) {
-
-            while (resultSet.next()) {
-                String brand = resultSet.getString("brand_label");
-                String carModel = resultSet.getString("car_model_label");
-                String plug = resultSet.getString("plug_type");
-
-                existingCars.add(new Car(brand, carModel, plug));
-            }
+        Statement selectStatement = connection.createStatement();
+        ResultSet resultSet = selectStatement.executeQuery(REQ_SELECT_ALL_CARS_MODELS);
+        while (resultSet.next()) {
+            String brand = resultSet.getString("brand_label");
+            String carModel = resultSet.getString("car_model_label");
+            String plug = resultSet.getString("plug_type");
+            existingCars.add(new Car(brand, carModel, plug));
         }
         return existingCars;
     }
+
+    /**
+     * Get brand id from brand
+     * @param carBrand
+     * @param connection
+     * @return
+     */
+    private Long getBrandId(CarBrand carBrand, Connection connection) throws SQLException{
+        Long brandId;
+        PreparedStatement statement = connection.prepareStatement(REQ_GET_BRAND_ID);
+        statement.setString(1, carBrand.name());
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            brandId = resultSet.getLong("id_brand");
+        } else {
+            brandId = getPlugId(PlugType.AUTRE, connection);
+        }
+        return brandId;
+    }
+
+    /**
+     * Get plug ID from plug name
+     * @param plug
+     * @param connection
+     * @return
+     */
+    private Long getPlugId(PlugType plug, Connection connection) throws SQLException {
+        Long plugId;
+        PreparedStatement statement = connection.prepareStatement(REQ_GET_PLUG_ID);
+        statement.setString(1, plug.name());
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            plugId = resultSet.getLong("id_plug_type");
+        } else {
+            plugId = getPlugId(PlugType.AUTRE, connection);
+        }
+        return plugId;
+    }
+
+
 
 }

@@ -113,6 +113,28 @@ public class ComponentsDaoImpl implements ComponentsDao {
     }
 
     /**
+     * Checks if there are new plugs to add to DB
+     * @param connection
+     * @return
+     */
+    private Set<String> getMissingPlugTypes(Connection connection) throws SQLException{
+        Set<String> dbPlugs = new HashSet<>();
+        Statement selectStatement = connection.createStatement();
+        ResultSet resultSet = selectStatement.executeQuery(REQ_GET_ALL_PLUG_TYPES);
+        while (resultSet.next()) {
+            dbPlugs.add(resultSet.getString("plug_type"));
+        }
+        Set<String> enumPlugs = new HashSet<>();
+        for (PlugType plug : PlugType.values()) {
+            enumPlugs.add(plug.name());
+        }
+        Set<String> missingPlugs = new HashSet<>(enumPlugs);
+        missingPlugs.removeAll(dbPlugs);
+        return missingPlugs;
+    }
+
+
+    /**
      * Return list of all Car brands registered in DB
      */
     @Override
@@ -122,7 +144,7 @@ public class ComponentsDaoImpl implements ComponentsDao {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(REQ_GET_CAR_BRANDS);
             while(resultSet.next()){
-                brands.add(CarBrand.valueOf(resultSet.getString("brand_label")).getLabel());
+                brands.add(CarBrand.valueOf(resultSet.getString("brand_label")).name());
             }
         } catch (SQLException e) {
             logger.error("une erreur s'est produite lors de la consultation du lexique en base de données", e);
@@ -151,26 +173,6 @@ public class ComponentsDaoImpl implements ComponentsDao {
         return models;
     }
 
-    /**
-     * Checks if there are new plugs to add to DB
-     * @param connection
-     * @return
-     */
-    private Set<String> getMissingPlugTypes(Connection connection) throws SQLException{
-        Set<String> dbPlugs = new HashSet<>();
-        Statement selectStatement = connection.createStatement();
-        ResultSet resultSet = selectStatement.executeQuery(REQ_GET_ALL_PLUG_TYPES);
-        while (resultSet.next()) {
-            dbPlugs.add(resultSet.getString("plug_type"));
-        }
-        Set<String> enumPlugs = new HashSet<>();
-        for (PlugType plug : PlugType.values()) {
-            enumPlugs.add(plug.name());
-        }
-        Set<String> missingPlugs = new HashSet<>(enumPlugs);
-        missingPlugs.removeAll(dbPlugs);
-        return missingPlugs;
-    }
 
 
 }
