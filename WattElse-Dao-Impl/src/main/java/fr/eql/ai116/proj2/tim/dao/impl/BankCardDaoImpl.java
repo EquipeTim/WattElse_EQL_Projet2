@@ -3,6 +3,7 @@ package fr.eql.ai116.proj2.tim.dao.impl;
 import fr.eql.ai116.proj2.tim.dao.BankCardDao;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
+import fr.eql.ai116.proj2.tim.entity.BankAccount;
 import fr.eql.ai116.proj2.tim.entity.BankCard;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,9 +14,11 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,6 +32,9 @@ public class BankCardDaoImpl implements BankCardDao {
     private static final String REQ_CLOSE_CARD = "UPDATE credit_card SET withdrawal_date_card = ? WHERE id_user = ?";
     private static final String REQ_ADD_CARD = "INSERT INTO credit_card (id_user, number_card, cardholder_name," +
             "expiration_date, cvv_number, registration_date_carte) VALUES (?,?,?,?,?,?) ";
+
+    private static final String REQ_GET_ALL_USER_ACCOUNTS = "SELECT number_card, cardholder_name, expiration_date, cvv_number, id_credit_card " +
+            " FROM credit_card cc JOIN session s ON cc.id_user = s.id_user WHERE s.token = ?";
 
     @Override
     public void addBankCard(BankCard bankCard, Long userId) {
@@ -58,7 +64,25 @@ public class BankCardDaoImpl implements BankCardDao {
     }
 
     @Override
-    public List<BankCard> getBankCards(long userId) {
-        return Collections.emptyList();
+    public List<BankCard> getBankCards(String token) {
+        List<BankCard> cards = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_ALL_USER_ACCOUNTS);
+            statement.setString(1, token);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                cards.add(new BankCard(resultSet.getString("number_card"),
+                                       resultSet.getString("cardholder_name"),
+                                       resultSet.getDate("expiration_date").toLocalDate(),
+                                       resultSet.getInt("cvv_number"),
+                                       resultSet.getLong("id_credit_card")));
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return cards;
     }
+
 }
+
+

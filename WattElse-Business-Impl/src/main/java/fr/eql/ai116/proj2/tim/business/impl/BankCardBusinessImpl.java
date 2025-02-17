@@ -9,6 +9,7 @@ import fr.eql.ai116.proj2.tim.entity.dto.BankCardDto;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import java.util.List;
 
 @Remote(BankCardBusiness.class)
 @Stateless
@@ -22,5 +23,10 @@ public class BankCardBusinessImpl implements BankCardBusiness {
         BankCard bankCard = new BankCard(bankCardDto.getNumberCard(),bankCardDto.getCardHolderName(),
                 bankCardDto.getExpirationDate(), bankCardDto.getCvvNumber(), null);
         bankCardDao.addBankCard(bankCard, bankCardDto.getUserId());
+    }
+
+    @Override
+    public List<BankCard> getBankCards(String token) {
+        return bankCardDao.getBankCards(token);
     }
 }

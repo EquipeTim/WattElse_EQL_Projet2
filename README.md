@@ -70,6 +70,11 @@ POST\
 "cvvNumber" : 666,
 "userId":55
 }\
+
+3.2 show all credit cards per user\
+/payment_methods/card/all
+GET\
+/activate bearer token\
 ## Bank Account
 4.1 Add Bank Account to DB\
 /payment_methods/account/add\

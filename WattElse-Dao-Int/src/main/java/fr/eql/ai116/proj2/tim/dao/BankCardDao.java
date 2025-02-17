@@ -9,5 +9,5 @@ public interface BankCardDao {
     void addBankCard(BankCard bankCard, Long userId);
     void closeBankCard(BankCard bankCard);
     void modifyBankCard(BankCard bankCard);
-    List<BankCard> getBankCards(long userId);
+    List<BankCard> getBankCards(String token);
 }

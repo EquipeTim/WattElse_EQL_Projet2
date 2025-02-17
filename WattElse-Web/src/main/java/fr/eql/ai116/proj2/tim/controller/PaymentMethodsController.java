@@ -3,9 +3,11 @@ package fr.eql.ai116.proj2.tim.controller;
 import fr.eql.ai116.proj2.tim.business.BankAccountBusiness;
 import fr.eql.ai116.proj2.tim.business.BankCardBusiness;
 import fr.eql.ai116.proj2.tim.entity.BankAccount;
+import fr.eql.ai116.proj2.tim.entity.BankCard;
 import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.dto.BankAccountDto;
 import fr.eql.ai116.proj2.tim.entity.dto.BankCardDto;
+import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -59,4 +61,14 @@ public class PaymentMethodsController {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
+    @GET
+    @Path("/card/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response fetchUserCards(@Context HttpHeaders headers) {
+        String authorizationHeader = headers.getHeaderString("Authorization");
+        String token = authorizationHeader.substring("Bearer ".length());
+        List<BankCard> cards = bankCardBusiness.getBankCards(token);
+        return Response.ok(cards).build();
+    }
+
 }
