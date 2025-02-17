@@ -118,7 +118,7 @@ POST\
 GET\
 
 6.4 Get all models registered under a brand\
-/components/brands/{brand}\
+/components/{brand}/models\
 GET\
 
 6.5 Get account closing reasons\

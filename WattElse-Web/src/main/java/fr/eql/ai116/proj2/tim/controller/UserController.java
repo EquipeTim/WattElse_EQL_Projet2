@@ -1,12 +1,10 @@
 package fr.eql.ai116.proj2.tim.controller;
 
 
-import fr.eql.ai116.proj2.tim.business.AuthenticationException;
 import fr.eql.ai116.proj2.tim.business.SessionNotFoundException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserCloseDto;
-import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -89,6 +87,7 @@ public class UserController {
     @POST
     @Path("/modify")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response modify(@Context HttpHeaders headers, FullUserDto fullUserDto) {
         String authorizationHeader = headers.getHeaderString("Authorization");
         String token = authorizationHeader.substring("Bearer ".length());

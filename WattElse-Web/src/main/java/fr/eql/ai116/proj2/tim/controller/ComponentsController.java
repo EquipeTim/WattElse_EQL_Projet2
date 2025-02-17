@@ -35,7 +35,7 @@ public class ComponentsController {
     }
 
     @GET
-    @Path("/model/{brand}")
+    @Path("/{brand}/models")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getModels(@PathParam("brand") String brand) {
         List<ChoicesDto> models = componentsBusiness.getCarModels(brand);

@@ -1,20 +1,20 @@
 package fr.eql.ai116.proj2.tim.entity.dto;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-public class ChargingStationDto {
+public class ChargingStationDto implements Serializable {
 
-    private long idStationClosingType;
-    private long idPlugType;
-    private long idCity;
-    private long idUser;
+    private Long idOwner;
+    private Long idStation;
+    private String plug;
+    private String city;
     private int powerChargingStation;
     private String addressChargingStation;
-    private long longitude;
-    private long latitude;
+    private Float longitude;
+    private Float latitude;
     private String emergencyPhone;
 
-    //Constructeur vide ///
+    //Constructeurs///
 
 
     public ChargingStationDto() {
@@ -22,21 +22,16 @@ public class ChargingStationDto {
 
     //Getters////
 
-
-    public long getIdStationClosingType() {
-        return idStationClosingType;
+    public Long getIdOwner() {
+        return idOwner;
     }
 
-    public long getIdPlugType() {
-        return idPlugType;
+    public String getPlug() {
+        return plug;
     }
 
-    public long getIdCity() {
-        return idCity;
-    }
-
-    public long getIdUser() {
-        return idUser;
+    public String getCity() {
+        return city;
     }
 
     public int getPowerChargingStation() {
@@ -47,11 +42,11 @@ public class ChargingStationDto {
         return addressChargingStation;
     }
 
-    public long getLongitude() {
+    public Float getLongitude() {
         return longitude;
     }
 
-    public long getLatitude() {
+    public Float getLatitude() {
         return latitude;
     }
 
@@ -59,23 +54,28 @@ public class ChargingStationDto {
         return emergencyPhone;
     }
 
+    public long getIdStation() {
+        return idStation;
+    }
+
+
     //Setters///
 
 
-    public void setIdStationClosingType(long idStationClosingType) {
-        this.idStationClosingType = idStationClosingType;
+    public void setIdOwner(Long idOwner) {
+        this.idOwner = idOwner;
     }
 
-    public void setIdPlugType(long idPlugType) {
-        this.idPlugType = idPlugType;
+    public void setIdStation(long idStation) {
+        this.idStation = idStation;
     }
 
-    public void setIdCity(long idCity) {
-        this.idCity = idCity;
+    public void setPlug(String plug) {
+        this.plug = plug;
     }
 
-    public void setIdUser(long idUser) {
-        this.idUser = idUser;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public void setPowerChargingStation(int powerChargingStation) {
@@ -86,11 +86,11 @@ public class ChargingStationDto {
         this.addressChargingStation = addressChargingStation;
     }
 
-    public void setLongitude(long longitude) {
+    public void setLongitude(Float longitude) {
         this.longitude = longitude;
     }
 
-    public void setLatitude(long latitude) {
+    public void setLatitude(Float latitude) {
         this.latitude = latitude;
     }
 

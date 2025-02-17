@@ -23,12 +23,12 @@ public class ComponentsDaoImpl implements ComponentsDao {
     private static final Logger logger = LogManager.getLogger();
 
     private static final String REQ_SELECT_PLUG = "SELECT * FROM plug_type ";
-
     private static final String REQ_GET_CAR_PLUGS = "SELECT * FROM model_car mc JOIN brand_car bc " +
             "ON mc.id_brand = bc.id_brand JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type " +
             "WHERE bc.brand_label = ? AND mc.car_model_label = ?";
-    private static final String REQ_GET_CAR_BRANDS = "SELECT DISTINCT * FROM brand_car";
-    private static final String REQ_GET_MODELS = "SELECT DISTINCT car_model_label FROM model_car mc JOIN brand_car bc ON mc.id_brand = bc.id_brand WHERE bc.brand_label = ?";
+    private static final String REQ_GET_CAR_BRANDS = "SELECT DISTINCT * FROM brand_car ORDER BY brand_label ASC";
+    private static final String REQ_GET_MODELS = "SELECT DISTINCT car_model_label FROM model_car mc JOIN brand_car bc " +
+            "ON mc.id_brand = bc.id_brand WHERE bc.brand_label = ? ORDER BY car_model_label ASC";
     private static final String REQ_GET_ACC_CLOSE_REASONS = "SELECT * FROM closing_account_user_type";
     private static final String REQ_GET_CAR_WITHDRAW_REASONS = "SELECT * FROM car_withdrawal_reason";
     private static final String REQ_GET_EVALUATION_TYPES = "SELECT * FROM evaluation_type";

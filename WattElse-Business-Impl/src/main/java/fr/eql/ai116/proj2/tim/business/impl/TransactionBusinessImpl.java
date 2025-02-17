@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.business.impl;
 
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
+import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Remote;
@@ -14,6 +15,8 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     @EJB
     private TransactionDao transactionDao;
 
-
-
+    @Override
+    public void reserveStation(ReservationDto reservationDto) {
+        transactionDao.reserveStation(reservationDto);
+    }
 }

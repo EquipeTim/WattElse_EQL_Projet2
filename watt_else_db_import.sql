@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS `bank_account` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.bank_account : ~0 rows (environ)
+INSERT INTO `bank_account` (`id_bank_account`, `id_user`, `iban`, `account_owner_name`, `bic_swift`, `account_registration_date`, `account_close_date`) VALUES
+	(1, 1, '6548311564694', 'Admin', 'LT1312', '2025-02-17 11:52:20', NULL);
 
 -- Listage de la structure de table wattelse. brand_car
 CREATE TABLE IF NOT EXISTS `brand_car` (
@@ -87,6 +89,8 @@ CREATE TABLE IF NOT EXISTS `charging_station` (
   `id_plug_type` int(11) NOT NULL,
   `id_city` int(11) DEFAULT NULL,
   `id_user` int(11) NOT NULL,
+  `id_owner_bank_account` int(11) DEFAULT NULL,
+  `id_owner_credit_card` int(11) DEFAULT NULL,
   `power_charging_station` int(11) DEFAULT NULL,
   `registration_station_date` timestamp DEFAULT NULL,
   `closing_station_date` timestamp DEFAULT NULL,
@@ -98,14 +102,16 @@ CREATE TABLE IF NOT EXISTS `charging_station` (
   KEY `FK_disposer` (`id_plug_type`),
   KEY `FK_expliquer` (`id_station_closing_type`),
   KEY `FK_installer` (`id_user`),
-  KEY `FK_localiser` (`id_city`)
+  KEY `FK_localiser` (`id_city`),
+  KEY `FK_prelever_account` (`id_owner_bank_account`),
+  KEY `FK_prelever_card` (`id_owner_credit_card`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.charging_station : ~0 rows (environ)
-INSERT INTO `charging_station` (`id_charging_station`, `id_station_closing_type`, `id_plug_type`, `id_city`, `id_user`, `power_charging_station`, `registration_station_date`, `closing_station_date`, `address_charging_station`, `longitude`, `latitude`, `emergency_phone`) VALUES
-	(1, NULL, 1, 1, 1, NULL, '2025-02-11 00:00:00', NULL, '32 Rue Barbès', 2.32961, 48.8171, NULL),
-	(2, NULL, 3, 1, 1, NULL, '2025-02-11 00:00:00', NULL, '6 Av. du Président Salvador', 2.32741, 48.8108, NULL),
-	(3, NULL, 5, 1, 1, NULL, '2025-02-11 00:00:00', NULL, '79 Av. du Général Leclerc', 2.31631, 48.7811, NULL);
+INSERT INTO `charging_station` (`id_charging_station`, `id_station_closing_type`, `id_plug_type`, `id_city`, `id_user`, `id_owner_bank_account`, `id_owner_credit_card`, `power_charging_station`, `registration_station_date`, `closing_station_date`, `address_charging_station`, `longitude`, `latitude`, `emergency_phone`) VALUES
+	(1, NULL, 1, 1, 1, 1, NULL, NULL, '2025-02-11 00:00:00', NULL, '32 Rue Barbès', 2.32961, 48.8171, NULL),
+	(2, NULL, 3, 1, 1, 1, NULL, NULL, '2025-02-11 00:00:00', NULL, '6 Av. du Président Salvador', 2.32741, 48.8108, NULL),
+	(3, NULL, 5, 1, 1, NULL, NULL, NULL, '2025-02-11 00:00:00', NULL, '79 Av. du Général Leclerc', 2.31631, 48.7811, NULL);
 
 -- Listage de la structure de table wattelse. city
 CREATE TABLE IF NOT EXISTS `city` (
@@ -290,30 +296,26 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `id_transaction` int(11) NOT NULL AUTO_INCREMENT,
   `id_payment` int(11) NOT NULL,
   `id_cancellation_type` int(11) DEFAULT NULL,
-  `id_car` int(11) NOT NULL,
-  `id_bank_account` int(11) DEFAULT NULL,
-  `id_credit_card` int(11) DEFAULT NULL,
+  `id_user` int(11) NOT NULL,
   `id_charging_station` int(11) NOT NULL,
   `id_payment_refuse_type` int(11) DEFAULT NULL,
-  `registration_reservation_date` datetime DEFAULT NULL,
+  `registration_reservation_date` timestamp DEFAULT NULL,
   `reservation_date` datetime DEFAULT NULL,
   `reservation_duration` int(11) DEFAULT NULL,
-  `start_date_charging` datetime DEFAULT NULL,
-  `end_date_charging` datetime DEFAULT NULL,
-  `date_payment` datetime DEFAULT NULL,
-  `confirmation_date_reservation` datetime DEFAULT NULL,
-  `refuse_date_reservation` datetime DEFAULT NULL,
-  `cancellation_date` datetime DEFAULT NULL,
+  `start_date_charging` timestamp DEFAULT NULL,
+  `end_date_charging` timestamp DEFAULT NULL,
+  `date_payment` timestamp DEFAULT NULL,
+  `confirmation_date_reservation` timestamp DEFAULT NULL,
+  `refuse_date_reservation` timestamp DEFAULT NULL,
+  `reservation_cancellation_date` timestamp DEFAULT NULL,
   `consume_quantity_power` int(11) DEFAULT NULL,
   `monetary_amount` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_transaction`),
   KEY `FK_brancher` (`id_charging_station`),
-  KEY `FK_charger` (`id_car`),
+  KEY `FK_charger` (`id_user`),
   KEY `FK_motiver` (`id_cancellation_type`),
   KEY `FK_payer` (`id_payment`),
-  KEY `FK_prelever` (`id_bank_account`),
-  KEY `FK_refuser` (`id_payment_refuse_type`),
-  KEY `FK_utiliser` (`id_credit_card`)
+  KEY `FK_refuser` (`id_payment_refuse_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.transaction : ~0 rows (environ)
