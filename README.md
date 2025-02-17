@@ -75,11 +75,10 @@ POST\
 /payment_methods/account/add\
 POST\
 {
-"numberCard":"1234-4321-5689-1312",
-"cardHolderName" : "Chipmunk Le great",
-"expirationDate" : "2025-10-12",
-"cvvNumber" : 666,
-"userId":55
+"iban":"1234-4321-5689-1312",
+"ownerName" : "Chipmunk Le great",
+"swift" : 666,
+"userId":2
 }\
 ## CARS
 5.1 Add Car to DB\

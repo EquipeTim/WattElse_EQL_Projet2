@@ -9,5 +9,5 @@ public interface BankAccountDao {
     void addBankAccount(BankAccount bankAccount, Long userId);
     void closeBankAccount(BankAccount bankAccount);
     void modifyBankAccount(BankAccount bankAccount);
-    List<BankAccount> getBankAccounts(Long userId);
+    List<BankAccount> getBankAccounts(String token);
 }

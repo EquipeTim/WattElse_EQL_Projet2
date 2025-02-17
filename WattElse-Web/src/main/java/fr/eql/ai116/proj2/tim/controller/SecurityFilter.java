@@ -42,6 +42,7 @@ public class SecurityFilter implements ContainerRequestFilter, ContainerResponse
             if (
                     Pattern.compile("/payment_methods/.*").matcher(resource).find()
                      || Pattern.compile("/transaction/.*").matcher(resource).find()
+                     || Pattern.compile("/account/.*").matcher(resource).find()
                      || Pattern.compile("/car/.*").matcher(resource).find()
             ) {
                 securityBusiness.authorize(authorisation, Role.USER);
