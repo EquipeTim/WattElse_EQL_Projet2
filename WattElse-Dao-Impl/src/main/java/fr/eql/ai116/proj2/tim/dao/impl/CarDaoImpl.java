@@ -90,20 +90,7 @@ private final DataSource dataSource = new WattElseDataSource();
 
     @Override
     public List<Car> findByUser(long userId) {
-       List<Car> cars = new ArrayList<>();
-       try(Connection connection = dataSource.getConnection()){
-            PreparedStatement statement = connection.prepareStatement(REQ_FIND_BY_USER);
-            statement.setLong(1, userId);
-            ResultSet resultSet = statement.executeQuery();
-            while(resultSet.next()){
-                cars.add(new Car(
-                        resultSet.getLong())
-                )
-            }
-
-        } catch (SQLException e) {
-           throw new RuntimeException(e);
-       }
+      return null;
     }
 }
 //@Override
