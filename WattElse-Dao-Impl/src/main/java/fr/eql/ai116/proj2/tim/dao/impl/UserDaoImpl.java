@@ -230,8 +230,9 @@ public class UserDaoImpl implements UserDao {
                         statement.setString(7, newUser.getAddress());
                         statement.setLong(8, cityId);
                         statement.setLong(9, session.getUserId());
-                        connection.commit();
                         int affectedRows = statement.executeUpdate();
+                        connection.commit();
+
                         if (affectedRows > 0) {
                             success = true;
                         }

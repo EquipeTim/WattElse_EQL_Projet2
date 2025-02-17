@@ -137,6 +137,23 @@ GET\
 components/reasons/payment_refusal\
 GET\
 
+6.9 Get price type\
+components/reasons/pricing_type\
+GET\
+
+6.10 Get reservation cancel reasons\
+components/reasons/reservation_cancellation_type\
+GET\
+
+6.12 Get station closing reasons\
+components/reasons/station_closing_type\
+GET\
+
+6.13 Get weekday\
+components/reasons/day\
+GET\
+
+
 ## TERMINALS
 7.1 Find charging stations\
 /terminals/find\

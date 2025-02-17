@@ -16,5 +16,12 @@ public interface ComponentsDao {
     List<ChoicesDto> getCarWithdrawalReasons();
     List<ChoicesDto> getEvaluationTypes();
     List<ChoicesDto> getPaymentRefusalReasons();
+    List<ChoicesDto> getPricingType();
+    List<ChoicesDto> getReservationCancelType();
+    List<ChoicesDto> getStationClosingType();
+    List<ChoicesDto> getUnavailabilityType();
+    List<ChoicesDto> getWeekDay();
+
+
 
 }
