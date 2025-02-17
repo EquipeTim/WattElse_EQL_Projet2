@@ -173,6 +173,15 @@ public class CarDaoImpl implements CarDao {
      * @return List of cars owned by user
      */
     @Override
+<<<<<<< HEAD
+    public int countByUser(long userId) {
+        return 0;
+    }
+
+    @Override
+    public List<Car> findByUser(long userId) {
+      return null;
+=======
     public List<Car> findByUser(String token) {
         List<Car> cars = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
@@ -191,6 +200,7 @@ public class CarDaoImpl implements CarDao {
             throw new RuntimeException(e);
         }
         return cars;
+>>>>>>> d9d83b8a80eac770d3fc000203e229a4a98c9c47
     }
 
 }
