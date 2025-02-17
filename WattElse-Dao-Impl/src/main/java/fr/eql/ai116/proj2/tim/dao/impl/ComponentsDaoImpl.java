@@ -33,6 +33,11 @@ public class ComponentsDaoImpl implements ComponentsDao {
     private static final String REQ_GET_CAR_WITHDRAW_REASONS = "SELECT * FROM car_withdrawal_reason";
     private static final String REQ_GET_EVALUATION_TYPES = "SELECT * FROM evaluation_type";
     private static final String REQ_GET_PAYMENT_REFUSAL_REASONS = "SELECT * FROM payment_refuse_type";
+    private static final String REQ_GET_PRICING_REASONS = "SELECT * FROM pricing_type";
+    private static final String REQ_GET_RESERVATION_CANCEL_REASONS = "SELECT * FROM reservation_cancellation_type";
+    private static final String REQ_GET_STATION_CLOSING_REASONS = "SELECT * FROM station_closing_type";
+    private static final String REQ_GET_UNAVAILABILITY_REASONS = "SELECT * FROM unavailability_type";
+    private static final String REQ_GET_WEEKDAY = "SELECT * FROM day";
     /**
      * Returns list of all plugs registered in DB
      * @return
@@ -150,6 +155,36 @@ public class ComponentsDaoImpl implements ComponentsDao {
     public List<ChoicesDto> getPaymentRefusalReasons() {
         return getList(REQ_GET_PAYMENT_REFUSAL_REASONS,
                 "id_payment_refuse_type", "refuse_payment_label");
+    }
+
+    @Override
+    public List<ChoicesDto> getPricingType() {
+        return getList(REQ_GET_PRICING_REASONS,
+                "id_type_pricing","type_pricing");
+    }
+
+    @Override
+    public List<ChoicesDto> getReservationCancelType() {
+        return getList(REQ_GET_RESERVATION_CANCEL_REASONS,
+                "id_cancellation_type","cancellation_label");
+    }
+
+    @Override
+    public List<ChoicesDto> getStationClosingType() {
+        return getList(REQ_GET_STATION_CLOSING_REASONS,
+                "id_station_closing_type","station_closing_type");
+    }
+
+    @Override
+    public List<ChoicesDto> getUnavailabilityType() {
+        return getList(REQ_GET_UNAVAILABILITY_REASONS,
+                "id_unavailability_type", "unavailability_type");
+    }
+
+    @Override
+    public List<ChoicesDto> getWeekDay() {
+        return getList(REQ_GET_WEEKDAY,
+                "id_day","day");
     }
 
 

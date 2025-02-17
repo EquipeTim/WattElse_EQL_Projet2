@@ -56,6 +56,31 @@ public class ComponentsBusinessImpl implements ComponentsBusiness {
     }
 
     @Override
+    public List<ChoicesDto> getPricingType() {
+        return componentsDao.getPricingType();
+    }
+
+    @Override
+    public List<ChoicesDto> getReservationCancelType() {
+        return componentsDao.getReservationCancelType();
+    }
+
+    @Override
+    public List<ChoicesDto> getStationClosingType() {
+        return componentsDao.getStationClosingType();
+    }
+
+    @Override
+    public List<ChoicesDto> getUnavailabilityType() {
+        return componentsDao.getUnavailabilityType();
+    }
+
+    @Override
+    public List<ChoicesDto> getWeekDay() {
+        return componentsDao.getWeekDay();
+    }
+
+    @Override
     public List<ChoicesDto> getCarBrands() {
         return componentsDao.getCarBrands();
     }

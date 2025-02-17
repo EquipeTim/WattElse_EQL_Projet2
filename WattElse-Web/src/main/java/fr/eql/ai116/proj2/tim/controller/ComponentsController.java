@@ -82,4 +82,34 @@ public class ComponentsController {
         List<ChoicesDto> plugs = componentsBusiness.findPlug(carDto);
         return Response.ok(plugs).build();
     }
+    @GET
+    @Path("/reasons/pricing_type")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPricingType() {
+        List<ChoicesDto> reasons = componentsBusiness.getPricingType();
+        return Response.ok(reasons).build();
+    }
+    @GET
+    @Path("/reasons/reservation_cancellation_type")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getReservationCancelType() {
+        List<ChoicesDto> reasons = componentsBusiness.getReservationCancelType();
+        return Response.ok(reasons).build();
+    }
+
+    @GET
+    @Path("/reasons/station_closing_type")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStationClosingType() {
+        List<ChoicesDto> reasons = componentsBusiness.getStationClosingType();
+        return Response.ok(reasons).build();
+    }
+
+    @GET
+    @Path("/reasons/day")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getWeekDay() {
+        List<ChoicesDto> reasons = componentsBusiness.getWeekDay();
+        return Response.ok(reasons).build();
+    }
 }
