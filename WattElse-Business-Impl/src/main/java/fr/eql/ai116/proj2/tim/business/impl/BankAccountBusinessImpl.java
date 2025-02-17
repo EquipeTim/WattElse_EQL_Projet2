@@ -8,6 +8,8 @@ import fr.eql.ai116.proj2.tim.entity.dto.BankAccountDto;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import java.util.Collections;
+import java.util.List;
 
 @Remote(BankAccountBusiness.class)
 @Stateless
@@ -21,5 +23,10 @@ public class BankAccountBusinessImpl implements BankAccountBusiness {
         BankAccount account = new BankAccount(bankAccountDto.getIban(), bankAccountDto.getOwnerName(),
                 bankAccountDto.getSwift(), null);
         bankAccountDao.addBankAccount(account,bankAccountDto.getUserId());
+    }
+
+    @Override
+    public List<BankAccount> getBankAccounts(String token) {
+        return bankAccountDao.getBankAccounts(token);
     }
 }
