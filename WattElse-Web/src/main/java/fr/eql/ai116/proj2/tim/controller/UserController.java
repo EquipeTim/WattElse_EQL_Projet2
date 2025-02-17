@@ -93,7 +93,6 @@ public class UserController {
         String authorizationHeader = headers.getHeaderString("Authorization");
         String token = authorizationHeader.substring("Bearer ".length());
         boolean updated = userBusiness.updateUser(fullUserDto, token);
-        System.out.println("test");
         if (updated) {
             return Response.ok().build();
         } else {

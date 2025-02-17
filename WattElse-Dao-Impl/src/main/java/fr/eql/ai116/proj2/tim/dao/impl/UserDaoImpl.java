@@ -217,8 +217,8 @@ public class UserDaoImpl implements UserDao {
                 try {
                     newUser.setUserId(null); // needed in case to modify email to verify that new email was not used
                     if (Objects.equals(oldUser.getEmail(), newUser.getEmail()) ||
-                            (!checkUserExists(newUser, connection)) ||
-                        (checkUserExists(newUser, connection) && checkAccountLocked(newUser, connection) )) {
+                            (!checkUserExists(newUser, connection) ||
+                        (checkUserExists(newUser, connection) && checkAccountLocked(newUser, connection)) )) {
                         Long cityId = getCityId(newUser);
                         PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_USER);
                         statement.setString(1, newUser.getName());
@@ -230,8 +230,8 @@ public class UserDaoImpl implements UserDao {
                         statement.setString(7, newUser.getAddress());
                         statement.setLong(8, cityId);
                         statement.setLong(9, session.getUserId());
-                        connection.commit();
                         int affectedRows = statement.executeUpdate();
+                        connection.commit();
                         if (affectedRows > 0) {
                             success = true;
                         }
