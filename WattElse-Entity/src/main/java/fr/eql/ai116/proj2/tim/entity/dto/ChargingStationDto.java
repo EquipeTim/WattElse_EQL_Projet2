@@ -9,9 +9,7 @@ public class ChargingStationDto {
     private long idCity;
     private long idUser;
     private int powerChargingStation;
-    private LocalDate registrationStationDate;
-    private LocalDate closingStationDate;
-    private String adressChargingStation;
+    private String addressChargingStation;
     private long longitude;
     private long latitude;
     private String emergencyPhone;
@@ -45,16 +43,8 @@ public class ChargingStationDto {
         return powerChargingStation;
     }
 
-    public LocalDate getRegistrationStationDate() {
-        return registrationStationDate;
-    }
-
-    public LocalDate getClosingStationDate() {
-        return closingStationDate;
-    }
-
-    public String getAdressChargingStation() {
-        return adressChargingStation;
+    public String getAddressChargingStation() {
+        return addressChargingStation;
     }
 
     public long getLongitude() {
@@ -92,16 +82,8 @@ public class ChargingStationDto {
         this.powerChargingStation = powerChargingStation;
     }
 
-    public void setRegistrationStationDate(LocalDate registrationStationDate) {
-        this.registrationStationDate = registrationStationDate;
-    }
-
-    public void setClosingStationDate(LocalDate closingStationDate) {
-        this.closingStationDate = closingStationDate;
-    }
-
-    public void setAdressChargingStation(String adressChargingStation) {
-        this.adressChargingStation = adressChargingStation;
+    public void setAddressChargingStation(String addressChargingStation) {
+        this.addressChargingStation = addressChargingStation;
     }
 
     public void setLongitude(long longitude) {

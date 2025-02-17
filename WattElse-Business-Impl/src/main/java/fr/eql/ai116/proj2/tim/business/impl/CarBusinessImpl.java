@@ -3,6 +3,9 @@ package fr.eql.ai116.proj2.tim.business.impl;
 import fr.eql.ai116.proj2.tim.business.CarBusiness;
 import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.entity.Car;
+import fr.eql.ai116.proj2.tim.entity.CarBrand;
+import fr.eql.ai116.proj2.tim.entity.CarModel;
+import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,11 +25,13 @@ public class CarBusinessImpl implements CarBusiness{
     private CarDao carDao;
 
 
-    @Override
-    public void addCar(CarDto newCarDto) {
-      Car car = new Car(newCarDto.getUserId(),newCarDto.getIdModelCar(), newCarDto.getLicensePlateNumber(), Timestamp.valueOf(newCarDto.getRegistrationDateCar()), Timestamp.valueOf(newCarDto.getRemoveDateCar()),newCarDto.getMaxElectricPower());
-      carDao.addCar(car, newCarDto.getUserId(), newCarDto.getIdModelCar());
 
+    @Override
+    public boolean addCar(CarDto newCarDto) {
+      Car car = new Car(null, newCarDto.getCarModel(),
+              newCarDto.getBrand(), newCarDto.getMaxElectricPower(),
+              newCarDto.getLicensePlateNumber(), newCarDto.getPlug());
+      return carDao.addCar(car, newCarDto.getUserId());
     }
 
     @Override
@@ -40,9 +45,10 @@ public class CarBusinessImpl implements CarBusiness{
     }
 
     @Override
-    public List<Car> findUserCar(long userid) {
-        return carDao.findByUser(userid);
+    public List<Car> findUserCar(String token) {
+        return carDao.findByUser(token);
     }
+
 }
 
 

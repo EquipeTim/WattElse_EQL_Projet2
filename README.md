@@ -7,18 +7,18 @@ Cyrine Said Ali
 
 ## ENDPOINTS:
 Starts by: /api/rest
-
+## Authentification
 1. Authenticate using user already registered in the system (DB)
 /connection/authenticate
 POST: send credentials
 {
-"email":"example@email.eql",
-"password":"mysecretWord"
+"email":"example@mail.mdr",
+"password":"theSecretWord"
 }
-
-2.1 Register user in the system (DB)
-/user/registration
-POST: 
+## User details
+2.1 Register user in the system (DB)\
+/user/registration\
+POST:\
 {
 "name":"myName",
 "surname":"mySillySurname",
@@ -29,20 +29,20 @@ POST:
 "phone_number":"123456-89",
 "city":"Paris",
 "postal_code":"75020"
-}
-2.2 Close the User Account
-*Header must contain token
-/user/close
-POST:
+}\
+2.2 Close the User Account\
+*Header must contain token\
+/user/close\
+POST:\
 {
 "userId":15,
 "token":"4802895",
 "reasonId":1
-}
-2.3 Modify user details
-*Header must contain token
-/user/modify
-POST
+}\
+2.3 Modify user details\
+*Header must contain token\
+/user/modify\
+POST\
 {
 "id":54,
 "name":"GRator",
@@ -54,23 +54,99 @@ POST
 "phone_number":"00000-00000",
 "city":"Lyon",
 "postal_code":"85"
-}
-2.4 GET user details
-*Header must contain token
-/user/details
-GET
-
-3.1 Add credit card to DB
-/payment_methods/card/add
-POST
+}\
+2.4 GET user details\
+*Header must contain token\
+/user/details\
+GET\
+## Bank Card
+3.1 Add credit card to DB\
+/payment_methods/card/add\
+POST\
 {
 "numberCard":"1234-4321-5689-1312",
 "cardHolderName" : "Chipmunk Le great",
 "expirationDate" : "2025-10-12",
 "cvvNumber" : 666,
 "userId":55
-}
+}\
+## Bank Account
+4.1 Add Bank Account to DB\
+/payment_methods/account/add\
+POST\
+{
+"numberCard":"1234-4321-5689-1312",
+"cardHolderName" : "Chipmunk Le great",
+"expirationDate" : "2025-10-12",
+"cvvNumber" : 666,
+"userId":55
+}\
+## CARS
+5.1 Add Car to DB\
+Detect plug type by "brand" and "carModel". If one or both are missing uses "plug"
+/car/add\
+POST\
+{
+"brand":"Tesla",
+"carModel":"MODEL S",
+"userId":3,
+"licensePlateNumber" : "999999",
+"maxElectricPower" : 15,
+"plug" : "NACS"
+}\
 
+5.2 Get all user cars\
+*Header must contain token\
+/car/get/all
+GET\
+
+## COMPONENTS
+6.1 Recover all plug types recorded in system\
+/components/plugs/all\
+GET\
+
+6.2 Get plugs used by specific car model\
+/components/plugs/by_car\
+POST\
+{
+"brand": "Tesla",
+"carModel" : "MODEL 3"
+}\
+
+6.3 Get all brands registered in the system\
+/components/brands\
+GET\
+
+6.4 Get all models registered under a brand\
+/components/brands/{brand}\
+GET\
+
+6.5 Get account closing reasons\
+components/reasons/accountClose\
+GET\
+
+6.6 Get car withdrawal reasons\
+components/reasons/car_withdrawal\
+GET\
+
+6.7 Get transaction evaluation criteria\
+components/evaluation_types\
+GET\
+
+6.8 Get payment refusal reasons\
+components/reasons/payment_refusal\
+GET\
+
+## TERMINALS
+7.1 Find charging stations\
+/terminals/find\
+POST\
+{
+"searchRadius":5,
+"startingLat":48.81633462767654,
+"startingLong": 2.327039836437512,
+"plugType" : "NACS"
+}
 
 ### Architecture
 

@@ -19,7 +19,6 @@ public class BankCardBusinessImpl implements BankCardBusiness {
 
     @Override
     public void addBankCard(BankCardDto bankCardDto) {
-        System.out.println("User ID "+bankCardDto.getUserId());
         BankCard bankCard = new BankCard(bankCardDto.getNumberCard(),bankCardDto.getCardHolderName(),
                 bankCardDto.getExpirationDate(), bankCardDto.getCvvNumber(), null);
         bankCardDao.addBankCard(bankCard, bankCardDto.getUserId());

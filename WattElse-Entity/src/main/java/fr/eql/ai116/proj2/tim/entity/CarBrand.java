@@ -1,22 +1,21 @@
 package fr.eql.ai116.proj2.tim.entity;
 // Marque
 public enum CarBrand {
-
     TESLA("Tesla"),
-    RIVIAJ("Riviaj"),
-    LUCID_MOTORS("Lucid Motors"),
+    RIVIAN("Rivian"),
+    LUCID("Lucid Motors"),
     BYTON("Byton"),
     NIO("NIO"),
     POLESTAR("Polestar"),
     FISKER("Fisker"),
-    BOLLINGER_MOTORS("Bollinger Motors"),
+    BOLLINGER("Bollinger Motors"),
     LORDSTOWN("Lordstown Motors"),
-    FARADAY_FUTURE("Faraday Future"),
+    FARADAY("Faraday Future"),
     CANOO("Canoo"),
     AUDI("Audi"),
     BMW("BMW"),
     VOLKSWAGEN("Volkswagen"),
-    MERCEDES_BENZ("Mercedes-Benz"),
+    MERCEDES("Mercedes-Benz"),
     PORSCHE("Porsche"),
     FORD("Ford"),
     CHEVROLET("Chevrolet"),
@@ -38,6 +37,14 @@ public enum CarBrand {
     MITSUBISHI("Mitsubishi"),
     SMART("Smart"),
     SUBARU("Subaru"),
+    BYD("BYD"),
+    XPENG("XPeng"),
+    GEELY("Geely"),
+    SAIC_MOTOR("SAIC Motor"),
+    GREATWALL("Great Wall"),
+    LI_AUTO("Li Auto"),
+    WELTMEISTER("Weltmeister"),
+    HONGQI("Hongqi"),
     AUTRE("Autre");
 
     private final String label;

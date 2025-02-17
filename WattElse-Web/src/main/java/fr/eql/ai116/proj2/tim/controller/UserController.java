@@ -46,7 +46,7 @@ public class UserController {
     }
 
     /**
-     * Closes tjhe user account in the database
+     * Closes the user account in the database
      * @param headers
      * @param userCloseDto
      * @return

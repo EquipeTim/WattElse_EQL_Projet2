@@ -1,15 +1,12 @@
 package fr.eql.ai116.proj2.tim.controller;
 
 import fr.eql.ai116.proj2.tim.business.ComponentsBusiness;
-import fr.eql.ai116.proj2.tim.entity.Plug;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
+import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -21,35 +18,68 @@ public class ComponentsController {
     @EJB
     private ComponentsBusiness componentsBusiness;
 
-    // Endpoint pour récupérer tous les plugs
     @GET
-    @Path("/plug_type")
+    @Path("/plugs/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllPlugs() {
-        try {
-            List<Plug> plug_type = componentsBusiness.getAllPlug();
-            return Response.ok(plug_type).build();
-        } catch (Exception e) {
-            System.out.println(e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Erreur lors de la récupération des plugs.")
-                    .build();
-        }
+        List<ChoicesDto> plug_type = componentsBusiness.getAllPlug();
+        return Response.ok(plug_type).build();
     }
 
-    // Endpoint pour récupérer les plugs d'un modèle de voiture donné (CarDto)
     @GET
-    @Path("/plug_type/byCar")
+    @Path("/brands")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCarBrands() {
+        List<ChoicesDto> brands = componentsBusiness.getCarBrands();
+        return Response.ok(brands).build();
+    }
+
+    @GET
+    @Path("/model/{brand}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getModels(@PathParam("brand") String brand) {
+        List<ChoicesDto> models = componentsBusiness.getCarModels(brand);
+        return Response.ok(models).build();
+    }
+
+    @GET
+    @Path("/reasons/accountClose")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAccountCloseReasons() {
+        List<ChoicesDto> reasons = componentsBusiness.getAccountCloseReasons();
+        return Response.ok(reasons).build();
+    }
+
+    @GET
+    @Path("/reasons/car_withdrawal")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCarWithdrawalReasons() {
+        List<ChoicesDto> reasons = componentsBusiness.getCarWithdrawalReasons();
+        return Response.ok(reasons).build();
+    }
+
+    @GET
+    @Path("/evaluation_types")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getEvaluationTypes() {
+        List<ChoicesDto> reasons = componentsBusiness.getEvaluationTypes();
+        return Response.ok(reasons).build();
+    }
+
+    @GET
+    @Path("/reasons/payment_refusal")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPaymentRefusalReasons() {
+        List<ChoicesDto> reasons = componentsBusiness.getPaymentRefusalReasons();
+        return Response.ok(reasons).build();
+    }
+
+    @POST
+    @Path("/plugs/by_car")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response findPlugsByCar(CarDto carDto) {
-        try {
-            List<String> plugs = componentsBusiness.findPlug(carDto);
-            return Response.ok(plugs).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Erreur lors de la récupération des plugs pour la voiture.")
-                    .build();
-        }
+        List<ChoicesDto> plugs = componentsBusiness.findPlug(carDto);
+        return Response.ok(plugs).build();
     }
 }

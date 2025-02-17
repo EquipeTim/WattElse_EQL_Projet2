@@ -1,11 +1,8 @@
 package fr.eql.ai116.proj2.tim.dao.impl;
 
-import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
-import fr.eql.ai116.proj2.tim.entity.Role;
-import fr.eql.ai116.proj2.tim.entity.Session;
-import fr.eql.ai116.proj2.tim.entity.User;
+import fr.eql.ai116.proj2.tim.entity.*;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,7 +18,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Remote(UserDao.class)
 @Stateless
@@ -231,8 +230,8 @@ public class UserDaoImpl implements UserDao {
                         statement.setString(7, newUser.getAddress());
                         statement.setLong(8, cityId);
                         statement.setLong(9, session.getUserId());
-                        int affectedRows = statement.executeUpdate();
                         connection.commit();
+                        int affectedRows = statement.executeUpdate();
                         if (affectedRows > 0) {
                             success = true;
                         }
@@ -249,6 +248,8 @@ public class UserDaoImpl implements UserDao {
         }
         return success;
     }
+
+
 
 
     /**

@@ -1,46 +1,59 @@
 package fr.eql.ai116.proj2.tim.entity;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
-
+import java.util.Objects;
 
 // Vehicule
 public class Car implements Serializable {
 
-    private long idCar;
+    private Long idCar;
+    private String licensePlate;
+    private Long maxElectricPower;
+    private String brand;
+    private String carModel;
+    private String plug;
 
-    private  Timestamp registrationDateCar;
-    private  Timestamp removeDateCar;
-    private  long maxElectricPower;
-
-    public Car() {
-    }
-
-    public Car(long userId, long idModelCar, long idCar, Timestamp registrationDateCar, Timestamp removeDateCar, long maxElectricPower) {
+    public Car(Long idCar, String carModel, String brand,
+               Long maxElectricPower, String licensePlate, String plug) {
         this.idCar = idCar;
-
-        this.registrationDateCar = registrationDateCar;
-        this.removeDateCar = removeDateCar;
+        this.carModel = carModel;
+        this.brand = brand;
         this.maxElectricPower = maxElectricPower;
+        this.licensePlate = licensePlate;
+        this.plug = plug;
     }
 
-    //getters////
+    public Car(String brand, String carModel, String plug) {
+        this.brand = brand;
+        this.carModel = carModel;
+        this.plug = plug;
+    }
 
-    public long getIdCar() {
+    ///getters///
+
+    public Long getIdCar() {
         return idCar;
     }
 
-
-    public Timestamp getRegistrationDateCar() {
-        return registrationDateCar;
+    public String getLicensePlate() {
+        return licensePlate;
     }
 
-    public Timestamp getRemoveDateCar() {
-        return removeDateCar;
-    }
-
-    public long getMaxElectricPower() {
+    public Long getMaxElectricPower() {
         return maxElectricPower;
+    }
+
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getCarModel() {
+        return carModel;
+    }
+
+    public String getPlug() {
+        return plug;
     }
 
     ///Setter//
@@ -49,15 +62,19 @@ public class Car implements Serializable {
         this.idCar = idCar;
     }
 
-    public void setRegistrationDateCar(Timestamp registrationDateCar) {
-        this.registrationDateCar = registrationDateCar;
-    }
-
     public void setMaxElectricPower(long maxElectricPower) {
         this.maxElectricPower = maxElectricPower;
     }
 
-    public void setRemoveDateCar(Timestamp removeDateCar) {
-        this.removeDateCar = removeDateCar;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return Objects.equals(brand, car.brand) && Objects.equals(carModel, car.carModel) && Objects.equals(plug, car.plug);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(brand, carModel, plug);
     }
 }

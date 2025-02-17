@@ -1,47 +1,35 @@
 package fr.eql.ai116.proj2.tim.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 // Compte bancaire
-public class BankAccount {
-    private long idBankAccount;
-    private final Long iban;
-    private final String cardHolderName;
-    private final long bicSwift;
-    private final LocalDate startDateRegistrationAccount;
-    private final LocalDate closingDateBankAccount;
+public class BankAccount implements Serializable {
+    private Long idBankAccount;
+    private final String iban;
+    private final String ownerName;
+    private final String bicSwift;
+
 /// /Constructor////
-    public BankAccount(long idBankAccount, Long iban, String cardHolderName, long bicSwift, LocalDate startDateRegistrationAccount, LocalDate closingDateBankAccount) {
+    public BankAccount(String iban, String ownerName, String bicSwift, Long idBankAccount) {
         this.idBankAccount = idBankAccount;
         this.iban = iban;
-        this.cardHolderName = cardHolderName;
+        this.ownerName = ownerName;
         this.bicSwift = bicSwift;
-        this.startDateRegistrationAccount = startDateRegistrationAccount;
-        this.closingDateBankAccount = closingDateBankAccount;
+
     }
 /// //Getters /////
-    public long getIdBankAccount() {
+    public Long getIdBankAccount() {
         return idBankAccount;
     }
-
-    public Long getIban() {
+    public String getIban() {
         return iban;
     }
-
-    public String getCardHolderName() {
-        return cardHolderName;
+    public String getAccountOwnerName() {
+        return ownerName;
     }
-
-    public long getBicSwift() {
+    public String getBicSwift() {
         return bicSwift;
-    }
-
-    public LocalDate getStartDateRegistrationAccount() {
-        return startDateRegistrationAccount;
-    }
-
-    public LocalDate getClosingDateBankAccount() {
-        return closingDateBankAccount;
     }
 
     /// Setters/////
