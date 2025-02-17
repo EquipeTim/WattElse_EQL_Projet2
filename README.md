@@ -148,6 +148,20 @@ POST\
 "plugType" : "NACS"
 }
 
+## TRANSACTIONS
+8.1 Reserva a charging station\
+Reservation is refused if no payment method is provided "idUserBankAccount" or "idUserBankCard"
+/transaction/reservation\
+POST\
+{
+"idStation":1,
+"idUser":"2",
+"reservationDate":"2025-03-01",
+"reservationStart":"12:00",
+"reservationDuration":30,
+"idUserBankAccount":1
+}
+
 ### Architecture
 
 > See `architecture.pdf` at the root of the project.
