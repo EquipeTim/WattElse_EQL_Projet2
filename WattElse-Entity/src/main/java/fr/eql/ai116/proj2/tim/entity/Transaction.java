@@ -54,13 +54,11 @@ public class Transaction implements Serializable {
     }
 
     private LocalTime calculateDuration(LocalDateTime end, LocalDateTime start){
-        Duration duration = Duration.between(end, start);
+        Duration duration = Duration.between(start, end);
         long seconds = duration.getSeconds();
-
         int hours = (int) seconds / SECONDS_PER_HOUR;
         int minutes = (int) ((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
         int secs = (int) (seconds % SECONDS_PER_MINUTE);
-
         return LocalTime.of(hours, minutes, secs);
 
     }

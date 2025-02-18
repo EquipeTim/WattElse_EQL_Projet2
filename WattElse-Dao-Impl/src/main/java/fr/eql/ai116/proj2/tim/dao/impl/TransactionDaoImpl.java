@@ -49,15 +49,15 @@ public class TransactionDaoImpl implements TransactionDao {
             "WHERE id_transaction = ?";
     private static final String REQ_GET_RESERVATION = "SELECT * FROM transaction WHERE id_transaction = ? ";
     private static final String REQ_GET_TRANSACTION_DETAILS =
-            "SELECT t.id_transaction,t.id_payment,t.id_user as id_client," +
-                    "t.start_date_charging,t.end_date_charging,t.consume_quantity," +
-                    "t.monetary_amount, cs.*, pr.*, p.*, pt.*" +
+            "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
+                    "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
+                    "t.monetary_amount, cs.*, pr.*, p.*, pt.* " +
                     "FROM transaction t " +
-                    "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station" +
-                    "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station" +
-                    "JOIN pricing_type pt ON pt.id_type_pricing = pr.id_type_pricing" +
-                    "JOIN payment p ON p.id_payment = t.id_payment" +
-                    "HERE id_transaction = ?";
+                    "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
+                    "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station " +
+                    "JOIN pricing_type pt ON pt.id_type_pricing = pr.id_type_pricing " +
+                    "JOIN payment p ON p.id_payment = t.id_payment " +
+                    "WHERE id_transaction = ?";
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -79,7 +79,6 @@ public class TransactionDaoImpl implements TransactionDao {
                 statement.setTimestamp(5, Timestamp.valueOf(reservationDto.getReservationDate()));
                 statement.setInt(6, reservationDto.getReservationDuration());
                 int affectedRows = statement.executeUpdate();
-                logger.error(statement);
                 connection.commit();
                 if (affectedRows > 0) {
                     ResultSet resultSet = statement.getGeneratedKeys();
