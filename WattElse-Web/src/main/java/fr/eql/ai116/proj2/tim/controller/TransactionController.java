@@ -52,7 +52,7 @@ public class TransactionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response stopCharge(ReservationDto reservationDto) {
-        transactionBusiness.indicateStopCharging(reservationDto);
-        return Response.ok().build();
+        ChoicesDto status = transactionBusiness.indicateStopCharging(reservationDto);
+        return Response.ok(status).build();
     }
 }

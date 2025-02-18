@@ -13,15 +13,17 @@ public class Reservation {
     private final Timestamp reservationTime;
     private final int reservationDuration;
     private final Timestamp rechargeStartTime;
+    private final Timestamp rechargeEndTime;
 
 
     public Reservation(Long userId, Long reservationId, Timestamp reservationTime,
-                       int reservationDuration, Timestamp rechargeStartTime) {
+                       int reservationDuration, Timestamp rechargeStartTime, Timestamp rechargeEndTime) {
         this.userId = userId;
         this.reservationId = reservationId;
         this.reservationTime = reservationTime;
         this.reservationDuration = reservationDuration;
         this.rechargeStartTime = rechargeStartTime;
+        this.rechargeEndTime = rechargeEndTime;
     }
 
     /**
@@ -33,9 +35,6 @@ public class Reservation {
         long timePassed_ms = time.getTime() -reservationTime.getTime();
 
         long timePassed_min = ((timePassed_ms/1000)) / 60;
-        System.out.println(reservationTime);
-        System.out.println(time);
-        System.out.println(timePassed_min);
         if (timePassed_min - OVERDUE_ALLOWED < reservationDuration){
             return true;
         }
@@ -44,5 +43,9 @@ public class Reservation {
 
     public Timestamp getRechargeStartTime() {
         return rechargeStartTime;
+    }
+
+    public Timestamp getRechargeEndTime() {
+        return rechargeEndTime;
     }
 }

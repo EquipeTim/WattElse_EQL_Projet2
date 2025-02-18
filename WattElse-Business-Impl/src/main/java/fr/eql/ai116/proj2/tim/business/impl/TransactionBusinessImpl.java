@@ -30,7 +30,7 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     }
 
     @Override
-    public void indicateStopCharging(ReservationDto reservationDto) {
-        transactionDao.stopCharging(reservationDto.getIdReservation());
+    public ChoicesDto indicateStopCharging(ReservationDto reservationDto) {
+        return transactionDao.stopCharging(reservationDto.getIdReservation());
     }
 }

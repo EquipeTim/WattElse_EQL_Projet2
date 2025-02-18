@@ -8,7 +8,7 @@ import fr.eql.ai116.proj2.tim.entity.dto.TransactionDto;
 public interface TransactionDao {
     ReservationDto reserveStation(ReservationDto reservationDto);
     ChoicesDto startCharging(Long reservationId);
-    void stopCharging(Long reservationId);
+    ChoicesDto stopCharging(Long reservationId);
     TransactionDto generatePayment(Long reservationId);
 
 }

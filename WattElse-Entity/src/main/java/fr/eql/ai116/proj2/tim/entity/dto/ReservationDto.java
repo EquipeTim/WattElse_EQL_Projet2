@@ -1,6 +1,8 @@
 package fr.eql.ai116.proj2.tim.entity.dto;
 
 import java.io.Serializable;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -14,7 +16,8 @@ public class ReservationDto implements Serializable {
     private LocalDate reservationDate;
     private LocalTime reservationStart;
     private int reservationDuration;
-
+    private Timestamp chargeStart;
+    private Timestamp chargeEnd;
 
     ///  Setters ///
 
@@ -50,6 +53,14 @@ public class ReservationDto implements Serializable {
         this.idReservation = idReservation;
     }
 
+    public void setChargeStart(Timestamp chargeStart) {
+        this.chargeStart = chargeStart;
+    }
+
+    public void setChargeEnd(Timestamp chargeEnd) {
+        this.chargeEnd = chargeEnd;
+    }
+
     /// Getters ///
 
     public Long getIdStation() {
@@ -82,5 +93,13 @@ public class ReservationDto implements Serializable {
 
     public Long getIdReservation() {
         return idReservation;
+    }
+
+    public Timestamp getChargeStart() {
+        return chargeStart;
+    }
+
+    public Timestamp getChargeEnd() {
+        return chargeEnd;
     }
 }
