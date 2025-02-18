@@ -167,10 +167,14 @@ POST\
 "startingLat":48.81633462767654,
 "startingLong": 2.327039836437512,
 "plugType" : "NACS"
-}
+}\
+7.2 Get info of specific Charging Station\
+/info/{id}\
+GET/
+
 
 ## TRANSACTIONS
-8.1 Reserva a charging station\
+8.1 Reserve a charging station\
 Reservation is refused if no payment method is provided "idUserBankAccount" or "idUserBankCard"
 /transaction/reservation\
 POST\
@@ -181,6 +185,19 @@ POST\
 "reservationStart":"12:00",
 "reservationDuration":30,
 "idUserBankAccount":1
+}
+
+8.2 Indicate start charging\
+/transaction/start\
+POST\
+{
+"idReservation":10
+}\
+8.3 Indicate end charging\
+/transaction/stop\
+POST\
+{
+"idReservation":10
 }
 
 ### Architecture
