@@ -3,6 +3,7 @@ package fr.eql.ai116.proj2.tim.business.impl;
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
@@ -26,12 +27,12 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     }
 
     @Override
-    public ChoicesDto indicateStartCharging(ReservationDto reservationDto) {
+    public Transaction indicateStartCharging(ReservationDto reservationDto) {
         return transactionDao.startCharging(reservationDto.getIdReservation());
     }
 
     @Override
-    public ChoicesDto indicateStopCharging(ReservationDto reservationDto) {
+    public Transaction indicateStopCharging(ReservationDto reservationDto) {
         return transactionDao.stopCharging(reservationDto.getIdReservation());
     }
 }

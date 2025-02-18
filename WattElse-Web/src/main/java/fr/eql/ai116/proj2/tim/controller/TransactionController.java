@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.controller;
 
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
@@ -45,7 +46,7 @@ public class TransactionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response startCharge(ReservationDto reservationDto) {
-        ChoicesDto status = transactionBusiness.indicateStartCharging(reservationDto);
+        Transaction status = transactionBusiness.indicateStartCharging(reservationDto);
         return Response.ok(status).build();
     }
 
@@ -54,7 +55,7 @@ public class TransactionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response stopCharge(ReservationDto reservationDto) {
-        ChoicesDto status = transactionBusiness.indicateStopCharging(reservationDto);
+        Transaction status = transactionBusiness.indicateStopCharging(reservationDto);
         return Response.ok(status).build();
     }
 }

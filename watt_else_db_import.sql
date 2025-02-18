@@ -259,7 +259,9 @@ CREATE TABLE IF NOT EXISTS `pricing` (
 
 -- Listage des données de la table wattelse.pricing : ~0 rows (environ)
 INSERT INTO `pricing` (`id_pricing`, `id_type_pricing`, `id_charging_station`, `price`, `start_date_pricing`, `end_date_pricing`) VALUES
-	(1, 1, 1, 0.5, '2025-02-01', NULL);
+	(1, 1, 1, 0.5, '2025-02-01', NULL),
+	(2, 2, 2, 1.01, '2025-02-18', NULL),
+	(3, 2, 3, 0.1, '2025-02-18', NULL);
 
 -- Listage de la structure de table wattelse. pricing_type
 CREATE TABLE IF NOT EXISTS `pricing_type` (
@@ -310,7 +312,7 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `confirmation_date_reservation` timestamp DEFAULT NULL,
   `refuse_date_reservation` timestamp DEFAULT NULL,
   `reservation_cancellation_date` timestamp DEFAULT NULL,
-  `consume_quantity_power` int(11) DEFAULT NULL,
+  `consume_quantity` float DEFAULT NULL,
   `monetary_amount` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_transaction`),
   KEY `FK_brancher` (`id_charging_station`),

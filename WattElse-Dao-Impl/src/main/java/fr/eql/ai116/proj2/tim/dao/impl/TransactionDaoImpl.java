@@ -4,7 +4,9 @@ import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.AccountCloseType;
+import fr.eql.ai116.proj2.tim.entity.PricingType;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.TransactionDto;
@@ -18,6 +20,8 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -41,11 +45,16 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_END_CHARGE = "UPDATE transaction SET end_date_charging = ? " +
             "WHERE id_transaction = ?";
     private static final String REQ_GET_RESERVATION = "SELECT * FROM transaction WHERE id_transaction = ? ";
-    private static final String REQ_GET_TRANSACTION_DETAILS = "SELECT * FROM transaction t " +
-            "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
-            "JOIN pricing p ON p.id_charging_station " +
-            "JOIN pricing_type pt ON pt.id_type_pricing " +
-            "JOIN WHERE id_transaction = ?";
+    private static final String REQ_GET_TRANSACTION_DETAILS =
+            "SELECT t.id_transaction,t.id_payment,t.id_user as id_client," +
+                    "t.start_date_charging,t.end_date_charging,t.consume_quantity," +
+                    "t.monetary_amount, cs.*, pr.*, p.*, pt.*" +
+                    "FROM transaction t " +
+                    "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station" +
+                    "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station" +
+                    "JOIN pricing_type pt ON pt.id_type_pricing = pr.id_type_pricing" +
+                    "JOIN payment p ON p.id_payment = t.id_payment" +
+                    "HERE id_transaction = ?";
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -56,15 +65,17 @@ public class TransactionDaoImpl implements TransactionDao {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
+                ZonedDateTime now = Instant.now().atZone(ZoneId.of(reservationDto.getTimeZone()));
                 Long paymentId = addNewPayment(reservationDto, connection);
-                PreparedStatement statement = connection.prepareStatement(REQ_RESERVE_STATION, Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement statement = connection.prepareStatement(REQ_RESERVE_STATION,  Statement.RETURN_GENERATED_KEYS);
                 statement.setLong(1, reservationDto.getIdUser());
                 statement.setLong(2, paymentId);
                 statement.setLong(3, reservationDto.getIdStation());
                 statement.setTimestamp(4, Timestamp.from(Instant.now()));
-                statement.setDate(5, Date.valueOf(reservationDto.getReservationDate()));
+                statement.setTimestamp(5, Timestamp.valueOf(reservationDto.getReservationDate()));
                 statement.setInt(6, reservationDto.getReservationDuration());
                 int affectedRows = statement.executeUpdate();
+                logger.error(statement);
                 connection.commit();
                 if (affectedRows > 0) {
                     ResultSet resultSet = statement.getGeneratedKeys();
@@ -100,39 +111,42 @@ public class TransactionDaoImpl implements TransactionDao {
      * @param reservationId
      */
     @Override
-    public ChoicesDto startCharging(Long reservationId) {
+    public Transaction startCharging(Long reservationId) {
         Timestamp now = Timestamp.from(Instant.now());
         Reservation reservation = getReservation(reservationId);
         if (reservation != null){
             if (reservation.getRechargeStartTime() == null) {
                 if (reservation.reservationValid(now)) {
-                    logger.error("Reservation valid " + now);
                     try (Connection connection = dataSource.getConnection()) {
                         PreparedStatement statement = connection.prepareStatement(REQ_START_CHARGE);
                         statement.setTimestamp(1, now);
                         statement.setLong(2, reservationId);
                         statement.executeUpdate();
-
-                        return new ChoicesDto(1L, "Heure de début de charge enregistrée: " + reformatTimestamp(now));
+                        return new Transaction(1L, "Heure de début de charge enregistrée: " + reformatTimestamp(now), reservationId);
                     } catch (SQLException e) {
                         logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
                     }
                 } else {
-                    return new ChoicesDto(2L, "La durée de réservation épuisé");
+                    return new Transaction(2L, "La durée de réservation épuisé", reservationId);
                 }
             }
-            return new ChoicesDto(3L, "Récharge déjà commencé");
+            return new Transaction(3L, "Récharge déjà commencé", reservationId);
             }
-        return new ChoicesDto(0L, "Réservation non trouvé");
+        return new Transaction(0L, "Réservation non trouvé", reservationId);
     }
 
+    /**
+     * Indicate the end of charging
+     * @param reservationId
+     * @return
+     */
     @Override
-    public ChoicesDto stopCharging(Long reservationId) {
+    public Transaction stopCharging(Long reservationId) {
         Timestamp now = Timestamp.from(Instant.now());
         Reservation reservation = getReservation(reservationId);
         if (reservation != null) {
             if (reservation.getRechargeStartTime() == null) {
-                return new ChoicesDto(2L, "Recharge pas encoré commencé");
+                return new Transaction(2L, "Recharge pas encoré commencé", reservationId);
             }
             if (reservation.getRechargeEndTime() == null) {
                 try (Connection connection = dataSource.getConnection()) {
@@ -140,39 +154,51 @@ public class TransactionDaoImpl implements TransactionDao {
                     statement.setTimestamp(1, now);
                     statement.setLong(2, reservationId);
                     statement.executeUpdate();
-                    return new ChoicesDto(1L, "Recharge terminé, id réservation: " + reservationId);
+                    Transaction transaction = generateTransactionInfo(reservationId);
+                    transaction.setStatusId(1L);
+                    transaction.setStatus("Recharge terminé");
+                    return transaction;
 
                 } catch (SQLException e) {
                     logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
                 }
             } else {
-                return new ChoicesDto(3L, "La récharge de cette réservation déjà terminé");
+                return new Transaction(3L, "La récharge de cette réservation déjà terminé", reservationId);
             }
         }
-        return new ChoicesDto(0L, "Réservation non trouvé");
-
+        return new Transaction(0L, "Réservation non trouvé", reservationId);
     }
 
     @Override
-    public TransactionDto generatePayment(Long reservationId) {
-        TransactionDto transactionDto = null;
-//        try (Connection connection = dataSource.getConnection()) {
-//            PreparedStatement statement = connection.prepareStatement(REQ_GET_R);
-//            statement.setLong(1, reservationId);
-//            ResultSet resultSet = statement.executeQuery();
-//            if (resultSet.next()) {
-//                transactionDto = new TransactionDto(resultSet.getLong("id_user"),
-//                        resultSet.getLong("id_transaction"),
-//                        resultSet.getTimestamp("reservation_date"),
-//                        resultSet.getInt("reservation_duration"));
-//            }
-//        } catch (SQLException e) {
-//            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
-//        }
-        return transactionDto;
+    public Transaction generateTransactionInfo(Long reservationId) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_TRANSACTION_DETAILS);
+            statement.setLong(1, reservationId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return new Transaction(
+                        resultSet.getLong("id_transaction"),
+                        resultSet.getLong("id_client"),
+                        resultSet.getLong("id_user"),
+                        resultSet.getTimestamp("start_date_charging").toLocalDateTime(),
+                        resultSet.getTimestamp("end_date_charging").toLocalDateTime(),
+                        null,
+                        resultSet.getFloat("consume_quantity"),
+                        PricingType.valueOf(resultSet.getString("type_pricing")).getLabel(),
+                        resultSet.getFloat("price"));
+
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return null;
     }
 
-
+    /**
+     * Gets reservation by the ID
+     * @param reservationId
+     * @return
+     */
     private Reservation getReservation(Long reservationId){
         Reservation reservation = null;
         try (Connection connection = dataSource.getConnection()) {

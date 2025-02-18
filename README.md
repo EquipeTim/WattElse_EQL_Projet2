@@ -72,7 +72,7 @@ POST\
 }\
 
 3.2 show all credit cards per user\
-/payment_methods/card/all
+/payment_methods/card/all\
 GET\
 /activate bearer token\
 ## Bank Account
@@ -182,7 +182,8 @@ POST\
 "idStation":1,
 "idUser":"2",
 "reservationDate":"2025-03-01",
-"reservationStart":"12:00",
+"reservationTime":"12:00",
+"timeZone":"Europe/Paris",
 "reservationDuration":30,
 "idUserBankAccount":1
 }

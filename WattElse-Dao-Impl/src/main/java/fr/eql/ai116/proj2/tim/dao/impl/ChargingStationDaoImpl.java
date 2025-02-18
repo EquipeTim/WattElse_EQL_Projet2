@@ -60,7 +60,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
             statement.setFloat(2, centerLat);
             statement.setFloat(3, centerLong);
             statement.setInt(4, radius);
-            statement.setString(5, String.valueOf(plug));
+            statement.setString(5, plug.name());
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String phone;
