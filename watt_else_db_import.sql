@@ -211,6 +211,22 @@ CREATE TABLE IF NOT EXISTS `opening_hour` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.opening_hour : ~0 rows (environ)
+INSERT INTO `opening_hour` (`id_opening_hour`, `id_charging_station`, `id_day`, `start_hour`, `end_hour`, `start_validity_date_opening_hour`, `end_validity_date_opening_hour`) VALUES
+	(1, 1, 2, '08:00:00', '17:00:00', '2025-02-01', '2026-02-18'),
+	(2, 1, 5, '10:00:00', '15:15:15', '2025-02-01', NULL),
+	(3, 1, 1, '08:10:55', '12:01:10', '2025-02-01', NULL),
+	(4, 1, 1, '14:00:05', '18:00:00', '2025-02-01', NULL),
+	(5, 1, 3, '08:00:00', '18:00:00', '2025-02-01', NULL),
+	(6, 1, 6, '12:00:00', '15:00:00', '2025-02-01', NULL),
+	(7, 1, 7, '06:00:00', '24:00:00', '2025-02-01', '2025-02-17'),
+	(8, 1, 4, '15:00:00', '20:00:00', '2025-02-01', NULL),
+	(9, 2, 2, '15:00:00', '20:00:00', '2025-02-01', NULL),
+	(10, 2, 1, '10:08:00', '18:42:50', '2025-02-01', NULL),
+	(11, 2, 3, '00:00:00', '24:00:00', '2025-02-01', NULL),
+	(12, 2, 6, '09:15:25', '17:35:00', '2025-02-01', NULL),
+	(13, 2, 7, '10:50:25', '21:21:21', '2025-03-21', NULL),
+	(14, 2, 4, '09:30:00', '11:59:00', '2025-02-01', NULL),
+	(15, 3, 5, '10:30:00', '19:45:39', '2025-02-18', NULL);
 
 -- Listage de la structure de table wattelse. payment
 CREATE TABLE IF NOT EXISTS `payment` (

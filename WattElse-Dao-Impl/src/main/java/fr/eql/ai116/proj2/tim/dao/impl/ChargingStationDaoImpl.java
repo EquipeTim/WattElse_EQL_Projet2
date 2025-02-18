@@ -38,9 +38,12 @@ private static final String REQ_FIND_TERMINAL = "SELECT * FROM charging_station 
         "JOIN city c ON c.id_city = cs.id_city " +
         "JOIN pricing p ON p.id_charging_station = cs.id_charging_station " +
         "JOIN pricing_type prt ON prt.id_type_pricing = p.id_type_pricing " +
+        "JOIN opening_hour oh ON oh.id_charging_station = cs.id_charging_station " +
+        "JOIN day d ON d.id_day = oh.id_day " +
         "WHERE " +
         "acos(sin(radians(latitude)) * sin(radians(?)) + cos(radians(latitude)) * " +
-        "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND plug_type = ?";
+        "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND plug_type = ? " +
+        "AND cs.closing_station_date IS NULL AND d.day = ? ";
 
 private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_station cs " +
             "JOIN plug_type pt ON cs.id_plug_type = pt.id_plug_type " +
@@ -52,7 +55,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
 
     @Override
     public List<ChargingStation> findChargingStation(Float centerLat, Float centerLong,
-                                                     Integer radius, PlugType plug) {
+                                                     Integer radius, PlugType plug, String weekDay) {
         List<ChargingStation> stations = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_FIND_TERMINAL);
@@ -61,6 +64,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
             statement.setFloat(3, centerLong);
             statement.setInt(4, radius);
             statement.setString(5, plug.name());
+            statement.setString(6, weekDay);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String phone;
@@ -69,7 +73,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
                 } else {
                     phone = resultSet.getString("phone_number");
                 }
-                stations.add(buildChargingStation(resultSet, phone));
+                stations.add(makeChargingStationObj(resultSet, phone));
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
@@ -84,7 +88,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
      * @return
      * @throws SQLException
      */
-    private ChargingStation buildChargingStation(ResultSet resultSet, String phone)
+    private ChargingStation makeChargingStationObj(ResultSet resultSet, String phone)
                                                 throws SQLException{
         return new ChargingStation(
                 resultSet.getLong("id_charging_station"),
@@ -127,7 +131,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
                 } else {
                     phone = resultSet.getString("phone_number");
                 }
-                return buildChargingStation(resultSet, phone);
+                return makeChargingStationObj(resultSet, phone);
             }
 
         } catch (SQLException e) {

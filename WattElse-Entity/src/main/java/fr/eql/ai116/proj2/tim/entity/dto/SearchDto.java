@@ -9,6 +9,7 @@ public class SearchDto implements Serializable {
     private Float startingLat;
     private Float startingLong;
     private PlugType plugType;
+    private String weekDay;
 
 
     public void setSearchRadius(Integer searchRadius) {
@@ -25,6 +26,10 @@ public class SearchDto implements Serializable {
 
     public void setPlugType(String plug) {
         this.plugType = PlugType.valueOf(plug);
+    }
+
+    public void setWeekDay(String weekDay) {
+        this.weekDay = weekDay;
     }
 
     /// Getters///
@@ -45,5 +50,7 @@ public class SearchDto implements Serializable {
         return plugType;
     }
 
-
+    public String getWeekDay() {
+        return weekDay;
+    }
 }

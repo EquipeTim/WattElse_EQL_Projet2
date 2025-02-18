@@ -8,7 +8,8 @@ import java.util.List;
 
 //Borne
 public interface ChargingStationDao {
-    List<ChargingStation> findChargingStation(Float centerLat, Float centerLong, Integer radius, PlugType plug);
+    List<ChargingStation> findChargingStation(Float centerLat, Float centerLong,
+                                              Integer radius, PlugType plug, String weekDay);
     void addChargingStation(ChargingStation chargingStation, long userId);
     void removeChargingStation(ChargingStation chargingStation);
     void modifyChargingStation(ChargingStation chargingStation);
