@@ -19,10 +19,13 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,13 +68,14 @@ public class TransactionDaoImpl implements TransactionDao {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                ZonedDateTime now = Instant.now().atZone(ZoneId.of(reservationDto.getTimeZone()));
+                Calendar utc = Calendar.getInstance(TimeZone.getTimeZone(reservationDto.getTimeZone()));
+                LocalDateTime now = LocalDateTime.now(ZoneId.of(reservationDto.getTimeZone()));
                 Long paymentId = addNewPayment(reservationDto, connection);
                 PreparedStatement statement = connection.prepareStatement(REQ_RESERVE_STATION,  Statement.RETURN_GENERATED_KEYS);
                 statement.setLong(1, reservationDto.getIdUser());
                 statement.setLong(2, paymentId);
                 statement.setLong(3, reservationDto.getIdStation());
-                statement.setTimestamp(4, Timestamp.from(Instant.now()));
+                statement.setTimestamp(4, Timestamp.valueOf(now), utc);//Timestamp.from(now.toInstant()));
                 statement.setTimestamp(5, Timestamp.valueOf(reservationDto.getReservationDate()));
                 statement.setInt(6, reservationDto.getReservationDuration());
                 int affectedRows = statement.executeUpdate();
