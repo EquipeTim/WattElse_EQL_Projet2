@@ -66,7 +66,7 @@ public class ComponentsDaoImpl implements ComponentsDao {
                         PlugType.valueOf(resultSet.getString("plug_type")).getDisplayName()));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return carPlugs;
     }
@@ -113,7 +113,7 @@ public class ComponentsDaoImpl implements ComponentsDao {
                         resultSet.getString(labelColumn)));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return choices;
     }
@@ -128,7 +128,7 @@ public class ComponentsDaoImpl implements ComponentsDao {
                         resultSet.getString(labelColumn)));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return choices;
     }

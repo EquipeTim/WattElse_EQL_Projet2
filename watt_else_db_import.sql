@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS `pricing` (
   `id_pricing` int(11) NOT NULL AUTO_INCREMENT,
   `id_type_pricing` int(11) NOT NULL,
   `id_charging_station` int(11) NOT NULL,
-  `price` int(11) DEFAULT NULL,
+  `price` float DEFAULT NULL,
   `start_date_pricing` date DEFAULT NULL,
   `end_date_pricing` date DEFAULT NULL,
   PRIMARY KEY (`id_pricing`),
@@ -258,6 +258,8 @@ CREATE TABLE IF NOT EXISTS `pricing` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.pricing : ~0 rows (environ)
+INSERT INTO `pricing` (`id_pricing`, `id_type_pricing`, `id_charging_station`, `price`, `start_date_pricing`, `end_date_pricing`) VALUES
+	(1, 1, 1, 0.5, '2025-02-01', NULL);
 
 -- Listage de la structure de table wattelse. pricing_type
 CREATE TABLE IF NOT EXISTS `pricing_type` (
