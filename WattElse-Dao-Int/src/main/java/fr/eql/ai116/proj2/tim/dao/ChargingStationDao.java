@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.dao;
 
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
+import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface ChargingStationDao {
     void addChargingStation(ChargingStation chargingStation, long userId);
     void removeChargingStation(ChargingStation chargingStation);
     void modifyChargingStation(ChargingStation chargingStation);
-    List<ChargingStation> getChargingStations(long userId);
+    ChargingStation getChargingStationById(long stationId);
 }

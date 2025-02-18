@@ -1,18 +1,23 @@
 package fr.eql.ai116.proj2.tim.entity.dto;
 
+import fr.eql.ai116.proj2.tim.entity.PlugType;
+import fr.eql.ai116.proj2.tim.entity.PricingType;
+
 import java.io.Serializable;
 
 public class ChargingStationDto implements Serializable {
 
     private Long idOwner;
     private Long idStation;
-    private String plug;
     private String city;
     private int powerChargingStation;
     private String addressChargingStation;
     private Float longitude;
     private Float latitude;
     private String emergencyPhone;
+    private String plugType;
+    private String pricingType;
+    private Float price;
 
     //Constructeurs///
 
@@ -20,15 +25,28 @@ public class ChargingStationDto implements Serializable {
     public ChargingStationDto() {
     }
 
+    public ChargingStationDto(Long idStation, String city, int powerChargingStation,
+                              String addressChargingStation, Float longitude, Float latitude,
+                              String emergencyPhone, String plugType, String pricingType,
+                              Float price) {
+        this.idStation = idStation;
+        this.city = city;
+        this.powerChargingStation = powerChargingStation;
+        this.addressChargingStation = addressChargingStation;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.emergencyPhone = emergencyPhone;
+        this.plugType = plugType;
+        this.pricingType = pricingType;
+        this.price = price;
+
+    }
     //Getters////
 
     public Long getIdOwner() {
         return idOwner;
     }
 
-    public String getPlug() {
-        return plug;
-    }
 
     public String getCity() {
         return city;
@@ -58,6 +76,17 @@ public class ChargingStationDto implements Serializable {
         return idStation;
     }
 
+    public String getPlugType() {
+        return plugType;
+    }
+
+    public String getPricingType() {
+        return pricingType;
+    }
+
+    public Float getPrice() {
+        return price;
+    }
 
     //Setters///
 
@@ -70,9 +99,6 @@ public class ChargingStationDto implements Serializable {
         this.idStation = idStation;
     }
 
-    public void setPlug(String plug) {
-        this.plug = plug;
-    }
 
     public void setCity(String city) {
         this.city = city;
@@ -97,4 +123,5 @@ public class ChargingStationDto implements Serializable {
     public void setEmergencyPhone(String emergencyPhone) {
         this.emergencyPhone = emergencyPhone;
     }
+
 }
