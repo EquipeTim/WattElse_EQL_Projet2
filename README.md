@@ -165,7 +165,7 @@ POST\
 }
 
 ## TRANSACTIONS
-8.1 Reserva a charging station\
+8.1 Reserve a charging station\
 Reservation is refused if no payment method is provided "idUserBankAccount" or "idUserBankCard"
 /transaction/reservation\
 POST\
