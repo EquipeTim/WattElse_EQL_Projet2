@@ -11,5 +11,6 @@ public interface TransactionBusiness {
     Reservation reserveStation(ReservationDto reservationDto);
     Transaction indicateStartCharging(ReservationDto reservationDto);
     Transaction indicateStopCharging(ReservationDto reservationDto);
+    Transaction getTransactionDetails(Long reservationId);
 
 }

@@ -35,4 +35,9 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     public Transaction indicateStopCharging(ReservationDto reservationDto) {
         return transactionDao.stopCharging(reservationDto.getIdReservation());
     }
+
+    @Override
+    public Transaction getTransactionDetails(Long reservationId) {
+        return transactionDao.generateTransactionInfo(reservationId);
+    }
 }

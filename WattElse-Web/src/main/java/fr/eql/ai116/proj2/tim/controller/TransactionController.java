@@ -58,4 +58,17 @@ public class TransactionController {
         Transaction status = transactionBusiness.indicateStopCharging(reservationDto);
         return Response.ok(status).build();
     }
+
+    @GET
+    @Path("/info/{reservation_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTransactionInfo(@PathParam("reservation_id") Long reservationId) {
+        Transaction status = transactionBusiness.getTransactionDetails(reservationId);
+        if (status != null) {
+            return Response.ok(status).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
 }
