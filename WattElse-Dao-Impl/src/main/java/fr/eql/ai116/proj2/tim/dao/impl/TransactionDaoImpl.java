@@ -84,6 +84,11 @@ public class TransactionDaoImpl implements TransactionDao {
         return reservation;
     }
 
+    /**
+     * Time formatter helper function
+     * @param time
+     * @return
+     */
     private String reformatTimestamp(Timestamp time){
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dateFormatter.setTimeZone(TimeZone.getDefault());
