@@ -166,7 +166,8 @@ POST\
 "searchRadius":5,
 "startingLat":48.81633462767654,
 "startingLong": 2.327039836437512,
-"plugType" : "NACS"
+"plugType" : "NACS",
+"weekDay":"Monday"
 }\
 7.2 Get info of specific Charging Station\
 /info/{id}\
