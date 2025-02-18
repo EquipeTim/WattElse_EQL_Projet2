@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -58,6 +59,13 @@ public class TransactionDaoImpl implements TransactionDao {
                     "JOIN pricing_type pt ON pt.id_type_pricing = pr.id_type_pricing " +
                     "JOIN payment p ON p.id_payment = t.id_payment " +
                     "WHERE id_transaction = ?";
+
+    private static final String REQ_FILL_CONSUMPTION = "UPDATE transaction SET consume_quantity = ? " +
+            "WHERE id_transaction = ?";
+    private static final String REQ_CALCULATE_TOTAL = "UPDATE transaction t " +
+            "JOIN pricing p ON t.id_charging_station = p.id_charging_station " +
+            "SET t.monetary_amount = p.price * t.consume_quantity WHERE t.id_transaction = ?";
+
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -157,11 +165,12 @@ public class TransactionDaoImpl implements TransactionDao {
                     statement.setTimestamp(1, now);
                     statement.setLong(2, reservationId);
                     statement.executeUpdate();
+                    fillConsumtionAndCalculatePrice(reservationId);
+
                     Transaction transaction = generateTransactionInfo(reservationId);
                     transaction.setStatusId(1L);
                     transaction.setStatus("Recharge terminé");
                     return transaction;
-
                 } catch (SQLException e) {
                     logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
                 }
@@ -170,6 +179,36 @@ public class TransactionDaoImpl implements TransactionDao {
             }
         }
         return new Transaction(0L, "Réservation non trouvé", reservationId);
+    }
+
+    private void fillConsumtionAndCalculatePrice(Long reservationId){
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                fillConsumption(reservationId, connection);
+                calculatePrice(reservationId, connection);
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                logger.error("Une erreur s'est produite lors de Calculation de prix pour transaction: " + reservationId, e);
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+    }
+
+    private void fillConsumption(Long reservationId, Connection connection) throws SQLException {
+        float quantity = new Random().nextFloat() * 100;
+        PreparedStatement statement = connection.prepareStatement(REQ_FILL_CONSUMPTION);
+        statement.setFloat(1, quantity);
+        statement.setLong(2, reservationId);
+        statement.executeUpdate();
+    }
+
+    private void calculatePrice(Long reservationId, Connection connection) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(REQ_CALCULATE_TOTAL);
+        statement.setLong(1, reservationId);
+        statement.executeUpdate();
     }
 
     @Override
