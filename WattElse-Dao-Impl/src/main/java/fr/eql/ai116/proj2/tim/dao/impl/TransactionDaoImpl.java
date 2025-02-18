@@ -51,8 +51,8 @@ public class TransactionDaoImpl implements TransactionDao {
      * @param reservationDto
      */
     @Override
-    public ReservationDto reserveStation(ReservationDto reservationDto) {
-        ReservationDto reservation = new ReservationDto();
+    public Reservation reserveStation(ReservationDto reservationDto) {
+        Reservation reservation = new Reservation();
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
@@ -69,7 +69,7 @@ public class TransactionDaoImpl implements TransactionDao {
                 if (affectedRows > 0) {
                     ResultSet resultSet = statement.getGeneratedKeys();
                     if (resultSet.next()) {
-                        reservation.setIdReservation(resultSet.getLong(1));
+                        reservation.setReservationId(resultSet.getLong(1));
                         reservation.setReservationDuration(reservationDto.getReservationDuration());
                     }
                 }

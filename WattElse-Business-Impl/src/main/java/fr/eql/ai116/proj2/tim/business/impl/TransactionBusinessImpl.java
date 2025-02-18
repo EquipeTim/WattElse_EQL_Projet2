@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.business.impl;
 
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
+import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
@@ -20,7 +21,7 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     private TransactionDao transactionDao;
 
     @Override
-    public ReservationDto reserveStation(ReservationDto reservationDto) {
+    public Reservation reserveStation(ReservationDto reservationDto) {
         return transactionDao.reserveStation(reservationDto);
     }
 

@@ -1,6 +1,7 @@
 package fr.eql.ai116.proj2.tim.controller;
 
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
+import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
@@ -30,12 +31,13 @@ public class TransactionController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response reserve(ReservationDto reservationDto) {
         if (reservationDto.getIdUserBankAccount() != null ||
-            reservationDto.getIdUserBankCard() != null){
-            ReservationDto reservation = transactionBusiness.reserveStation(reservationDto);
-        return Response.ok(reservation).build();
-        } else {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            reservationDto.getIdUserBankCard() != null) {
+            Reservation reservation = transactionBusiness.reserveStation(reservationDto);
+            if (reservation != null) {
+                return Response.ok(reservation).build();
+            }
         }
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @POST

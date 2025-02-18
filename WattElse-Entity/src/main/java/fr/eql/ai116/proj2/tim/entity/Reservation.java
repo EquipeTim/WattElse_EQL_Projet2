@@ -8,13 +8,14 @@ import java.time.temporal.ChronoUnit;
 
 public class Reservation {
     private static final int OVERDUE_ALLOWED = 15;
-    private final Long userId;
-    private final Long reservationId;
-    private final Timestamp reservationTime;
-    private final int reservationDuration;
-    private final Timestamp rechargeStartTime;
-    private final Timestamp rechargeEndTime;
+    private Long userId;
+    private Long reservationId;
+    private Timestamp reservationTime;
+    private int reservationDuration;
+    private Timestamp rechargeStartTime;
+    private Timestamp rechargeEndTime;
 
+    public Reservation(){}
 
     public Reservation(Long userId, Long reservationId, Timestamp reservationTime,
                        int reservationDuration, Timestamp rechargeStartTime, Timestamp rechargeEndTime) {
@@ -41,6 +42,19 @@ public class Reservation {
         return false;
     }
 
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
+    }
+
+    public void setReservationTime(Timestamp reservationTime) {
+        this.reservationTime = reservationTime;
+    }
+
+    public void setReservationDuration(int reservationDuration) {
+        this.reservationDuration = reservationDuration;
+    }
+
+    ///  Getters ///
     public Timestamp getRechargeStartTime() {
         return rechargeStartTime;
     }
@@ -48,4 +62,6 @@ public class Reservation {
     public Timestamp getRechargeEndTime() {
         return rechargeEndTime;
     }
+
+
 }

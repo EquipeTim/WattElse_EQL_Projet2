@@ -51,9 +51,9 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
             "WHERE cs.id_charging_station = ?";
 
     @Override
-    public List<ChargingStationDto> findChargingStation(Float centerLat, Float centerLong,
+    public List<ChargingStation> findChargingStation(Float centerLat, Float centerLong,
                                                      Integer radius, PlugType plug) {
-        List<ChargingStationDto> stations = new ArrayList<>();
+        List<ChargingStation> stations = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_FIND_TERMINAL);
             statement.setFloat(1, centerLat);
@@ -69,7 +69,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
                 } else {
                     phone = resultSet.getString("phone_number");
                 }
-                stations.add(buildChargingStationDto(resultSet, phone));
+                stations.add(buildChargingStation(resultSet, phone));
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
@@ -84,9 +84,9 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
      * @return
      * @throws SQLException
      */
-    private ChargingStationDto buildChargingStationDto(ResultSet resultSet, String phone)
+    private ChargingStation buildChargingStation(ResultSet resultSet, String phone)
                                                 throws SQLException{
-        return new ChargingStationDto(
+        return new ChargingStation(
                 resultSet.getLong("id_charging_station"),
                 resultSet.getString("city"),
                 resultSet.getInt("power_charging_station"),
@@ -115,7 +115,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
     }
 
     @Override
-    public ChargingStationDto getChargingStationById(long stationId){
+    public ChargingStation getChargingStationById(long stationId){
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_GET_TERMINAL_BY_ID);
             statement.setLong(1, stationId);
@@ -127,7 +127,7 @@ private static final String REQ_GET_TERMINAL_BY_ID = "SELECT * FROM charging_sta
                 } else {
                     phone = resultSet.getString("phone_number");
                 }
-                return buildChargingStationDto(resultSet, phone);
+                return buildChargingStation(resultSet, phone);
             }
 
         } catch (SQLException e) {

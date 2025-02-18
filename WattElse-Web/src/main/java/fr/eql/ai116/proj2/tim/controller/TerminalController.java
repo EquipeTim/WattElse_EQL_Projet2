@@ -1,7 +1,7 @@
 package fr.eql.ai116.proj2.tim.controller;
 
 import fr.eql.ai116.proj2.tim.business.TerminalBusiness;
-import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
+import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
 import javax.ejb.EJB;
@@ -28,7 +28,7 @@ public class TerminalController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response findTerminals(SearchDto searchDto) {
-        List<ChargingStationDto> stations = terminalBusiness.findTerminals(searchDto);
+        List<ChargingStation> stations = terminalBusiness.findTerminals(searchDto);
         return Response.ok(stations).build();
     }
 
@@ -36,7 +36,7 @@ public class TerminalController {
     @Path("/info/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getInfo(@PathParam("id") Long terminalId) {
-        ChargingStationDto station = terminalBusiness.findTerminalsById(terminalId);
+        ChargingStation station = terminalBusiness.findTerminalsById(terminalId);
         return Response.ok(station).build();
     }
 }

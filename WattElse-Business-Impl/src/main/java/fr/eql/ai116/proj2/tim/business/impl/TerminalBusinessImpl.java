@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.business.impl;
 
 import fr.eql.ai116.proj2.tim.business.TerminalBusiness;
 import fr.eql.ai116.proj2.tim.dao.ChargingStationDao;
+import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
@@ -21,13 +22,13 @@ public class TerminalBusinessImpl implements TerminalBusiness {
     private ChargingStationDao chargingStationDao;
 
     @Override
-    public List<ChargingStationDto> findTerminals(SearchDto searchDto){
+    public List<ChargingStation> findTerminals(SearchDto searchDto){
         return chargingStationDao.findChargingStation(searchDto.getStartingLat(),
                 searchDto.getStartingLong(), searchDto.getSearchRadius(), searchDto.getPlugType());
     }
 
     @Override
-    public ChargingStationDto findTerminalsById(Long terminalId) {
+    public ChargingStation findTerminalsById(Long terminalId) {
         return chargingStationDao.getChargingStationById(terminalId);
     }
 }
