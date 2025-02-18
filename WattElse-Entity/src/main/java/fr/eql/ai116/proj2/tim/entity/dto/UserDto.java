@@ -14,6 +14,8 @@ public class UserDto implements Serializable {
 
     public UserDto(Long userId, String name, String surname, String email, String token) {
         this.userId = userId;
+        this.name = name;
+        this.surname = surname;
         this.email = email;
         this.token = token;
     }

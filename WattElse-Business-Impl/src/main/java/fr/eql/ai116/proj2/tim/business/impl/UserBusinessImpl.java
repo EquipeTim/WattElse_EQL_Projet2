@@ -1,12 +1,12 @@
 package fr.eql.ai116.proj2.tim.business.impl;
 
+import fr.eql.ai116.proj2.tim.business.SessionNotFoundException;
 import fr.eql.ai116.proj2.tim.business.UserBusiness;
 import fr.eql.ai116.proj2.tim.dao.UserDao;
 import fr.eql.ai116.proj2.tim.entity.Role;
 import fr.eql.ai116.proj2.tim.entity.User;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserCloseDto;
-import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,18 +32,34 @@ public class UserBusinessImpl implements UserBusiness {
     }
 
     @Override
-    public boolean closeUserAccount(UserCloseDto userCloseDto) {
+    public boolean closeUserAccount(UserCloseDto userCloseDto){
         User user = userDao.getUserById(userCloseDto.getUserId());
-        boolean isAccountOwner =userDao.isAccountOwner(user, userCloseDto.getToken());
-        if (isAccountOwner) {
-            userDao.closeUserAccount(userCloseDto.getUserId(), userCloseDto.getReasonId());
-            return true;
+        if (user != null) {
+            boolean isAccountOwner = userDao.isAccountOwner(user, userCloseDto.getToken());
+            if (isAccountOwner) {
+                userDao.closeUserAccount(userCloseDto.getUserId(), userCloseDto.getReasonId());
+                return true;
+            }
         }
         return false;
     }
 
     @Override
-    public FullUserDto getUserData(String token) {
-        return userDao.getUserData(token);
+    public boolean updateUser(FullUserDto fullUserDto, String token) {
+        User user = new User(fullUserDto.getId(), fullUserDto.getName(), fullUserDto.getSurname(),
+                fullUserDto.getBirthdate(), fullUserDto.getEmail(), fullUserDto.getAddress(),
+                fullUserDto.getCity(), fullUserDto.getPostCode(), fullUserDto.getPhone(),
+                fullUserDto.getPassword(), Role.valueOf("USER"));
+        return userDao.modifyUser(user, token);
     }
+
+    @Override
+    public FullUserDto getUserData(String token) throws SessionNotFoundException {
+        FullUserDto userData = userDao.getUserData(token);
+        if (userData == null){
+            throw new SessionNotFoundException("Session non trouvée");
+        }
+        return userData;
+    }
+
 }

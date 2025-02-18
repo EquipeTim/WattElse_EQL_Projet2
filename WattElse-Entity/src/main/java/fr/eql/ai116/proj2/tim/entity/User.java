@@ -36,11 +36,10 @@ public class User implements Serializable {
 
     }
     /// SETTER ///
-    public void setUserId(long userId) {this.userId = userId;}
-    public void setPassword(String password) {this.password = password;}
+    public void setUserId(Long userId) {this.userId = userId;}
 
     ///  GETTERS ///
-    public long getId() {
+    public Long getId() {
         return userId;
     }
 

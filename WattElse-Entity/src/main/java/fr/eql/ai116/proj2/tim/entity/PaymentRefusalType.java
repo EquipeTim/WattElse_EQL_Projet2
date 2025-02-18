@@ -1,7 +1,6 @@
 package fr.eql.ai116.proj2.tim.entity;
 // Raison de refus paiement
 public enum PaymentRefusalType {
-
     INSUFFICIEN_FUNDS("Fonds insuffisants"),
     INVALID_PAYMENT_METHOD("Méthode de paiement invalide"),
     EXPIRED_CREDIT_CARD("Carte de crédit expirée"),

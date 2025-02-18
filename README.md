@@ -5,22 +5,182 @@ Miroslava Castillo
 Cyrine Said Ali
 
 
-### ENDPOINTS:
+## ENDPOINTS:
 Starts by: /api/rest
-
+## Authentification
 1. Authenticate using user already registered in the system (DB)
 /connection/authenticate
 POST: send credentials
 {
-"email":"example@email.eql",
-"password":"mysecretWord"
+"email":"example@mail.mdr",
+"password":"theSecretWord"
+}
+## User details
+2.1 Register user in the system (DB)\
+/user/registration\
+POST:\
+{
+"name":"myName",
+"surname":"mySillySurname",
+"birthdate":"1990-08-01",
+"email":"example@mail.mdr",
+"password":"theSecretWord",
+"address":"141 Boulevard Mortier",
+"phone_number":"123456-89",
+"city":"Paris",
+"postal_code":"75020"
+}\
+2.2 Close the User Account\
+*Header must contain token\
+/user/close\
+POST:\
+{
+"userId":15,
+"token":"4802895",
+"reasonId":1
+}\
+2.3 Modify user details\
+*Header must contain token\
+/user/modify\
+POST\
+{
+"id":54,
+"name":"GRator",
+"surname":"travaillor",
+"birthdate":"2050-08-01",
+"email":"normoi@mail.mdr",
+"password":"a",
+"address":"BRRRAAAA",
+"phone_number":"00000-00000",
+"city":"Lyon",
+"postal_code":"85"
+}\
+2.4 GET user details\
+*Header must contain token\
+/user/details\
+GET\
+## Bank Card
+3.1 Add credit card to DB\
+/payment_methods/card/add\
+POST\
+{
+"numberCard":"1234-4321-5689-1312",
+"cardHolderName" : "Chipmunk Le great",
+"expirationDate" : "2025-10-12",
+"cvvNumber" : 666,
+"userId":55
+}\
+
+3.2 show all credit cards per user\
+/payment_methods/card/all
+GET\
+/activate bearer token\
+## Bank Account
+4.1 Add Bank Account to DB\
+/payment_methods/account/add\
+POST\
+{
+"iban":"1234-4321-5689-1312",
+"ownerName" : "Chipmunk Le great",
+"swift" : 666,
+"userId":2
+}\
+## CARS
+5.1 Add Car to DB\
+Detect plug type by "brand" and "carModel". If one or both are missing uses "plug"
+/car/add\
+POST\
+{
+"brand":"Tesla",
+"carModel":"MODEL S",
+"userId":3,
+"licensePlateNumber" : "999999",
+"maxElectricPower" : 15,
+"plug" : "NACS"
+}\
+
+5.2 Get all user cars\
+*Header must contain token\
+/car/get/all
+GET\
+
+## COMPONENTS
+6.1 Recover all plug types recorded in system\
+/components/plugs/all\
+GET\
+
+6.2 Get plugs used by specific car model\
+/components/plugs/by_car\
+POST\
+{
+"brand": "Tesla",
+"carModel" : "MODEL 3"
+}\
+
+6.3 Get all brands registered in the system\
+/components/brands\
+GET\
+
+6.4 Get all models registered under a brand\
+/components/{brand}/models\
+GET\
+
+6.5 Get account closing reasons\
+components/reasons/accountClose\
+GET\
+
+6.6 Get car withdrawal reasons\
+components/reasons/car_withdrawal\
+GET\
+
+6.7 Get transaction evaluation criteria\
+components/evaluation_types\
+GET\
+
+6.8 Get payment refusal reasons\
+components/reasons/payment_refusal\
+GET\
+
+6.9 Get price type\
+components/reasons/pricing_type\
+GET\
+
+6.10 Get reservation cancel reasons\
+components/reasons/reservation_cancellation_type\
+GET\
+
+6.12 Get station closing reasons\
+components/reasons/station_closing_type\
+GET\
+
+6.13 Get weekday\
+components/reasons/day\
+GET\
+
+
+## TERMINALS
+7.1 Find charging stations\
+/terminals/find\
+POST\
+{
+"searchRadius":5,
+"startingLat":48.81633462767654,
+"startingLong": 2.327039836437512,
+"plugType" : "NACS"
 }
 
-2. Register user in the system (DB)
-/user/registration
-POST: Register user in the DB
+## TRANSACTIONS
+8.1 Reserva a charging station\
+Reservation is refused if no payment method is provided "idUserBankAccount" or "idUserBankCard"
+/transaction/reservation\
+POST\
 {
-g
+"idStation":1,
+"idUser":"2",
+"reservationDate":"2025-03-01",
+"reservationStart":"12:00",
+"reservationDuration":30,
+"idUserBankAccount":1
 }
 
 ### Architecture

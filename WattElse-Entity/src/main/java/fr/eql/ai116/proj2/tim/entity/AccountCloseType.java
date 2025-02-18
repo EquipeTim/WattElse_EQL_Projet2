@@ -1,7 +1,6 @@
 package fr.eql.ai116.proj2.tim.entity;
 // Motif fermeture
-enum AccountCloseType {
-
+public enum AccountCloseType {
     NO_LONGER_OWNING_AN_ELECTRIC_CAR("Je ne posséde plus de voiture électrique"),
     SWITCHING_TO_A_DIFFERENT_CHARGING_NETWORK("Je passe à un autre réseau de recharge"),
     DISSATISFACTION_WITH_SERVICE("Insatisfaction vis-à-vis du service"),

@@ -6,7 +6,9 @@ public enum WeekDay {
     TUESDAY("Mardi"),
     WEDNESDAY("Mercredi"),
     THURSDAY("Jeudi"),
-    FRIDAY("Vendredi");
+    FRIDAY("Vendredi"),
+    SATURDAY("Samedi"),
+    SUNDAY("Dimanche");
 
     private final String label;
 

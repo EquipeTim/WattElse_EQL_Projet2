@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 public class FullUserDto implements Serializable {
+    private Long id;
     private String name;
     private String surname;
     private LocalDate birthdate;
@@ -13,6 +14,27 @@ public class FullUserDto implements Serializable {
     private String phone_number;
     private String city;
     private String postal_code;
+
+    public FullUserDto() {
+    }
+
+    public FullUserDto(String name, String surname, LocalDate birthdate,
+                       String email, String password, String address,
+                       String phone_number, String city, String postal_code) {
+        this.name = name;
+        this.surname = surname;
+        this.birthdate = birthdate;
+        this.email = email;
+        this.password = password;
+        this.address = address;
+        this.phone_number = phone_number;
+        this.city = city;
+        this.postal_code = postal_code;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -50,6 +72,9 @@ public class FullUserDto implements Serializable {
         this.postal_code = postal_code;
     }
 
+    public Long getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
