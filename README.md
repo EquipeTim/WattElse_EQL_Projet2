@@ -173,6 +173,14 @@ POST\
 /info/{id}\
 GET/
 
+7.3 Get opening hours of specific Charging Station\
+/info/hours\
+POST\
+{
+"stationId" :1,
+"timeZone" : "Europe/Paris"
+}\
+
 
 ## TRANSACTIONS
 8.1 Reserve a charging station\
@@ -201,6 +209,18 @@ POST\
 {
 "idReservation":10
 }
+8.4 Get information on specific transaction\
+/transaction/info/reservation/{reservation_id}\
+GET\
+8.5 Get transaction made by user from date\
+/transaction/info/user/history\
+POST\
+{
+"userId":2,
+"date":"2025-02-18"
+}\
+
+
 
 ### Architecture
 

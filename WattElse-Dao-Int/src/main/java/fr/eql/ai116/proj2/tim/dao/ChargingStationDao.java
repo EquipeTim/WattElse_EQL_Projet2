@@ -1,8 +1,10 @@
 package fr.eql.ai116.proj2.tim.dao;
 
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
+import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
+import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 
 import java.util.List;
 
@@ -14,4 +16,5 @@ public interface ChargingStationDao {
     void removeChargingStation(ChargingStation chargingStation);
     void modifyChargingStation(ChargingStation chargingStation);
     ChargingStation getChargingStationById(long stationId);
+    List<OpeningHour> getOpeningHours(Long stationId, String timeZone);
 }
