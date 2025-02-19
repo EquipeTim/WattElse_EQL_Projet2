@@ -1,36 +1,39 @@
 package fr.eql.ai116.proj2.tim.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 // Horaire Ouverture
-public class OpeningHour {
+public class OpeningHour implements Serializable {
 
-    private long idOpeningHour;
-    private final LocalDate startHour;
-    private final LocalDate endHour;
+    private final String day;
+    private final LocalTime startHour;
+    private final LocalTime endHour;
     private final LocalDate startValidityDateOpeningHour;
     private final LocalDate endValidityDateOpeningHour;
 
     /// Constructor///
 
-    public OpeningHour(LocalDate startHour, LocalDate endHour, LocalDate startValidityDateOpeningHour, LocalDate endValidityDateOpeningHour, long idOpeningHour) {
+    public OpeningHour(String day, LocalTime startHour, LocalTime endHour
+            , LocalDate startValidityDateOpeningHour, LocalDate endValidityDateOpeningHour) {
+        this.day = day;
         this.startHour = startHour;
         this.endHour = endHour;
         this.startValidityDateOpeningHour = startValidityDateOpeningHour;
         this.endValidityDateOpeningHour = endValidityDateOpeningHour;
-        this.idOpeningHour = idOpeningHour;
     }
 
     /// Getter///
-    public long getIdOpeningHour() {
-        return idOpeningHour;
+    public String getDay() {
+        return day;
     }
 
-    public LocalDate getStartHour() {
+    public LocalTime getStartHour() {
         return startHour;
     }
 
-    public LocalDate getEndHour() {
+    public LocalTime getEndHour() {
         return endHour;
     }
 
@@ -42,9 +45,14 @@ public class OpeningHour {
         return endValidityDateOpeningHour;
     }
 
-    /// Setter///
-
-    public void setIdOpeningHour(long idOpeningHour) {
-        this.idOpeningHour = idOpeningHour;
+    @Override
+    public String toString() {
+        return "OpeningHour{" +
+                "day='" + day + '\'' +
+                ", startHour=" + startHour +
+                ", endHour=" + endHour +
+                ", startValidityDateOpeningHour=" + startValidityDateOpeningHour +
+                ", endValidityDateOpeningHour=" + endValidityDateOpeningHour +
+                '}';
     }
 }

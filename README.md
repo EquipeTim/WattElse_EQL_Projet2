@@ -68,22 +68,17 @@ POST\
 "cardHolderName" : "Chipmunk Le great",
 "expirationDate" : "2025-10-12",
 "cvvNumber" : 666,
-"userI
-d":55
+"userId":55
 }\
+
 3.2 show all credit cards per user\
-/payment_methods/card/all
+/payment_methods/card/all\
 GET\
 /activate bearer token\
 3.3 Remove a credit card from DB\
 /payment_methods/card/close
 POST\
 {
-"numberCard":"1234-4321-5689-1312",
-"cardHolderName" : "Chipmunk Le great",
-"expirationDate" : "2025-10-12",
-"cvvNumber" : 4588,
-"userId":1,
 "bankCardId":6
 }
 ## Bank Account
@@ -104,10 +99,6 @@ GET\
 /payment_methods/account/close\
 POST\
 {
-"iban":"2533-4321-5689-1312",
-"ownerName" : "Chipmunk Le great",
-"bicSwift" : 666,
-"userId":3,
 "idBankAccount":10
 }\
 ## CARS
@@ -191,11 +182,36 @@ POST\
 "searchRadius":5,
 "startingLat":48.81633462767654,
 "startingLong": 2.327039836437512,
-"plugType" : "NACS"
-}
+"plugType" : "NACS",
+"timeZone":"Europe/Paris",
+"date":"2025-02-19",
+"time":"20:00"
+}\
+*time parameter is optional, if not provided, current server time is used\
+
+7.2 Get info of specific Charging Station\
+/info/{id}\
+GET/
+
+7.3 Get opening hours of specific Charging Station\
+/info/hours\
+POST\
+{
+"stationId" :1,
+"timeZone" : "Europe/Paris"
+}\
+
+7.4 Get reservation hours of specific charging station\
+/info/occupied\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-19"
+}\
+
 
 ## TRANSACTIONS
-8.1 Reserva a charging station\
+8.1 Reserve a charging station\
 Reservation is refused if no payment method is provided "idUserBankAccount" or "idUserBankCard"
 /transaction/reservation\
 POST\
@@ -203,10 +219,36 @@ POST\
 "idStation":1,
 "idUser":"2",
 "reservationDate":"2025-03-01",
-"reservationStart":"12:00",
+"reservationTime":"12:00",
+"timeZone":"Europe/Paris",
 "reservationDuration":30,
 "idUserBankAccount":1
 }
+
+8.2 Indicate start charging\
+/transaction/start\
+POST\
+{
+"idReservation":10
+}\
+8.3 Indicate end charging\
+/transaction/stop\
+POST\
+{
+"idReservation":10
+}
+8.4 Get information on specific transaction\
+/transaction/info/reservation/{reservation_id}\
+GET\
+8.5 Get transaction made by user from date\
+/transaction/info/user/history\
+POST\
+{
+"userId":2,
+"date":"2025-02-18"
+}\
+
+
 
 ### Architecture
 

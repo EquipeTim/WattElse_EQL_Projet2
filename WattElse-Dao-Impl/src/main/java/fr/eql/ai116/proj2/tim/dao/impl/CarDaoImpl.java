@@ -207,7 +207,7 @@ public class CarDaoImpl implements CarDao {
                         resultSet.getString("plug_type")));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return cars;
     }

@@ -5,55 +5,75 @@ import java.io.Serializable;
 // Borne
 public class ChargingStation implements Serializable {
 
-    private long idChargingStation;
-    private long power;
+    private Long idOwner;
+    private Long idStation;
+    private String city;
+    private int powerChargingStation;
     private String addressChargingStation;
-    private long longitude;
-    private long latitude;
+    private Float longitude;
+    private Float latitude;
     private String emergencyPhone;
-    private PlugType plugType;
+    private String plugType;
+    private String pricingType;
+    private Float price;
 
-    public ChargingStation(long idChargingStation, long power,
-                           String addressChargingStation, long longitude, long latitude,
-                           String emergencyPhone, PlugType plugType) {
-        this.idChargingStation = idChargingStation;
-        this.power = power;
+    public ChargingStation(Long idStation, String city, int powerChargingStation,
+                              String addressChargingStation, Float longitude, Float latitude,
+                              String emergencyPhone, String plugType, String pricingType,
+                              Float price) {
+        this.idStation = idStation;
+        this.city = city;
+        this.powerChargingStation = powerChargingStation;
         this.addressChargingStation = addressChargingStation;
         this.longitude = longitude;
         this.latitude = latitude;
         this.emergencyPhone = emergencyPhone;
         this.plugType = plugType;
+        this.pricingType = pricingType;
+        this.price = price;
     }
 
-    ///  Setters
-    ///
-    public void setIdChargingStation(long idChargingStation) {
-        this.idChargingStation = idChargingStation;
+    public Long getIdOwner() {
+        return idOwner;
     }
 
-    /// Getters
+    public Long getIdStation() {
+        return idStation;
+    }
 
-    public long getPower() {
-        return power;
+    public String getCity() {
+        return city;
+    }
+
+    public int getPowerChargingStation() {
+        return powerChargingStation;
     }
 
     public String getAddressChargingStation() {
         return addressChargingStation;
     }
 
-    public long getLongitude() {
+    public Float getLongitude() {
         return longitude;
-    }
-
-    public long getLatitude() {
-        return latitude;
     }
 
     public String getEmergencyPhone() {
         return emergencyPhone;
     }
 
-    public PlugType getPlugType() {
+    public String getPlugType() {
         return plugType;
+    }
+
+    public String getPricingType() {
+        return pricingType;
+    }
+
+    public Float getPrice() {
+        return price;
+    }
+
+    public Float getLatitude() {
+        return latitude;
     }
 }
