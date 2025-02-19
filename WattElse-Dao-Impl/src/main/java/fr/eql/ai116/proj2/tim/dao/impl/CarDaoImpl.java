@@ -33,7 +33,7 @@ public class CarDaoImpl implements CarDao {
             "c.id_user = s.id_user WHERE s.token = ?";
     private static final String REQ_GET_MODEL_ID = "SELECT * FROM model_car mc JOIN brand_CAR bc " +
             "ON mc.id_brand = bc.id_brand JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type " +
-            "WHERE brand_label = ? AND car_model_label = ? AND plug_type = ?";
+            "WHERE brand_label = ? AND car_model_label = ? AND plug_type = ? ORDER BY car_model_label ASC";
     private static final String REQ_GET_MODEL_ID_PLUG_ONLY = "SELECT * FROM model_car mc " +
             "JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type WHERE pt.plug_type = ? " +
             "AND car_model_label = 'Autre'";

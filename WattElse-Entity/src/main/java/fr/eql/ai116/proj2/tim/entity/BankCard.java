@@ -24,6 +24,8 @@ public class BankCard implements Serializable {
         this.bankCardId = idCreditCard;
     }
 
+
+
     /// Getters////
 
     public long getBankCardId() {
@@ -48,4 +50,16 @@ public class BankCard implements Serializable {
 
 
     //Setters/////
+
+
+    @Override
+    public String toString() {
+        return "BankCard{" +
+                "bankCardId=" + bankCardId +
+                ", numberCard='" + numberCard + '\'' +
+                ", cardHolderName='" + cardHolderName + '\'' +
+                ", expirationDate=" + expirationDate +
+                ", cvvNumber=" + cvvNumber +
+                '}';
+    }
 }
