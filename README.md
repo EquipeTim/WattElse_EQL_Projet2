@@ -126,7 +126,7 @@ GET\
 GET\
 
 6.5 Get account closing reasons\
-components/reasons/accountClose\
+/components/reasons/accountClose\
 GET\
 
 6.6 Get car withdrawal reasons\
