@@ -6,6 +6,7 @@ import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
+import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -60,7 +61,7 @@ public class TransactionController {
     }
 
     @GET
-    @Path("/info/{reservation_id}")
+    @Path("/info/reservation/{reservation_id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTransactionInfo(@PathParam("reservation_id") Long reservationId) {
         Transaction status = transactionBusiness.getTransactionDetails(reservationId);
@@ -69,6 +70,15 @@ public class TransactionController {
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+    }
+
+    @POST
+    @Path("/info/user/history")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getUserTransactions(SearchDto searchDto) {
+        List<Transaction> transactions = transactionBusiness.getUserTransactions(searchDto);
+        return Response.ok(transactions).build();
     }
 
 }

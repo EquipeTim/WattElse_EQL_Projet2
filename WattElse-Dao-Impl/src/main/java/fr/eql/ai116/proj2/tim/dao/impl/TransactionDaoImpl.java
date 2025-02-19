@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
@@ -26,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -49,6 +51,8 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_END_CHARGE = "UPDATE transaction SET end_date_charging = ? " +
             "WHERE id_transaction = ?";
     private static final String REQ_GET_RESERVATION = "SELECT * FROM transaction WHERE id_transaction = ? ";
+    private static final String REQ_GET_USER_TRANSACTIONS = "SELECT * FROM transaction " +
+            "WHERE id_user = ? AND reservation_date > ?";
     private static final String REQ_GET_TRANSACTION_DETAILS =
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
                     "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
@@ -218,21 +222,43 @@ public class TransactionDaoImpl implements TransactionDao {
             statement.setLong(1, reservationId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return new Transaction(
+                Timestamp startTime = resultSet.getTimestamp("start_date_charging");
+                Timestamp endTime = resultSet.getTimestamp("end_date_charging");
+                LocalDateTime startDate = startTime != null ? startTime.toLocalDateTime() : null;
+                LocalDateTime endDate = endTime != null ? endTime.toLocalDateTime() : null;
+                Transaction transaction = new Transaction(
                         resultSet.getLong("id_transaction"),
                         resultSet.getLong("id_client"),
                         resultSet.getLong("id_user"),
-                        resultSet.getTimestamp("start_date_charging").toLocalDateTime(),
-                        resultSet.getTimestamp("end_date_charging").toLocalDateTime(),
+                        startDate,
+                        endDate,
                         resultSet.getFloat("consume_quantity"),
                         PricingType.valueOf(resultSet.getString("type_pricing")).getLabel(),
                         resultSet.getFloat("price"));
+                return transaction;
 
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return null;
+    }
+
+    @Override
+    public List<Transaction> getUserTransactions(Long userId, String date) {
+        List<Transaction> transactions = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_USER_TRANSACTIONS);
+            statement.setLong(1, userId);
+            statement.setString(2, date);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                transactions.add(generateTransactionInfo(resultSet.getLong("id_transaction")));
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return transactions;
     }
 
     /**

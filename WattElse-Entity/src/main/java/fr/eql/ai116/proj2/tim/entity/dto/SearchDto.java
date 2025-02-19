@@ -3,14 +3,18 @@ package fr.eql.ai116.proj2.tim.entity.dto;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class SearchDto implements Serializable {
     private Long stationId;
+    private Long userId;
     private Integer searchRadius;
     private Float startingLat;
     private Float startingLong;
     private PlugType plugType;
-    private String weekDay;
+    private String date;
     private String timeZone;
 
 
@@ -30,8 +34,8 @@ public class SearchDto implements Serializable {
         this.plugType = PlugType.valueOf(plug);
     }
 
-    public void setWeekDay(String weekDay) {
-        this.weekDay = weekDay;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public void setTimeZone(String timeZone) {
@@ -40,6 +44,10 @@ public class SearchDto implements Serializable {
 
     public void setStationId(Long stationId) {
         this.stationId = stationId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     /// Getters///
@@ -60,8 +68,14 @@ public class SearchDto implements Serializable {
         return plugType;
     }
 
+    public String getDate() {
+        return date;
+    }
+
     public String getWeekDay() {
-        return weekDay;
+        DateTimeFormatter dtfInput = DateTimeFormatter.ofPattern("u-M-d", Locale.ENGLISH);
+        DateTimeFormatter dtfOutput = DateTimeFormatter.ofPattern("EEEE", Locale.ENGLISH);
+        return LocalDate.parse(date, dtfInput).format(dtfOutput);
     }
 
     public String getTimeZone() {
@@ -70,5 +84,9 @@ public class SearchDto implements Serializable {
 
     public Long getStationId() {
         return stationId;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 }

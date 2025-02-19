@@ -48,7 +48,9 @@ public class Transaction implements Serializable {
         this.priceType = priceType;
         this.price = price;
         this.monetaryAmount = price * consumeQuantity;
-        chargeDurationMin = calculateDuration(endDateCharging, startDateCharging);
+        if (startDateCharging != null && endDateCharging != null) {
+            chargeDurationMin = calculateDuration(endDateCharging, startDateCharging);
+        }
     }
 
     private LocalTime calculateDuration(LocalDateTime end, LocalDateTime start){
