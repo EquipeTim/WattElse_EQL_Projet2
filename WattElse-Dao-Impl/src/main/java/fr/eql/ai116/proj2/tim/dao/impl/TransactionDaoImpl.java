@@ -4,6 +4,7 @@ import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.AccountCloseType;
+import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -69,6 +71,7 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_CALCULATE_TOTAL = "UPDATE transaction t " +
             "JOIN pricing p ON t.id_charging_station = p.id_charging_station " +
             "SET t.monetary_amount = p.price * t.consume_quantity WHERE t.id_transaction = ?";
+
 
     /**
      * Reserve a charging station
@@ -149,6 +152,8 @@ public class TransactionDaoImpl implements TransactionDao {
             }
         return new Transaction(0L, "Réservation non trouvé", reservationId);
     }
+
+
 
     /**
      * Indicate the end of charging
