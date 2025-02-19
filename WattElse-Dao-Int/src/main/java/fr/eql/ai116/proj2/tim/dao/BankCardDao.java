@@ -10,7 +10,7 @@ import java.util.List;
 public interface BankCardDao {
     boolean registerCard(BankCard bankCard, Long userId);
     boolean closeBankCard(Long bankCardId);
-    void modifyBankCard(BankCard bankCard);
+    boolean modifyBankCard(BankCard bankCard);
     List<BankCard> getBankCards(String token);
     BankCard getBankCardById(Long bankCardId);
 

@@ -44,9 +44,11 @@ public class BankCard implements Serializable {
         return expirationDate;
     }
 
-    public long getCvvNumber() {
+    public int getCvvNumber() {
         return cvvNumber;
     }
+
+
 
 
     //Setters/////

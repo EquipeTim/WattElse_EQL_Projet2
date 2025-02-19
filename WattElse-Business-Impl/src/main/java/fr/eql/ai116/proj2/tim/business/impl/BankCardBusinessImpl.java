@@ -10,6 +10,7 @@ import fr.eql.ai116.proj2.tim.entity.dto.PaymentCloseDto;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import java.time.LocalDate;
 import java.util.List;
 
 @Remote(BankCardBusiness.class)
@@ -43,6 +44,17 @@ public class BankCardBusinessImpl implements BankCardBusiness {
         return false;
         }
 
+    @Override
+    public boolean modifyBankCard(BankCardDto bankCardDto) {
+        System.out.println(bankCardDto.toString());
+       BankCard bankCard = new BankCard(bankCardDto.getNumberCard(), bankCardDto.getCardHolderName(),
+               bankCardDto.getExpirationDate(), bankCardDto.getCvvNumber(), bankCardDto.getIdCreditCard());
+       return bankCardDao.modifyBankCard(bankCard);
+    }
+
 }
+
+
+
 
 

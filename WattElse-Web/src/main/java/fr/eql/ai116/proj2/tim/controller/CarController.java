@@ -53,4 +53,20 @@ public class CarController {
             return Response.status(Response.Status.FOUND).build();
         }
 
+
+    @POST
+    @Path("/modify")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response modify(CarDto carDto) {
+        boolean updated = carBusiness.modifyCar(carDto);
+        if (updated) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+    }
+
+
+
 }

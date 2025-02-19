@@ -35,4 +35,16 @@ public class BankCardDto implements Serializable {
     public long getUserId() {return userId;}
 
     public void setUserId(long userId) {this.userId = userId;}
+
+    @Override
+    public String toString() {
+        return "BankCardDto{" +
+                "idCreditCard=" + idCreditCard +
+                ", numberCard='" + numberCard + '\'' +
+                ", cardHolderName='" + cardHolderName + '\'' +
+                ", expirationDate=" + expirationDate +
+                ", cvvNumber=" + cvvNumber +
+                ", userId=" + userId +
+                '}';
+    }
 }
