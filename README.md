@@ -68,15 +68,27 @@ POST\
 "cardHolderName" : "Chipmunk Le great",
 "expirationDate" : "2025-10-12",
 "cvvNumber" : 666,
-"userId":55
+"userI
+d":55
 }\
-
 3.2 show all credit cards per user\
 /payment_methods/card/all\
 GET\
 /activate bearer token\
+3.3 Remove a credit card from DB\
+/payment_methods/card/close
+POST\
+{
+"numberCard":"1234-4321-5689-1312",
+"cardHolderName" : "Chipmunk Le great",
+"expirationDate" : "2025-10-12",
+"cvvNumber" : 4588,
+"userId":1,
+"bankCardId":6
+}
 ## Bank Account
 4.1 Add Bank Account to DB\
+*Header must contain token\
 /payment_methods/account/add\
 POST\
 {
@@ -84,6 +96,19 @@ POST\
 "ownerName" : "Chipmunk Le great",
 "swift" : 666,
 "userId":2
+}\
+4.2 Show all accounts \
+/payment_methods/account/all
+GET\
+4.3 Remove an account from DB\
+/payment_methods/account/close\
+POST\
+{
+"iban":"2533-4321-5689-1312",
+"ownerName" : "Chipmunk Le great",
+"bicSwift" : 666,
+"userId":3,
+"idBankAccount":10
 }\
 ## CARS
 5.1 Add Car to DB\
