@@ -224,7 +224,6 @@ public class TransactionDaoImpl implements TransactionDao {
                         resultSet.getLong("id_user"),
                         resultSet.getTimestamp("start_date_charging").toLocalDateTime(),
                         resultSet.getTimestamp("end_date_charging").toLocalDateTime(),
-                        null,
                         resultSet.getFloat("consume_quantity"),
                         PricingType.valueOf(resultSet.getString("type_pricing")).getLabel(),
                         resultSet.getFloat("price"));

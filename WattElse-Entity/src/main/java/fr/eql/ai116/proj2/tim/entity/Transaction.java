@@ -19,7 +19,6 @@ public class Transaction implements Serializable {
     private long idOwner;
     private LocalDateTime startDateCharging;
     private LocalDateTime endDateCharging;
-    private LocalDateTime datePayment;
     private Float consumeQuantity;
     private String priceType;
     private Float price;
@@ -38,14 +37,13 @@ public class Transaction implements Serializable {
     }
 
     public Transaction(long idTransaction, Long idUser, Long idOwner, LocalDateTime startDateCharging,
-                       LocalDateTime endDateCharging, LocalDateTime datePayment, Float consumeQuantity,
+                       LocalDateTime endDateCharging, Float consumeQuantity,
                        String priceType, Float price) {
         this.idTransaction = idTransaction;
         this.idUser = idUser;
         this.idOwner = idOwner;
         this.startDateCharging = startDateCharging;
         this.endDateCharging = endDateCharging;
-        this.datePayment = datePayment;
         this.consumeQuantity = consumeQuantity;
         this.priceType = priceType;
         this.price = price;
@@ -87,9 +85,6 @@ public class Transaction implements Serializable {
         return endDateCharging;
     }
 
-    public LocalDateTime getDatePayment() {
-        return datePayment;
-    }
 
     public Float getConsumeQuantity() {
         return consumeQuantity;
@@ -121,7 +116,6 @@ public class Transaction implements Serializable {
                 "idTransaction=" + idTransaction +
                 ", startDateCharging=" + startDateCharging +
                 ", endDateCharging=" + endDateCharging +
-                ", datePayment=" + datePayment +
                 ", consumeQuantity=" + consumeQuantity +
                 ", priceType='" + priceType + '\'' +
                 ", price=" + price +
