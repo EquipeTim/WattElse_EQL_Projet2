@@ -43,7 +43,7 @@ public class TerminalController {
     }
 
     @POST
-    @Path("/info/hours/")
+    @Path("/info/hours")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getOpeningHours(SearchDto searchDto) {
         List<OpeningHour> hours = terminalBusiness.getOpeningHours(searchDto);

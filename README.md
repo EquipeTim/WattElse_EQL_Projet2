@@ -173,6 +173,14 @@ POST\
 /info/{id}\
 GET/
 
+7.3 Get opening hours of specific Charging Station\
+/info/hours\
+POST\
+{
+"stationId" :1,
+"timeZone" : "Europe/Paris"
+}\
+
 
 ## TRANSACTIONS
 8.1 Reserve a charging station\
