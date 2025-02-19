@@ -200,6 +200,14 @@ POST\
 "timeZone" : "Europe/Paris"
 }\
 
+7.4 Get reservation hours of specific charging station\
+/info/occupied\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-19"
+}\
+
 
 ## TRANSACTIONS
 8.1 Reserve a charging station\
