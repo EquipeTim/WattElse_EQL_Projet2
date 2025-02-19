@@ -5,6 +5,7 @@ import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
+import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
@@ -79,6 +80,19 @@ public class TransactionController {
     public Response getUserTransactions(SearchDto searchDto) {
         List<Transaction> transactions = transactionBusiness.getUserTransactions(searchDto);
         return Response.ok(transactions).build();
+    }
+
+    @POST
+    @Path("/pay")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response pay(PaymentDto paymentDto) {
+        if (paymentDto.getIdAccountForPayment() != null
+           || paymentDto.getIdCardForPayment() != null){
+                transactionBusiness.pay(paymentDto);
+                return Response.ok().build();
+        }
+        return Response.status(Response.Status.BAD_REQUEST).build();
+
     }
 
 }
