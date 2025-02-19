@@ -19,6 +19,7 @@ public class Transaction implements Serializable {
     private long idOwner;
     private LocalDateTime startDateCharging;
     private LocalDateTime endDateCharging;
+    private LocalDateTime reservationDate;
     private Float consumeQuantity;
     private String priceType;
     private Float price;
@@ -36,13 +37,14 @@ public class Transaction implements Serializable {
         this.idTransaction = idTransaction;
     }
 
-    public Transaction(long idTransaction, Long idUser, Long idOwner, LocalDateTime startDateCharging,
-                       LocalDateTime endDateCharging, Float consumeQuantity,
+    public Transaction(long idTransaction, Long idUser, Long idOwner, LocalDateTime reservationDate,
+                       LocalDateTime startDateCharging, LocalDateTime endDateCharging, Float consumeQuantity,
                        String priceType, Float price) {
         this.idTransaction = idTransaction;
         this.idUser = idUser;
         this.idOwner = idOwner;
         this.startDateCharging = startDateCharging;
+        this.reservationDate = reservationDate;
         this.endDateCharging = endDateCharging;
         this.consumeQuantity = consumeQuantity;
         this.priceType = priceType;
@@ -110,6 +112,14 @@ public class Transaction implements Serializable {
 
     public Long getStatusId() {
         return statusId;
+    }
+
+    public LocalDateTime getReservationDate() {
+        return reservationDate;
+    }
+
+    public LocalTime getChargeDurationMin() {
+        return chargeDurationMin;
     }
 
     @Override

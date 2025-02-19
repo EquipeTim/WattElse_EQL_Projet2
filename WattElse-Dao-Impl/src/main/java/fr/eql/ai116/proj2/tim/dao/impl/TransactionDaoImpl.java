@@ -58,7 +58,7 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_GET_TRANSACTION_DETAILS =
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
                     "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
-                    "t.monetary_amount, cs.*, pr.*, p.*, pt.* " +
+                    "t.monetary_amount, t.reservation_date, cs.*, pr.*, p.*, pt.* " +
                     "FROM transaction t " +
                     "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
                     "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station " +
@@ -235,6 +235,7 @@ public class TransactionDaoImpl implements TransactionDao {
                         resultSet.getLong("id_transaction"),
                         resultSet.getLong("id_client"),
                         resultSet.getLong("id_user"),
+                        resultSet.getTimestamp("reservation_date").toLocalDateTime(),
                         startDate,
                         endDate,
                         resultSet.getFloat("consume_quantity"),
