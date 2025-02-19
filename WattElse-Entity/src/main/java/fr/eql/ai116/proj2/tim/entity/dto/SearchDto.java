@@ -5,11 +5,13 @@ import fr.eql.ai116.proj2.tim.entity.PlugType;
 import java.io.Serializable;
 
 public class SearchDto implements Serializable {
+    private Long stationId;
     private Integer searchRadius;
     private Float startingLat;
     private Float startingLong;
     private PlugType plugType;
     private String weekDay;
+    private String timeZone;
 
 
     public void setSearchRadius(Integer searchRadius) {
@@ -32,6 +34,14 @@ public class SearchDto implements Serializable {
         this.weekDay = weekDay;
     }
 
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public void setStationId(Long stationId) {
+        this.stationId = stationId;
+    }
+
     /// Getters///
 
     public Integer getSearchRadius() {
@@ -52,5 +62,13 @@ public class SearchDto implements Serializable {
 
     public String getWeekDay() {
         return weekDay;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public Long getStationId() {
+        return stationId;
     }
 }
