@@ -212,7 +212,13 @@ POST\
 8.4 Get information on specific transaction\
 /transaction/info/reservation/{reservation_id}\
 GET\
-8.5
+8.5 Get transaction made by user from date\
+/transaction/info/user/history\
+POST\
+{
+"userId":2,
+"date":"2025-02-18"
+}\
 
 
 
