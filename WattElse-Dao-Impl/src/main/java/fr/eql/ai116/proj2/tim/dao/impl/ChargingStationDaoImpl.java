@@ -10,6 +10,7 @@ import fr.eql.ai116.proj2.tim.entity.PricingType;
 import fr.eql.ai116.proj2.tim.entity.WeekDay;
 import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
+import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,10 +46,11 @@ private static final String REQ_GET_TERMINAL_OPENING_HOURS =
         "JOIN day d ON oh.id_day = d.id_day " +
         "JOIN charging_station cs ON oh.id_charging_station = cs.id_charging_station "  +
         "WHERE oh.id_charging_station = ? AND start_validity_date_opening_hour < ? " +
-                "AND (end_validity_date_opening_hour > ? OR end_validity_date_opening_hour IS NULL) " +
-                "AND cs.id_station_closing_type IS NULL";
+        "AND (end_validity_date_opening_hour > ? OR end_validity_date_opening_hour IS NULL) " +
+        "AND cs.id_station_closing_type IS NULL";
 private static final String REQ_FIND_TERMINAL =
-        "SELECT * FROM charging_station cs " +
+        "SELECT cs.id_charging_station, cs.emergency_phone, u.phone_number, c.city, cs.power_charging_station, " +
+                " cs.address_charging_station, cs.longitude, cs.latitude, pt.plug_type, prt.type_pricing, p.price FROM charging_station cs " +
         "JOIN plug_type pt ON cs.id_plug_type = pt.id_plug_type " +
         "JOIN user u ON cs.id_user = u.id_user " +
         "JOIN city c ON c.id_city = cs.id_city " +
@@ -56,10 +58,14 @@ private static final String REQ_FIND_TERMINAL =
         "JOIN pricing_type prt ON prt.id_type_pricing = p.id_type_pricing " +
         "JOIN opening_hour oh ON oh.id_charging_station = cs.id_charging_station " +
         "JOIN day d ON d.id_day = oh.id_day " +
+        "LEFT JOIN unavailability una ON una.id_charging_station = cs.id_charging_station " +
         "WHERE " +
         "acos(sin(radians(latitude)) * sin(radians(?)) + cos(radians(latitude)) * " +
         "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND plug_type = ? " +
-        "AND cs.closing_station_date IS NULL AND d.day = ? ";
+        "AND cs.closing_station_date IS NULL AND d.day = ? " +
+        "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
+        "AND (? BETWEEN oh.start_hour AND oh.end_hour) " +
+        "AND ((? NOT BETWEEN una.start_date_unavailability AND una.end_date_unavailability) OR una.start_date_unavailability IS NULL) ";
 
 private static final String REQ_GET_TERMINAL_BY_ID =
         "SELECT * FROM charging_station cs " +
@@ -70,18 +76,25 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         "JOIN pricing_type prt ON prt.id_type_pricing = p.id_type_pricing " +
         "WHERE cs.id_charging_station = ?";
 
+private static final String REQ_GET_RESERVATION_TIMES =
+            "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ?";
+
     @Override
-    public List<ChargingStation> findChargingStation(Float centerLat, Float centerLong,
-                                                     Integer radius, PlugType plug, String weekDay) {
+    public List<ChargingStation> findChargingStation(SearchDto searchDto) {
         List<ChargingStation> stations = new ArrayList<>();
+        LocalTime now = LocalTime.now(ZoneId.of(searchDto.getTimeZone()));
+        LocalTime time = searchDto.getTime() != null ? LocalTime.parse(searchDto.getTime()) : now;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_FIND_TERMINAL);
-            statement.setFloat(1, centerLat);
-            statement.setFloat(2, centerLat);
-            statement.setFloat(3, centerLong);
-            statement.setInt(4, radius);
-            statement.setString(5, plug.name());
-            statement.setString(6, weekDay);
+            statement.setFloat(1, searchDto.getStartingLat());
+            statement.setFloat(2, searchDto.getStartingLat());
+            statement.setFloat(3, searchDto.getStartingLong());
+            statement.setInt(4, searchDto.getSearchRadius());
+            statement.setString(5, searchDto.getPlugType().name());
+            statement.setString(6, searchDto.getWeekDay());
+            statement.setString(7, searchDto.getDate());
+            statement.setString(8, String.valueOf(time));
+            statement.setString(9, searchDto.getDate());
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String phone;
@@ -186,4 +199,25 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         }
         return openingHours;
     }
+
+    @Override
+    public List<OpeningHour> getReservedTimeSlots(Long stationId, String date){
+        List<OpeningHour> occupied = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_RESERVATION_TIMES);
+            statement.setLong(1, stationId);
+            statement.setString(2, date);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                LocalTime startTime = resultSet.getTimestamp("reservation_date").toLocalDateTime().toLocalTime();
+                LocalTime endTime = startTime.plusMinutes(resultSet.getInt("reservation_duration"));
+                occupied.add(new OpeningHour(null, startTime,endTime, null, null));
+
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return occupied;
+    }
+
 }

@@ -12,4 +12,6 @@ public interface TerminalBusiness {
     List<ChargingStation> findTerminals(SearchDto search);
     ChargingStation findTerminalsById(Long stationId);
     List<OpeningHour> getOpeningHours(SearchDto searchDto);
+    List<OpeningHour> getReservedTimeSlots(SearchDto searchDto);
+
 }

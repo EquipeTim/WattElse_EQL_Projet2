@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import java.util.Collections;
 import java.util.List;
 
 @Remote(TerminalBusiness.class)
@@ -24,9 +25,7 @@ public class TerminalBusinessImpl implements TerminalBusiness {
 
     @Override
     public List<ChargingStation> findTerminals(SearchDto searchDto){
-        return chargingStationDao.findChargingStation(searchDto.getStartingLat(),
-                searchDto.getStartingLong(), searchDto.getSearchRadius(),
-                searchDto.getPlugType(), searchDto.getWeekDay());
+        return chargingStationDao.findChargingStation(searchDto);
     }
 
     @Override
@@ -37,5 +36,10 @@ public class TerminalBusinessImpl implements TerminalBusiness {
     @Override
     public List<OpeningHour> getOpeningHours(SearchDto searchDto) {
         return chargingStationDao.getOpeningHours(searchDto.getStationId(), searchDto.getTimeZone());
+    }
+
+    @Override
+    public List<OpeningHour> getReservedTimeSlots(SearchDto searchDto) {
+        return chargingStationDao.getReservedTimeSlots(searchDto.getStationId(), searchDto.getDate());
     }
 }

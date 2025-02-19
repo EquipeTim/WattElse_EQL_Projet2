@@ -68,9 +68,9 @@ POST\
 "cardHolderName" : "Chipmunk Le great",
 "expirationDate" : "2025-10-12",
 "cvvNumber" : 666,
-"userI
-d":55
+"userId":55
 }\
+
 3.2 show all credit cards per user\
 /payment_methods/card/all\
 GET\
@@ -79,11 +79,6 @@ GET\
 /payment_methods/card/close
 POST\
 {
-"numberCard":"1234-4321-5689-1312",
-"cardHolderName" : "Chipmunk Le great",
-"expirationDate" : "2025-10-12",
-"cvvNumber" : 4588,
-"userId":1,
 "bankCardId":6
 }
 ## Bank Account
@@ -104,10 +99,6 @@ GET\
 /payment_methods/account/close\
 POST\
 {
-"iban":"2533-4321-5689-1312",
-"ownerName" : "Chipmunk Le great",
-"bicSwift" : 666,
-"userId":3,
 "idBankAccount":10
 }\
 ## CARS
@@ -192,8 +183,12 @@ POST\
 "startingLat":48.81633462767654,
 "startingLong": 2.327039836437512,
 "plugType" : "NACS",
-"weekDay":"Monday"
+"timeZone":"Europe/Paris",
+"date":"2025-02-19",
+"time":"20:00"
 }\
+*time parameter is optional, if not provided, current server time is used\
+
 7.2 Get info of specific Charging Station\
 /info/{id}\
 GET/
@@ -204,6 +199,14 @@ POST\
 {
 "stationId" :1,
 "timeZone" : "Europe/Paris"
+}\
+
+7.4 Get reservation hours of specific charging station\
+/info/occupied\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-19"
 }\
 
 

@@ -353,6 +353,8 @@ CREATE TABLE IF NOT EXISTS `unavailability` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.unavailability : ~0 rows (environ)
+INSERT INTO `unavailability` (`id_unavailability`, `id_unavailability_type`, `id_charging_station`, `start_date_unavailability`, `end_date_unavailability`) VALUES
+	(1, 1, 3, '2025-02-19', '2025-02-23');
 
 -- Listage de la structure de table wattelse. unavailability_type
 CREATE TABLE IF NOT EXISTS `unavailability_type` (

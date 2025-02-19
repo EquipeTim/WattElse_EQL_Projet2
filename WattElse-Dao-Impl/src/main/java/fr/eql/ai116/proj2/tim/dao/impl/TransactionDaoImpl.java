@@ -4,6 +4,7 @@ import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.AccountCloseType;
+import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -56,7 +58,7 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_GET_TRANSACTION_DETAILS =
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
                     "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
-                    "t.monetary_amount, cs.*, pr.*, p.*, pt.* " +
+                    "t.monetary_amount, t.reservation_date, cs.*, pr.*, p.*, pt.* " +
                     "FROM transaction t " +
                     "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
                     "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station " +
@@ -69,6 +71,7 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_CALCULATE_TOTAL = "UPDATE transaction t " +
             "JOIN pricing p ON t.id_charging_station = p.id_charging_station " +
             "SET t.monetary_amount = p.price * t.consume_quantity WHERE t.id_transaction = ?";
+
 
     /**
      * Reserve a charging station
@@ -150,6 +153,8 @@ public class TransactionDaoImpl implements TransactionDao {
         return new Transaction(0L, "Réservation non trouvé", reservationId);
     }
 
+
+
     /**
      * Indicate the end of charging
      * @param reservationId
@@ -230,6 +235,7 @@ public class TransactionDaoImpl implements TransactionDao {
                         resultSet.getLong("id_transaction"),
                         resultSet.getLong("id_client"),
                         resultSet.getLong("id_user"),
+                        resultSet.getTimestamp("reservation_date").toLocalDateTime(),
                         startDate,
                         endDate,
                         resultSet.getFloat("consume_quantity"),
