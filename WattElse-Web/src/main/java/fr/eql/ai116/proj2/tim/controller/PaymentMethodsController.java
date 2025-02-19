@@ -4,10 +4,9 @@ import fr.eql.ai116.proj2.tim.business.BankAccountBusiness;
 import fr.eql.ai116.proj2.tim.business.BankCardBusiness;
 import fr.eql.ai116.proj2.tim.entity.BankAccount;
 import fr.eql.ai116.proj2.tim.entity.BankCard;
-import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.dto.BankAccountDto;
 import fr.eql.ai116.proj2.tim.entity.dto.BankCardDto;
-import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
+import fr.eql.ai116.proj2.tim.entity.dto.PaymentCloseDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -35,17 +34,25 @@ public class PaymentMethodsController {
     @POST
     @Path("/card/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addCard(BankCardDto bankCardDto) {
-        bankCardBusiness.addBankCard(bankCardDto);
-        return Response.ok().build();
+    public Response register(BankCardDto bankCardDto) {
+        boolean added = bankCardBusiness.registerCard(bankCardDto, bankCardDto.getUserId());
+        if (added) {
+            return Response.status(Response.Status.CREATED).build();
+        }else{
+            return Response.status(Response.Status.FOUND).build();
+        }
     }
 
     @POST
     @Path("/account/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addAccount(BankAccountDto bankAccountDto) {
-        bankAccountBusiness.addBankAccount(bankAccountDto);
-        return Response.ok().build();
+    public Response register(BankAccountDto bankAccountDto) {
+        boolean added = bankAccountBusiness.registerBankAccount(bankAccountDto,bankAccountDto.getUserId());
+        if (added) {
+            return Response.status(Response.Status.CREATED).build();
+        }else{
+            return Response.status(Response.Status.FOUND).build();
+        }
     }
 
     @GET
@@ -71,4 +78,27 @@ public class PaymentMethodsController {
         return Response.ok(cards).build();
     }
 
+
+
+@POST
+@Path("/card/close")
+@Produces(MediaType.APPLICATION_JSON)
+public Response close(PaymentCloseDto paymentCloseDto) {
+    boolean isClosed = bankCardBusiness.closeBankCard(paymentCloseDto, paymentCloseDto.getBankCardId());
+        if (isClosed) {
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.FORBIDDEN).build();
 }
+    @POST
+    @Path("/account/close")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response closeaccount(PaymentCloseDto paymentCloseDto) {
+        boolean isClosed = bankAccountBusiness.closeBankAccount(paymentCloseDto, paymentCloseDto.getIdBankAccount());
+        if (isClosed) {
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.FORBIDDEN).build();
+    }
+}
+
