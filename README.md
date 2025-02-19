@@ -75,8 +75,15 @@ POST\
 /payment_methods/card/all\
 GET\
 /activate bearer token\
+3.3 Remove a credit card from DB\
+/payment_methods/card/close
+POST\
+{
+"bankCardId":6
+}
 ## Bank Account
 4.1 Add Bank Account to DB\
+*Header must contain token\
 /payment_methods/account/add\
 POST\
 {
@@ -84,6 +91,15 @@ POST\
 "ownerName" : "Chipmunk Le great",
 "swift" : 666,
 "userId":2
+}\
+4.2 Show all accounts \
+/payment_methods/account/all
+GET\
+4.3 Remove an account from DB\
+/payment_methods/account/close\
+POST\
+{
+"idBankAccount":10
 }\
 ## CARS
 5.1 Add Car to DB\
@@ -167,8 +183,12 @@ POST\
 "startingLat":48.81633462767654,
 "startingLong": 2.327039836437512,
 "plugType" : "NACS",
-"weekDay":"Monday"
+"timeZone":"Europe/Paris",
+"date":"2025-02-19",
+"time":"20:00"
 }\
+*time parameter is optional, if not provided, current server time is used\
+
 7.2 Get info of specific Charging Station\
 /info/{id}\
 GET/
