@@ -10,6 +10,7 @@ import fr.eql.ai116.proj2.tim.entity.PricingType;
 import fr.eql.ai116.proj2.tim.entity.WeekDay;
 import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
+import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,7 +60,9 @@ private static final String REQ_FIND_TERMINAL =
         "WHERE " +
         "acos(sin(radians(latitude)) * sin(radians(?)) + cos(radians(latitude)) * " +
         "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND plug_type = ? " +
-        "AND cs.closing_station_date IS NULL AND d.day = ? ";
+        "AND cs.closing_station_date IS NULL AND d.day = ? " +
+        "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
+        "AND (? BETWEEN oh.start_hour AND oh.end_hour)";
 
 private static final String REQ_GET_TERMINAL_BY_ID =
         "SELECT * FROM charging_station cs " +
@@ -71,17 +74,20 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         "WHERE cs.id_charging_station = ?";
 
     @Override
-    public List<ChargingStation> findChargingStation(Float centerLat, Float centerLong,
-                                                     Integer radius, PlugType plug, String weekDay) {
+    public List<ChargingStation> findChargingStation(SearchDto searchDto) {
         List<ChargingStation> stations = new ArrayList<>();
+        LocalTime now = LocalTime.now(ZoneId.of(searchDto.getTimeZone()));
+        LocalTime time = searchDto.getTime() != null ? LocalTime.parse(searchDto.getTime()) : now;
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_FIND_TERMINAL);
-            statement.setFloat(1, centerLat);
-            statement.setFloat(2, centerLat);
-            statement.setFloat(3, centerLong);
-            statement.setInt(4, radius);
-            statement.setString(5, plug.name());
-            statement.setString(6, weekDay);
+            statement.setFloat(1, searchDto.getStartingLat());
+            statement.setFloat(2, searchDto.getStartingLat());
+            statement.setFloat(3, searchDto.getStartingLong());
+            statement.setInt(4, searchDto.getSearchRadius());
+            statement.setString(5, searchDto.getPlugType().name());
+            statement.setString(6, searchDto.getWeekDay());
+            statement.setString(7, searchDto.getDate());
+            statement.setString(8, String.valueOf(time));
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String phone;
