@@ -24,9 +24,7 @@ public class TerminalBusinessImpl implements TerminalBusiness {
 
     @Override
     public List<ChargingStation> findTerminals(SearchDto searchDto){
-        return chargingStationDao.findChargingStation(searchDto.getStartingLat(),
-                searchDto.getStartingLong(), searchDto.getSearchRadius(),
-                searchDto.getPlugType(), searchDto.getWeekDay());
+        return chargingStationDao.findChargingStation(searchDto);
     }
 
     @Override

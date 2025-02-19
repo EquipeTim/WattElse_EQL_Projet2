@@ -15,6 +15,7 @@ public class SearchDto implements Serializable {
     private Float startingLong;
     private PlugType plugType;
     private String date;
+    private String time;
     private String timeZone;
 
 
@@ -48,6 +49,10 @@ public class SearchDto implements Serializable {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     /// Getters///
@@ -88,5 +93,9 @@ public class SearchDto implements Serializable {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public String getTime() {
+        return time;
     }
 }
