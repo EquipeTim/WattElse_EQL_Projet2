@@ -8,7 +8,7 @@ import java.util.List;
 public interface CarBusiness {
     boolean addCar(CarDto newCarDto);
     void removeCar(CarDto car);
-    void modifyCar(CarDto car);
+    boolean modifyCar(CarDto carDto);
     List<Car> findUserCar(String token);
 
 

@@ -6,6 +6,7 @@ import fr.eql.ai116.proj2.tim.entity.BankAccount;
 import fr.eql.ai116.proj2.tim.entity.BankCard;
 import fr.eql.ai116.proj2.tim.entity.dto.BankAccountDto;
 import fr.eql.ai116.proj2.tim.entity.dto.BankCardDto;
+import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentCloseDto;
 
 import javax.ejb.EJB;
@@ -80,10 +81,10 @@ public class PaymentMethodsController {
 
 
 
-@POST
-@Path("/card/close")
-@Produces(MediaType.APPLICATION_JSON)
-public Response close(PaymentCloseDto paymentCloseDto) {
+    @POST
+    @Path("/card/close")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response close(PaymentCloseDto paymentCloseDto) {
     boolean isClosed = bankCardBusiness.closeBankCard(paymentCloseDto, paymentCloseDto.getBankCardId());
         if (isClosed) {
             return Response.ok().build();
@@ -99,6 +100,20 @@ public Response close(PaymentCloseDto paymentCloseDto) {
             return Response.ok().build();
         }
         return Response.status(Response.Status.FORBIDDEN).build();
+    }
+
+
+    @POST
+    @Path("card/modify")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response modify(BankCardDto bankCardDto) {
+        boolean updated = bankCardBusiness.modifyBankCard(bankCardDto);
+        if (updated) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
     }
 }
 

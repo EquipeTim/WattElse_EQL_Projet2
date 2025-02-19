@@ -40,9 +40,11 @@ public class CarBusinessImpl implements CarBusiness{
     }
 
     @Override
-    public void modifyCar(CarDto car) {
-
+    public boolean modifyCar(CarDto carDto) {
+    Car car = new Car(carDto.getIdCar(), carDto.getCarModel(), carDto.getBrand(), carDto.getMaxElectricPower(), carDto.getLicensePlateNumber(), carDto.getPlug());
+    return carDao.modifyCar(car);//
     }
+
 
     @Override
     public List<Car> findUserCar(String token) {

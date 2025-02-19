@@ -38,6 +38,7 @@ public class CarDaoImpl implements CarDao {
             "JOIN plug_type pt ON mc.id_plug_type = pt.id_plug_type WHERE pt.plug_type = ? " +
             "AND car_model_label = 'Autre'";
 
+    private static final String REQ_UPDATE_CAR = "UPDATE car SET  license_plate_number = ?, max_electric_power = ? WHERE id_car = ?";
 
 
     @Override
@@ -162,8 +163,26 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
-    public void modifyCar(Car car) {
-
+    public boolean modifyCar(Car car) {
+        boolean success = false;
+        try (Connection connection = dataSource.getConnection()){
+            PreparedStatement statement =
+                    connection.prepareStatement(REQ_UPDATE_CAR);
+            statement.setString(1,car.getLicensePlate());
+            statement.setLong(2, car.getMaxElectricPower());
+            statement.setLong(3,car.getIdCar());
+           // "UPDATE car SET id_model_car = ?, license_plate_number = ?, max_electric_power = ? WHERE id_car = ?";
+        int affectedRows = statement.executeUpdate();
+        if(affectedRows>0){
+            success = true;
+            logger.info("la voiture avec ID {] a été bien modifiée", car.getIdCar());
+        }else{
+            logger.warn("Aucune voiture trouvée avec l'ID {}", car.getIdCar());
+        }
+        }catch (SQLException e){
+            logger.error("Une erreur s'est produite lors de la connexion à la base de données", e);
+        }
+        return success;
     }
 
     /**
