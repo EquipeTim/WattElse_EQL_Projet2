@@ -167,8 +167,12 @@ POST\
 "startingLat":48.81633462767654,
 "startingLong": 2.327039836437512,
 "plugType" : "NACS",
-"weekDay":"Monday"
+"timeZone":"Europe/Paris",
+"date":"2025-02-19",
+"time":"20:00"
 }\
+*time parameter is optional, if not provided, current server time is used\
+
 7.2 Get info of specific Charging Station\
 /info/{id}\
 GET/
