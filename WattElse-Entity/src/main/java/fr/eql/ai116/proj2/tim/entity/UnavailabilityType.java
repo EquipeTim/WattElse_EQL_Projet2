@@ -6,6 +6,8 @@ public enum UnavailabilityType {
     NETWORK_OR_CONNECTION_ISSUE ("Problème de réseau ou de connexion"),
     CHARGING_STATION_OCCUPIED ("Borne occupée"),
     OVERLOAD_OR_SECURITY ("Surcharge ou sécurité"),
+    MAINTENANCE ("Maintenance programmée"),
+    BROKEN("En panne"),
     PERSONAL_REASONS("Raisons personnelles");
 
     private final String label;
