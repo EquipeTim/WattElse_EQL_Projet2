@@ -150,7 +150,7 @@ components/reasons/reservation_cancellation_type\
 GET\
 
 6.12 Get station closing reasons\
-components/reasons/station_closing_type\
+/components/reasons/station_closing_type\
 GET\
 
 6.13 Get weekday\
