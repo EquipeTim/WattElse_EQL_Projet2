@@ -72,7 +72,7 @@ POST\
 }\
 
 3.2 show all credit cards per user\
-/payment_methods/card/all
+/payment_methods/card/all\
 GET\
 /activate bearer token\
 ## Bank Account
@@ -165,11 +165,20 @@ POST\
 "searchRadius":5,
 "startingLat":48.81633462767654,
 "startingLong": 2.327039836437512,
-"plugType" : "NACS"
+"plugType" : "NACS",
+"weekDay":"Monday"
 }\
 7.2 Get info of specific Charging Station\
 /info/{id}\
 GET/
+
+7.3 Get opening hours of specific Charging Station\
+/info/hours\
+POST\
+{
+"stationId" :1,
+"timeZone" : "Europe/Paris"
+}\
 
 
 ## TRANSACTIONS
@@ -181,7 +190,8 @@ POST\
 "idStation":1,
 "idUser":"2",
 "reservationDate":"2025-03-01",
-"reservationStart":"12:00",
+"reservationTime":"12:00",
+"timeZone":"Europe/Paris",
 "reservationDuration":30,
 "idUserBankAccount":1
 }
@@ -198,6 +208,18 @@ POST\
 {
 "idReservation":10
 }
+8.4 Get information on specific transaction\
+/transaction/info/reservation/{reservation_id}\
+GET\
+8.5 Get transaction made by user from date\
+/transaction/info/user/history\
+POST\
+{
+"userId":2,
+"date":"2025-02-18"
+}\
+
+
 
 ### Architecture
 

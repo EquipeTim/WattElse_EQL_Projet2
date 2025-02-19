@@ -1,9 +1,9 @@
 package fr.eql.ai116.proj2.tim.entity.dto;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class ReservationDto implements Serializable {
@@ -14,7 +14,8 @@ public class ReservationDto implements Serializable {
     private Long idUserBankCard;
     private Long idUserBankAccount;
     private LocalDate reservationDate;
-    private LocalTime reservationStart;
+    private LocalTime reservationTime;
+    private String timeZone;
     private int reservationDuration;
     private Timestamp chargeStart;
     private Timestamp chargeEnd;
@@ -41,8 +42,8 @@ public class ReservationDto implements Serializable {
         this.reservationDate = reservationDate;
     }
 
-    public void setReservationStart(LocalTime reservationStart) {
-        this.reservationStart = reservationStart;
+    public void setReservationTime(LocalTime reservationTime) {
+        this.reservationTime = reservationTime;
     }
 
     public void setReservationDuration(int reservationDuration) {
@@ -61,6 +62,10 @@ public class ReservationDto implements Serializable {
         this.chargeEnd = chargeEnd;
     }
 
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
     /// Getters ///
 
     public Long getIdStation() {
@@ -71,12 +76,12 @@ public class ReservationDto implements Serializable {
         return idUser;
     }
 
-    public LocalDate getReservationDate() {
-        return reservationDate;
+    public LocalDateTime getReservationDate() {
+        return reservationDate.atTime(reservationTime);
     }
 
-    public LocalTime getReservationStart() {
-        return reservationStart;
+    public String getTimeZone() {
+        return timeZone;
     }
 
     public int getReservationDuration() {

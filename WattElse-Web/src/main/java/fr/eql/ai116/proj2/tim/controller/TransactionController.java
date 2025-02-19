@@ -2,9 +2,11 @@ package fr.eql.ai116.proj2.tim.controller;
 
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
+import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -45,7 +47,7 @@ public class TransactionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response startCharge(ReservationDto reservationDto) {
-        ChoicesDto status = transactionBusiness.indicateStartCharging(reservationDto);
+        Transaction status = transactionBusiness.indicateStartCharging(reservationDto);
         return Response.ok(status).build();
     }
 
@@ -54,7 +56,29 @@ public class TransactionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response stopCharge(ReservationDto reservationDto) {
-        ChoicesDto status = transactionBusiness.indicateStopCharging(reservationDto);
+        Transaction status = transactionBusiness.indicateStopCharging(reservationDto);
         return Response.ok(status).build();
     }
+
+    @GET
+    @Path("/info/reservation/{reservation_id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTransactionInfo(@PathParam("reservation_id") Long reservationId) {
+        Transaction status = transactionBusiness.getTransactionDetails(reservationId);
+        if (status != null) {
+            return Response.ok(status).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @POST
+    @Path("/info/user/history")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getUserTransactions(SearchDto searchDto) {
+        List<Transaction> transactions = transactionBusiness.getUserTransactions(searchDto);
+        return Response.ok(transactions).build();
+    }
+
 }

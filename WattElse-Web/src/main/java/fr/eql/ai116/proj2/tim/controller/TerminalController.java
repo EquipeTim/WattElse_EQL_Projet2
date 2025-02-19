@@ -2,6 +2,8 @@ package fr.eql.ai116.proj2.tim.controller;
 
 import fr.eql.ai116.proj2.tim.business.TerminalBusiness;
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
+import fr.eql.ai116.proj2.tim.entity.OpeningHour;
+import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
 import javax.ejb.EJB;
@@ -38,5 +40,13 @@ public class TerminalController {
     public Response getInfo(@PathParam("id") Long terminalId) {
         ChargingStation station = terminalBusiness.findTerminalsById(terminalId);
         return Response.ok(station).build();
+    }
+
+    @POST
+    @Path("/info/hours")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOpeningHours(SearchDto searchDto) {
+        List<OpeningHour> hours = terminalBusiness.getOpeningHours(searchDto);
+        return Response.ok(hours).build();
     }
 }
