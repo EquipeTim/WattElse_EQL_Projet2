@@ -4,6 +4,7 @@ import fr.eql.ai116.proj2.tim.business.AuthorizationException;
 import fr.eql.ai116.proj2.tim.business.CarBusiness;
 import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
+import fr.eql.ai116.proj2.tim.entity.dto.CarCloseDto;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
 
 import javax.ejb.EJB;
@@ -66,7 +67,18 @@ public class CarController {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
-
-
-
+    @POST
+    @Path("/remove")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response remove(CarCloseDto carCloseDto) {
+        boolean isRemoved = carBusiness.removeCar(carCloseDto);
+        if (isRemoved) {
+            return Response.ok().build();
+        }
+        return Response.status(Response.Status.FORBIDDEN).build();
+    }
 }
+
+
+
+

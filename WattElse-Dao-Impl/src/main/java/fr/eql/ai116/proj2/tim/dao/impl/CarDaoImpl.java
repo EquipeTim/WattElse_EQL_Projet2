@@ -39,6 +39,12 @@ public class CarDaoImpl implements CarDao {
             "AND car_model_label = 'Autre'";
 
     private static final String REQ_UPDATE_CAR = "UPDATE car SET  license_plate_number = ?, max_electric_power = ? WHERE id_car = ?";
+    private static final String REQ_CLOSE_CAR = "UPDATE car SET remove_date_car = ? ," +
+            " id_car_withdrawal = ? WHERE id_car = ?";
+    private static final String REQ_FIND_CAR_BY_ID = "SELECT * FROM car c JOIN model_car mc ON " +
+            "c.id_model_car = mc.id_model_car JOIN brand_car bc ON  mc.id_brand =bc.id_brand JOIN plug_type pt" +
+            " ON mc.id_plug_type = pt.id_plug_type WHERE id_car = ?";
+
 
 
     @Override
@@ -158,9 +164,27 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
-    public void removeCar(Car car) {
-
+    public boolean removeCar(Long idCar, Long closeReasonId) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_CLOSE_CAR);
+            //Régler la date de retrait sur la date actuelle (à l'aide de java.sql.Date)
+            statement.setTimestamp(1, Timestamp.from(Instant.now()));
+            statement.setLong(2, closeReasonId);
+            statement.setLong(3, idCar);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected >0) {
+                logger.info("La voiture {} a été supprimé", idCar);
+                return true;
+            }else {
+                logger.info("La suppression n'a pas abouti");
+                return false;
+            }
+        } catch (SQLException e) {
+            logger.error("une erreur s'est produite lors de la connexion avec la base de données", e);
+           return false;
+        }
     }
+
 
     @Override
     public boolean modifyCar(Car car) {
@@ -212,4 +236,29 @@ public class CarDaoImpl implements CarDao {
         return cars;
     }
 
+    @Override
+    public Car getCarById(Long idCar) {
+        Car car= null;
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_FIND_CAR_BY_ID);
+            statement.setLong(1, idCar);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                car = new Car(
+                        resultSet.getLong("id_car"),
+                        resultSet.getString("car_model_label"),
+                        resultSet.getString("brand_label"),
+                        resultSet.getLong("max_electric_power"),
+                        resultSet.getString("license_plate_number"),
+                        resultSet.getString("plug_type")
+                );
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite " +
+                    "lors de la consultation de la voiture en base de données", e);
+        }
+        return car;
+    }
+
 }
+

@@ -45,4 +45,10 @@ public class BankAccountBusinessImpl implements BankAccountBusiness {
         }
         return false;
     }
+
+    @Override
+    public boolean modifyBankAccount(BankAccountDto bankAccountDto) {
+      BankAccount bankAccount = new BankAccount(bankAccountDto.getIban(),bankAccountDto.getOwnerName(),bankAccountDto.getSwift(),bankAccountDto.getIdAccount());
+      return bankAccountDao.modifyBankAccount(bankAccount);
+    }
 }

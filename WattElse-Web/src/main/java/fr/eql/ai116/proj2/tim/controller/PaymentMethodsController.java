@@ -115,5 +115,19 @@ public class PaymentMethodsController {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
     }
+
+
+    @POST
+    @Path("account/modify")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response modifyAccount(BankAccountDto bankAccountDto) {
+        boolean updated = bankAccountBusiness.modifyBankAccount(bankAccountDto);
+        if (updated) {
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+    }
 }
 
