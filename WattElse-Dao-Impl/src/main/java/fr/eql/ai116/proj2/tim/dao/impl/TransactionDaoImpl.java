@@ -39,7 +39,7 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_ADD_CARD_PAYMENT = "INSERT INTO payment (id_credit_card) VALUES (?)";
     private static final String REQ_ADD_ACCOUNT_PAYMENT = "INSERT INTO payment (id_bank_account) VALUES (?)";
     private static final String REQ_START_CHARGE = "UPDATE transaction SET start_date_charging = ? " +
-            "WHERE id_transaction = ?";
+            "WHERE id_transaction = ? WHERE id_cancellation_type IS NULL";
     private static final String REQ_END_CHARGE = "UPDATE transaction SET end_date_charging = ? " +
             "WHERE id_transaction = ?";
     private static final String REQ_GET_RESERVATION = "SELECT * FROM transaction WHERE id_transaction = ? ";
@@ -87,7 +87,6 @@ public class TransactionDaoImpl implements TransactionDao {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
-
                 Long paymentId = addNewPayment(reservationDto, connection);
                 PreparedStatement statement = connection.prepareStatement(REQ_RESERVE_STATION,  Statement.RETURN_GENERATED_KEYS);
                 statement.setLong(1, reservationDto.getIdUser());
@@ -136,18 +135,14 @@ public class TransactionDaoImpl implements TransactionDao {
         Timestamp now = Timestamp.from(Instant.now());
         Reservation reservation = getReservation(reservationId);
         if (reservation != null){
+            if (reservation.getReservationCancelTime() != null){
+                return new Transaction(5L, "Réservation annulé avant le début. Date d'annulation:  "
+                        + reservation.getReservationCancelTime(), reservationId);
+            }
             if (reservation.getRechargeStartTime() == null) {
                 int reservationStatus = reservation.reservationValid(now);
                 if (reservationStatus == 1) {
-                    try (Connection connection = dataSource.getConnection()) {
-                        PreparedStatement statement = connection.prepareStatement(REQ_START_CHARGE);
-                        statement.setTimestamp(1, now);
-                        statement.setLong(2, reservationId);
-                        statement.executeUpdate();
-                        return new Transaction(1L, "Heure de début de charge enregistrée: " + reformatTimestamp(now), reservationId);
-                    } catch (SQLException e) {
-                        logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
-                    }
+                    return executeStartCharging(now, reservationId);
                 } else if (reservationStatus == 0){
                     return new Transaction(2L, "La durée de réservation épuisé", reservationId);
                 } else {
@@ -160,6 +155,26 @@ public class TransactionDaoImpl implements TransactionDao {
         return new Transaction(0L, "Réservation non trouvé", reservationId);
     }
 
+    /**
+     * Marks the reservation as recharge started
+     * @param now
+     * @param reservationId
+     * @return
+     */
+    private Transaction executeStartCharging(Timestamp now, Long reservationId) {
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_START_CHARGE);
+            statement.setTimestamp(1, now);
+            statement.setLong(2, reservationId);
+            statement.executeUpdate();
+            logger.info("La réservation nr {} a commencé la recharge", reservationId);
+            return new Transaction(1L, "Heure de début de charge enregistrée: "
+                    + reformatTimestamp(now), reservationId);
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return null;
+    }
 
 
     /**
@@ -186,6 +201,7 @@ public class TransactionDaoImpl implements TransactionDao {
                     Transaction transaction = generateTransactionInfo(reservationId);
                     transaction.setStatusId(1L);
                     transaction.setStatus("Recharge terminé");
+                    logger.info("La réservation nr {} a terminé la recharge", reservationId);
                     return transaction;
                 } catch (SQLException e) {
                     logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
@@ -408,12 +424,14 @@ public class TransactionDaoImpl implements TransactionDao {
             statement.setLong(1, reservationId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                reservation = new Reservation(resultSet.getLong("id_user"),
+                reservation = new Reservation(
+                        resultSet.getLong("id_user"),
                         resultSet.getLong("id_transaction"),
                         resultSet.getTimestamp("reservation_date"),
                         resultSet.getInt("reservation_duration"),
                         resultSet.getTimestamp("start_date_charging"),
-                        resultSet.getTimestamp("end_date_charging"));
+                        resultSet.getTimestamp("end_date_charging"),
+                        resultSet.getTimestamp("reservation_cancellation_date"));
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
