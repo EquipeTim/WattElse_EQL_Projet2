@@ -274,9 +274,7 @@ public class TransactionDaoImpl implements TransactionDao {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                //LocalDateTime now = LocalDateTime.now(ZoneId.of(paymentDto.getTimeZone()));
                 Timestamp now = Timestamp.from(Instant.now());
-                System.out.println(paymentDto.toString());
                 executePayment(paymentDto.getIdReservation(), paymentDto.getIdAccountForPayment(),
                         paymentDto.getIdCardForPayment(), now, connection);
                 updateTransaction(paymentDto.getIdReservation(), now, connection);
@@ -336,7 +334,6 @@ public class TransactionDaoImpl implements TransactionDao {
      */
     private void executePayment(Long idReservation, Long idAccount, Long idCard, Timestamp now, Connection connection)
             throws SQLException{
-        System.out.println("executing payment");
         Transaction transaction = generateTransactionInfo(idReservation);
         PreparedStatement statement = connection.prepareStatement(REQ_EXECUTE_PAYMENT);
         if (idCard != null) {
