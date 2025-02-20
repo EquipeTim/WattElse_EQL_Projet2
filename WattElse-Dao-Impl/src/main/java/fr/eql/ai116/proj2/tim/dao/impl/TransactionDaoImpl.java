@@ -80,6 +80,16 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_GET_USER_PAYMENTS =
             "SELECT id_transaction FROM transaction WHERE id_user = ? " +
             "AND reservation_date > ? AND end_date_charging IS NOT NULL";
+    private static final String REQ_GET_TARIF_TYPE =
+            "SELECT * FROM pricing p " +
+            "JOIN pricing_type pt ON pt.id_type_pricing = p.id_type_pricing " +
+            "JOIN transaction t ON p.id_charging_station = t.id_charging_station " +
+            "WHERE t.id_transaction = ? " +
+            "AND t.start_date_charging > p.start_date_pricing " +
+                    "AND (t.start_date_charging < p.end_date_pricing OR p.end_date_pricing IS NULL)";
+    private static final String REQ_GET_CHARGE_DURATION =
+            "SELECT TIMESTAMPDIFF(HOUR, start_date_charging, end_date_charging) AS charging_time " +
+            "FROM transaction WHERE id_transaction = ? ";
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -234,12 +244,50 @@ public class TransactionDaoImpl implements TransactionDao {
         }
     }
 
+    /**
+     * Fills the consumtion firld for the reservation after the charging is over
+     * @param reservationId
+     * @param connection
+     * @throws SQLException
+     */
     private void fillConsumption(Long reservationId, Connection connection) throws SQLException {
-        float quantity = new Random().nextFloat() * 100;
+        float quantity = getFillQuantity(reservationId, connection);
         PreparedStatement statement = connection.prepareStatement(REQ_FILL_CONSUMPTION);
         statement.setFloat(1, quantity);
         statement.setLong(2, reservationId);
         statement.executeUpdate();
+    }
+
+    private float getFillQuantity(Long reservationId, Connection connection) throws SQLException {
+        Float quantity = null;
+        PreparedStatement statement = connection.prepareStatement(REQ_GET_TARIF_TYPE);
+        statement.setLong(1, reservationId);
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            if (PricingType.valueOf(resultSet.getString("type_pricing"))
+                == PricingType.PRICING_PER_HOUR){
+                quantity = getRechargeDuration(reservationId, connection);
+            } else {
+                quantity = new Random().nextFloat() * 100;
+            }
+        }
+        return quantity;
+    }
+
+    /**
+     * Calculates recharge duration in minutes
+     * @param reservationId
+     * @param connection
+     * @return
+     */
+    private Float getRechargeDuration(Long reservationId, Connection connection) throws SQLException{
+        PreparedStatement statement = connection.prepareStatement(REQ_GET_CHARGE_DURATION);
+        statement.setLong(1, reservationId);
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            return resultSet.getFloat("charging_time");
+        }
+        return null;
     }
 
     private void calculatePrice(Long reservationId, Connection connection) throws SQLException {
@@ -315,8 +363,8 @@ public class TransactionDaoImpl implements TransactionDao {
                             paymentDto.getIdCardForPayment(), now, connection);
                     updateTransaction(paymentDto.getIdReservation(), now, connection);
                     processPayment(paymentDto.getIdReservation(), connection);
-                    payment = generatePaymentInfo(paymentDto.getIdReservation());
                     connection.commit();
+                    payment = generatePaymentInfo(paymentDto.getIdReservation());
                     logger.info("Transaction id {} a été réglé", paymentDto.getIdReservation());
                 }
             } catch (SQLException e) {
@@ -330,6 +378,10 @@ public class TransactionDaoImpl implements TransactionDao {
         return payment;
     }
 
+    /**
+     * Cancels a reservation
+     * @param reservationId
+     */
     @Override
     public void cancelReservation(Long reservationId) {
 
