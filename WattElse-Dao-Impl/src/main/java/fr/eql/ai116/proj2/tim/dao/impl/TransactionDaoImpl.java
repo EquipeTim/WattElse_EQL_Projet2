@@ -44,7 +44,7 @@ public class TransactionDaoImpl implements TransactionDao {
             "WHERE id_transaction = ?";
     private static final String REQ_GET_RESERVATION = "SELECT * FROM transaction WHERE id_transaction = ? ";
     private static final String REQ_GET_USER_TRANSACTIONS = "SELECT * FROM transaction " +
-            "WHERE id_user = ? AND reservation_date > ?";
+            "WHERE id_user = ? AND reservation_date > ? ORDER BY reservation_date DSC";
     private static final String REQ_GET_TRANSACTION_DETAILS =
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
                     "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
@@ -68,6 +68,13 @@ public class TransactionDaoImpl implements TransactionDao {
             "payment_date = ?, payment_amount = ? WHERE id_payment = ?";
     private static final String REQ_REFUSE_PAYMENT =
             "UPDATE transaction SET id_payment_refuse_type = ? WHERE id_transaction = ?";
+    private static final String REQ_GET_PAYMENT_INFO =
+            "SELECT * FROM payment p " +
+            "JOIN transaction t ON p.id_payment = t.id_payment " +
+            "LEFT JOIN bank_account ba ON ba.id_bank_account = p.id_bank_account " +
+            "LEFT JOIN credit_card cc ON cc.id_credit_card = p.id_credit_card " +
+            "LEFT JOIN payment_refuse_type prt ON prt.id_payment_refuse_type = t.id_payment_refuse_type " +
+            "WHERE t.id_transaction = ?";
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -284,6 +291,7 @@ public class TransactionDaoImpl implements TransactionDao {
                         paymentDto.getIdCardForPayment(), now, connection);
                 updateTransaction(paymentDto.getIdReservation(), now, connection);
                 processPayment(paymentDto.getIdReservation(), connection);
+                //payment = generatePaymentInfo(paymentDto.getIdReservation());
                 connection.commit();
             } catch (SQLException e) {
                 connection.rollback();
@@ -296,8 +304,38 @@ public class TransactionDaoImpl implements TransactionDao {
         return payment;
     }
 
+    private Payment generatePaymentInfo(Long reservationId){
+        Payment payment = null;
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_PAYMENT_INFO);
+            statement.setLong(1, reservationId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()){
+                String iban = resultSet.getString("iban");
+                iban = iban != null ? iban.substring(iban.length()-4) : null;
+                String cardNumber = resultSet.getString("number_card");
+                cardNumber = cardNumber != null ? cardNumber.substring(cardNumber.length()-4) : null;
+                payment = new Payment(resultSet.getLong("id_bank_account"),
+                                    resultSet.getLong("id_credit_card"),
+                                    resultSet.getLong("id_payment_refuse_type"),
+                                    resultSet.getLong("id_transaction"),
+                                    resultSet.getLong("id_user"),
+                                    resultSet.getTimestamp("payment_date").toLocalDateTime(),
+                                    resultSet.getTimestamp("reservation_date").toLocalDateTime(),
+                                    iban, cardNumber,
+                                    PaymentRefusalType.valueOf(resultSet.getString("refuse_payment_label")).getLabel(),
+                                    resultSet.getFloat("payment_amount")
+                        );
+                System.out.println(payment);
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return payment;
+    }
+
     /**
-     * Simulates payment processing x% chance to refuse a payment
+     * Simulates payment processing 10% chance to refuse a payment
      * @param reservationId
      * @param connection
      * @throws SQLException

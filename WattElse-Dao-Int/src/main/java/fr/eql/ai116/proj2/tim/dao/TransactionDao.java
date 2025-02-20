@@ -19,4 +19,5 @@ public interface TransactionDao {
     List<Transaction> getUserTransactions(Long userId, String date);
     Payment pay(PaymentDto paymentDto);
 
+
 }

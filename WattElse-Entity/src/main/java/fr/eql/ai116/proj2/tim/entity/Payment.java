@@ -10,7 +10,6 @@ public class Payment implements Serializable {
     private Long idPaymentRefuseReason;
     private Long idReservation;
     private Long idUser;
-    private Long idOwner;
     private LocalDateTime paymentDate;
     private LocalDateTime reservationDate;
     private String nrAccountUsed;
@@ -19,14 +18,13 @@ public class Payment implements Serializable {
     private Float amountToPay;
 
     public Payment(Long idAccountUsed, Long idCardUsed, Long idPaymentRefuseReason, Long idReservation,
-                   Long idUser, Long idOwner, LocalDateTime paymentDate, LocalDateTime reservationDate,
+                   Long idUser, LocalDateTime paymentDate, LocalDateTime reservationDate,
                    String nrAccountUsed, String nrCardUsed, String paymentRefuseReason, Float amountToPay) {
         this.idAccountUsed = idAccountUsed;
         this.idCardUsed = idCardUsed;
         this.idPaymentRefuseReason = idPaymentRefuseReason;
         this.idReservation = idReservation;
         this.idUser = idUser;
-        this.idOwner = idOwner;
         this.paymentDate = paymentDate;
         this.reservationDate = reservationDate;
         this.nrAccountUsed = nrAccountUsed;
@@ -35,11 +33,64 @@ public class Payment implements Serializable {
         this.amountToPay = amountToPay;
     }
 
+    public Long getIdAccountUsed() {
+        return idAccountUsed;
+    }
+
+    public Long getIdCardUsed() {
+        return idCardUsed;
+    }
+
+    public Long getIdPaymentRefuseReason() {
+        return idPaymentRefuseReason;
+    }
+
+    public Long getIdReservation() {
+        return idReservation;
+    }
+
+    public Long getIdUser() {
+        return idUser;
+    }
+
     public LocalDateTime getPaymentDate() {
         return paymentDate;
     }
 
-    public Long getIdAccountUsed() {
-        return idAccountUsed;
+    public LocalDateTime getReservationDate() {
+        return reservationDate;
+    }
+
+    public String getNrAccountUsed() {
+        return nrAccountUsed;
+    }
+
+    public String getNrCardUsed() {
+        return nrCardUsed;
+    }
+
+    public String getPaymentRefuseReason() {
+        return paymentRefuseReason;
+    }
+
+    public Float getAmountToPay() {
+        return amountToPay;
+    }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "idAccountUsed=" + idAccountUsed +
+                ", idCardUsed=" + idCardUsed +
+                ", idPaymentRefuseReason=" + idPaymentRefuseReason +
+                ", idReservation=" + idReservation +
+                ", idUser=" + idUser +
+                ", paymentDate=" + paymentDate +
+                ", reservationDate=" + reservationDate +
+                ", nrAccountUsed='" + nrAccountUsed + '\'' +
+                ", nrCardUsed='" + nrCardUsed + '\'' +
+                ", paymentRefuseReason='" + paymentRefuseReason + '\'' +
+                ", amountToPay=" + amountToPay +
+                '}';
     }
 }
