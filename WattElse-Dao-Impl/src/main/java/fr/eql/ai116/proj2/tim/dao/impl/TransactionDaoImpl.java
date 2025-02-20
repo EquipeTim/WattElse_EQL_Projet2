@@ -44,7 +44,7 @@ public class TransactionDaoImpl implements TransactionDao {
             "WHERE id_transaction = ?";
     private static final String REQ_GET_RESERVATION = "SELECT * FROM transaction WHERE id_transaction = ? ";
     private static final String REQ_GET_USER_TRANSACTIONS = "SELECT * FROM transaction " +
-            "WHERE id_user = ? AND reservation_date > ? ORDER BY reservation_date DSC";
+            "WHERE id_user = ? AND reservation_date > ? ORDER BY reservation_date DESC";
     private static final String REQ_GET_TRANSACTION_DETAILS =
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
                     "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
