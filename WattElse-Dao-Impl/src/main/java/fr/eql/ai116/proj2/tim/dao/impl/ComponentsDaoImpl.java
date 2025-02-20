@@ -4,6 +4,7 @@ import fr.eql.ai116.proj2.tim.dao.ComponentsDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
+import fr.eql.ai116.proj2.tim.entity.WeekDay;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +64,7 @@ public class ComponentsDaoImpl implements ComponentsDao {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 carPlugs.add(new ChoicesDto(resultSet.getLong("id_plug_type"),
-                        PlugType.valueOf(resultSet.getString("plug_type")).getDisplayName()));
+                        PlugType.valueOf(resultSet.getString("plug_type")).getLabel()));
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
@@ -118,7 +119,8 @@ public class ComponentsDaoImpl implements ComponentsDao {
         return choices;
     }
 
-    private List<ChoicesDto> getList(String request, String idColumn, String labelColumn){
+    private  List<ChoicesDto> getList(String request, String idColumn,
+                                                          String labelColumn){
         List<ChoicesDto> choices = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -183,8 +185,12 @@ public class ComponentsDaoImpl implements ComponentsDao {
 
     @Override
     public List<ChoicesDto> getWeekDay() {
-        return getList(REQ_GET_WEEKDAY,
-                "id_day","day");
+        List<ChoicesDto> days = getList(REQ_GET_WEEKDAY,"id_day","day");
+        List<ChoicesDto> fixedDays = new ArrayList<>();
+        for (ChoicesDto day : days) {
+            fixedDays.add(new ChoicesDto(day.getChoiceId(), WeekDay.valueOf(day.getChoice()).getLabel()));
+        }
+        return fixedDays;
     }
 
 

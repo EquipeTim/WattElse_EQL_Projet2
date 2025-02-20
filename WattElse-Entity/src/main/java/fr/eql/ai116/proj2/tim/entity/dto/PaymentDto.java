@@ -1,20 +1,20 @@
 package fr.eql.ai116.proj2.tim.entity.dto;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 public class PaymentDto implements Serializable {
 
-    private Long idTransaction;
+    private Long idReservation;
     private Long idCardForPayment;
     private Long idAccountForPayment;
 
-    public Long getIdTransaction() {
-        return idTransaction;
+
+    public Long getIdReservation() {
+        return idReservation;
     }
 
-    public void setIdTransaction(Long idTransaction) {
-        this.idTransaction = idTransaction;
+    public void setIdReservation(Long idReservation) {
+        this.idReservation = idReservation;
     }
 
     public Long getIdCardForPayment() {
@@ -31,5 +31,15 @@ public class PaymentDto implements Serializable {
 
     public void setIdAccountForPayment(Long idAccountForPayment) {
         this.idAccountForPayment = idAccountForPayment;
+    }
+
+
+    @Override
+    public String toString() {
+        return "PaymentDto{" +
+                "idReservation=" + idReservation +
+                ", idCardForPayment=" + idCardForPayment +
+                ", idAccountForPayment=" + idAccountForPayment +
+                '}';
     }
 }

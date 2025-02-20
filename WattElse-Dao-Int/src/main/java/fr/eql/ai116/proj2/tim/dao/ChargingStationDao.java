@@ -17,4 +17,7 @@ public interface ChargingStationDao {
     void modifyChargingStation(ChargingStation chargingStation);
     ChargingStation getChargingStationById(long stationId);
     List<OpeningHour> getOpeningHours(Long stationId, String timeZone);
+    List<OpeningHour> getReservedTimeSlots(Long stationId, String date);
+    List<OpeningHour> getSpecificDayOpeningHours(Long stationId, String date);
+
 }
