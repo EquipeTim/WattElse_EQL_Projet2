@@ -75,12 +75,25 @@ POST\
 /payment_methods/card/all\
 GET\
 /activate bearer token\
+
 3.3 Remove a credit card from DB\
 /payment_methods/card/close
 POST\
 {
 "bankCardId":6
+}\
+
+3.4 Modify a credit card \
+/payment_methods/card/modify
+POST\
+{
+"idCreditCard": 1,
+"cardHolderName": "Jean Marie",
+"cvvNumber": 254578,
+"expirationDate": "2022-02-15",
+"numberCard": "2154"
 }
+
 ## Bank Account
 4.1 Add Bank Account to DB\
 *Header must contain token\
@@ -92,15 +105,28 @@ POST\
 "swift" : 666,
 "userId":2
 }\
+
 4.2 Show all accounts \
 /payment_methods/account/all
 GET\
+
 4.3 Remove an account from DB\
 /payment_methods/account/close\
 POST\
 {
 "idBankAccount":10
 }\
+
+4.4 Modify bank account\
+/payment_methods/account/modify
+POST\
+{
+"ownerName": "Chipmunk Le great",
+"swift": "111",
+"iban": "1312",
+"idAccount": 1
+}\
+
 ## CARS
 5.1 Add Car to DB\
 Detect plug type by "brand" and "carModel". If one or both are missing uses "plug"
@@ -120,6 +146,25 @@ POST\
 /car/get/all
 GET\
 
+5.3 Modify a car\
+/car/modify\
+POST\
+{
+"brand": "AUTRE",
+"carModel": "Autre",
+"idCar": 2,
+"licensePlateNumber": "7779",
+"maxElectricPower": 130,
+"plug": "NACS"
+}
+
+5.4 Delete a car\
+/car/remove
+POST\
+{
+"idCar":4,
+"reasonId": 1
+}\
 ## COMPONENTS
 6.1 Recover all plug types recorded in system\
 /components/plugs/all\

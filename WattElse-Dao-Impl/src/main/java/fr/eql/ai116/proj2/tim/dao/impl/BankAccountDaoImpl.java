@@ -32,6 +32,7 @@ public class BankAccountDaoImpl  implements BankAccountDao {
             "RIGHT(iban, 4) AS iban FROM bank_account ba JOIN session s ON ba.id_user = s.id_user WHERE s.token = ?";
     private static final String REQ_ACCOUNT_EXISTS = "SELECT * FROM bank_account WHERE iban = ? and id_user =? and account_close_date IS NULL";
 
+    private static final String REQ_UPDATE_ACCOUNT = "UPDATE bank_account SET iban = ?, account_owner_name = ?, bic_swift = ? WHERE id_bank_account = ?";
 
 
     private void addBankAccount(BankAccount bankAccount, Long userId, Connection connection) throws SQLException{
@@ -119,9 +120,34 @@ public class BankAccountDaoImpl  implements BankAccountDao {
 
 
     @Override
-    public void modifyBankAccount(BankAccount bankAccount) {
+    public boolean modifyBankAccount(BankAccount bankAccount) {
+        boolean success = false;
+        System.out.println(bankAccount.toString());
+        try (Connection connection = dataSource.getConnection()) {
 
+            // Préparer la mise à jour des informations bancaires
+            PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_ACCOUNT);
+            statement.setString(1, bankAccount.getIban());
+            statement.setString(2, bankAccount.getAccountOwnerName());
+            statement.setString(3, bankAccount.getBicSwift());
+            statement.setLong(4, bankAccount.getIdBankAccount());  //
+            logger.error(statement);
+            int affectedRows = statement.executeUpdate();  // Exécuter la mise à jour
+
+            if (affectedRows > 0) {
+                success = true;
+                logger.info("Le compte bancaire avec ID {} a été bien modifiée", bankAccount.getIdBankAccount());
+            }else{
+                logger.warn("Aucun compte bancaire trouvée avec l'ID {}", bankAccount.getIdBankAccount());
+            }
+
+
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion à la base de données", e);
+        }
+        return success;  // Retourne true si la mise à jour a réussi, sinon false
     }
+
 
     @Override
     public List<BankAccount> getBankAccounts(String token) {

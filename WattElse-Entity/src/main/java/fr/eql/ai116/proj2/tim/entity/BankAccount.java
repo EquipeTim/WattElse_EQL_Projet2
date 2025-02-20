@@ -32,6 +32,13 @@ public class BankAccount implements Serializable {
         return bicSwift;
     }
 
-    /// Setters/////
-
+    @Override
+    public String toString() {
+        return "BankAccount{" +
+                "idBankAccount=" + idBankAccount +
+                ", iban='" + iban + '\'' +
+                ", ownerName='" + ownerName + '\'' +
+                ", bicSwift='" + bicSwift + '\'' +
+                '}';
+    }
 }

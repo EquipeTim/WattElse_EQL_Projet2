@@ -6,6 +6,7 @@ import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.CarBrand;
 import fr.eql.ai116.proj2.tim.entity.CarModel;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
+import fr.eql.ai116.proj2.tim.entity.dto.CarCloseDto;
 import fr.eql.ai116.proj2.tim.entity.dto.CarDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,9 +36,15 @@ public class CarBusinessImpl implements CarBusiness{
     }
 
     @Override
-    public void removeCar(CarDto car) {
-
+    public boolean removeCar(CarCloseDto carCloseDto) {
+        Car car = carDao.getCarById(carCloseDto.getIdCar());
+        if (car!= null){
+            carDao.removeCar(carCloseDto.getIdCar(),carCloseDto.getReasonId());
+            return true;
+        }
+        return false;
     }
+
 
     @Override
     public boolean modifyCar(CarDto carDto) {
