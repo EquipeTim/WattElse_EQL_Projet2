@@ -15,17 +15,21 @@ public class Reservation implements Serializable {
     private int reservationDuration;
     private Timestamp rechargeStartTime;
     private Timestamp rechargeEndTime;
+    private Timestamp reservationCancelTime;
+
 
     public Reservation(){}
 
     public Reservation(Long userId, Long reservationId, Timestamp reservationTime,
-                       int reservationDuration, Timestamp rechargeStartTime, Timestamp rechargeEndTime) {
+                       int reservationDuration, Timestamp rechargeStartTime, Timestamp rechargeEndTime,
+                       Timestamp reservationCancelTime) {
         this.userId = userId;
         this.reservationId = reservationId;
         this.reservationTime = reservationTime;
         this.reservationDuration = reservationDuration;
         this.rechargeStartTime = rechargeStartTime;
         this.rechargeEndTime = rechargeEndTime;
+        this.reservationCancelTime = reservationCancelTime;
     }
 
     /**
@@ -81,6 +85,10 @@ public class Reservation implements Serializable {
 
     public int getReservationDuration() {
         return reservationDuration;
+    }
+
+    public Timestamp getReservationCancelTime() {
+        return reservationCancelTime;
     }
 
     @Override

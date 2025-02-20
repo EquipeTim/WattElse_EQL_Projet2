@@ -71,7 +71,8 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         "WHERE cs.id_charging_station = ?";
 
 private static final String REQ_GET_RESERVATION_TIMES =
-        "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ?";
+        "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ? " +
+        "AND id_cancellation_type IS NULL";
 private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "SELECT * FROM opening_hour oh " +
         "LEFT JOIN unavailability una ON oh.id_charging_station = una.id_charging_station " +
