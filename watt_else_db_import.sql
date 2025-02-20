@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `charging_station` (
 INSERT INTO `charging_station` (`id_charging_station`, `id_station_closing_type`, `id_plug_type`, `id_city`, `id_user`, `id_owner_bank_account`, `id_owner_credit_card`, `power_charging_station`, `registration_station_date`, `closing_station_date`, `address_charging_station`, `longitude`, `latitude`, `emergency_phone`) VALUES
 	(1, NULL, 1, 1, 1, 1, NULL, NULL, '2025-02-11 00:00:00', NULL, '32 Rue Barbès', 2.32961, 48.8171, NULL),
 	(2, NULL, 3, 1, 1, 1, NULL, NULL, '2025-02-11 00:00:00', NULL, '6 Av. du Président Salvador', 2.32741, 48.8108, NULL),
-	(3, NULL, 5, 1, 1, NULL, NULL, NULL, '2025-02-11 00:00:00', NULL, '79 Av. du Général Leclerc', 2.31631, 48.7811, NULL);
+	(3, NULL, 5, 1, 1, 1, NULL, NULL, '2025-02-11 00:00:00', NULL, '79 Av. du Général Leclerc', 2.31631, 48.7811, NULL);
 
 -- Listage de la structure de table wattelse. city
 CREATE TABLE IF NOT EXISTS `city` (
@@ -218,11 +218,11 @@ INSERT INTO `opening_hour` (`id_opening_hour`, `id_charging_station`, `id_day`, 
 	(4, 1, 1, '14:00:05', '18:00:00', '2025-02-01', NULL),
 	(5, 1, 3, '08:00:00', '18:00:00', '2025-02-01', NULL),
 	(6, 1, 6, '12:00:00', '15:00:00', '2025-02-01', NULL),
-	(7, 1, 7, '06:00:00', '24:00:00', '2025-02-01', '2025-02-17'),
+	(7, 1, 7, '06:00:00', '23:29:00', '2025-02-01', '2025-02-17'),
 	(8, 1, 4, '15:00:00', '20:00:00', '2025-02-01', NULL),
 	(9, 2, 2, '15:00:00', '20:00:00', '2025-02-01', NULL),
 	(10, 2, 1, '10:08:00', '18:42:50', '2025-02-01', NULL),
-	(11, 2, 3, '00:00:00', '24:00:00', '2025-02-01', NULL),
+	(11, 2, 3, '00:00:00', '23:59:00', '2025-02-01', NULL),
 	(12, 2, 6, '09:15:25', '17:35:00', '2025-02-01', NULL),
 	(13, 2, 7, '10:50:25', '21:21:21', '2025-03-21', NULL),
 	(14, 2, 4, '09:30:00', '11:59:00', '2025-02-01', NULL),
@@ -233,8 +233,8 @@ CREATE TABLE IF NOT EXISTS `payment` (
   `id_payment` int(11) NOT NULL AUTO_INCREMENT,
   `id_bank_account` int(11) DEFAULT NULL,
   `id_credit_card` int(11) DEFAULT NULL,
-  `payement_date` datetime DEFAULT NULL,
-  `payement_amount` int(11) DEFAULT NULL,
+  `payment_date` datetime DEFAULT NULL,
+  `payment_amount` float DEFAULT NULL,
   PRIMARY KEY (`id_payment`),
   KEY `FK_crediter` (`id_bank_account`),
   KEY `FK_verser` (`id_credit_card`)

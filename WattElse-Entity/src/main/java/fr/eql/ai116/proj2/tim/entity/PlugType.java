@@ -16,7 +16,7 @@ public enum PlugType {
         this.displayName = displayName;
     }
 
-    public String getDisplayName() {
+    public String getLabel() {
         return displayName;
     }
 }
