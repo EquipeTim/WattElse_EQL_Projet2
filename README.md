@@ -175,6 +175,7 @@ GET\
 
 ## TERMINALS
 7.1 Find charging stations\
+Time must be provided in "HH:mm form"
 /terminals/find\
 POST\
 {
@@ -184,7 +185,7 @@ POST\
 "plugType" : "NACS",
 "timeZone":"Europe/Paris",
 "date":"2025-02-19",
-"time":"20:00"
+"time":"09:00"
 }\
 *time parameter is optional, if not provided, current server time is used\
 
@@ -202,6 +203,14 @@ POST\
 
 7.4 Get reservation hours of specific charging station\
 /info/occupied\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-19"
+}\
+
+7.5 Get opening hours of specific terminal on specific day\
+info/day/hours\
 POST\
 {
 "stationId" :1,
@@ -247,6 +256,16 @@ POST\
 "userId":2,
 "date":"2025-02-18"
 }\
+8.6 Pay for the transaction\
+Need to send again the method of payment:\
+"idUserBankAccount" or "idUserBankCard". This permits to change the method of payment just before the payment.\
+
+/transaction/pay\
+POST\
+{
+"idReservation":38,
+"idAccountForPayment":1
+}
 
 
 

@@ -33,7 +33,8 @@ public class BankCardDaoImpl implements BankCardDao {
             "expiration_date, cvv_number, registration_date_carte) VALUES (?,?,?,?,?,?) ";
 
     private static final String REQ_GET_ALL_USER_CARDS= "SELECT cardholder_name, expiration_date, cvv_number, id_credit_card, " +
-            "RIGHT(number_card, 4) AS number_card FROM credit_card cc JOIN session s ON cc.id_user = s.id_user WHERE s.token = ?";
+            "RIGHT(number_card, 4) AS number_card FROM credit_card cc JOIN session s ON cc.id_user = s.id_user WHERE s.token = ? " +
+            "AND withdrawal_date_card IS NULL";
     private static final String REQ_CARD_EXISTS = "SELECT * FROM credit_card WHERE number_card = ? and id_user =? and withdrawal_date_card IS NULL";
     private static final String REQ_CLOSE_CARD = "UPDATE credit_card SET withdrawal_date_card =? WHERE id_credit_card = ?";
     private static final String REQ_FIND_CARD_BY_ID ="SELECT * FROM credit_card WHERE id_credit_card = ?";

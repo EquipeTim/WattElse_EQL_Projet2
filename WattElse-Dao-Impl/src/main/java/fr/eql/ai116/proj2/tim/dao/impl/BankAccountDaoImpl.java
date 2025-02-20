@@ -29,7 +29,8 @@ public class BankAccountDaoImpl  implements BankAccountDao {
     private static final String REQ_ADD_BANK_ACC = "INSERT INTO bank_account (id_user, iban, account_owner_name," +
             "bic_swift, account_registration_date) VALUES (?,?,?,?,?) ";
     private static final String REQ_GET_ALL_USER_ACCOUNTS = "SELECT account_owner_name, bic_swift, id_bank_account, " +
-            "RIGHT(iban, 4) AS iban FROM bank_account ba JOIN session s ON ba.id_user = s.id_user WHERE s.token = ?";
+            "RIGHT(iban, 4) AS iban FROM bank_account ba JOIN session s ON ba.id_user = s.id_user WHERE s.token = ? " +
+            "AND account_close_date IS NULL;";
     private static final String REQ_ACCOUNT_EXISTS = "SELECT * FROM bank_account WHERE iban = ? and id_user =? and account_close_date IS NULL";
 
 

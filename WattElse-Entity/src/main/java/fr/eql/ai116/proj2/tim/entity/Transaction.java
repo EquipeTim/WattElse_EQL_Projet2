@@ -15,6 +15,7 @@ public class Transaction implements Serializable {
     static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
     private long idTransaction;
+    private Long idPayment;
     private long idUser;
     private long idOwner;
     private LocalDateTime startDateCharging;
@@ -37,9 +38,11 @@ public class Transaction implements Serializable {
         this.idTransaction = idTransaction;
     }
 
-    public Transaction(long idTransaction, Long idUser, Long idOwner, LocalDateTime reservationDate,
-                       LocalDateTime startDateCharging, LocalDateTime endDateCharging, Float consumeQuantity,
+    public Transaction(Long idPayment, long idTransaction, Long idUser, Long idOwner, LocalDateTime reservationDate,
+                       LocalDateTime startDateCharging,
+                       LocalDateTime endDateCharging, Float consumeQuantity,
                        String priceType, Float price) {
+        this.idPayment = idPayment;
         this.idTransaction = idTransaction;
         this.idUser = idUser;
         this.idOwner = idOwner;
@@ -89,6 +92,9 @@ public class Transaction implements Serializable {
         return endDateCharging;
     }
 
+    public Long getIdPayment() {
+        return idPayment;
+    }
 
     public Float getConsumeQuantity() {
         return consumeQuantity;
