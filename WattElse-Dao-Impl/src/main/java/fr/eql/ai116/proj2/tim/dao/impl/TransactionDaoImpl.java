@@ -129,7 +129,8 @@ public class TransactionDaoImpl implements TransactionDao {
         Reservation reservation = getReservation(reservationId);
         if (reservation != null){
             if (reservation.getRechargeStartTime() == null) {
-                if (reservation.reservationValid(now)) {
+                int reservationStatus = reservation.reservationValid(now);
+                if (reservationStatus == 1) {
                     try (Connection connection = dataSource.getConnection()) {
                         PreparedStatement statement = connection.prepareStatement(REQ_START_CHARGE);
                         statement.setTimestamp(1, now);
@@ -139,8 +140,11 @@ public class TransactionDaoImpl implements TransactionDao {
                     } catch (SQLException e) {
                         logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
                     }
-                } else {
+                } else if (reservationStatus == 0){
                     return new Transaction(2L, "La durée de réservation épuisé", reservationId);
+                } else {
+                    return new Transaction(4L, "Votre réservation est prevue pour: " +
+                            reservation.getReservationTime(), reservationId);
                 }
             }
             return new Transaction(3L, "Récharge déjà commencé", reservationId);

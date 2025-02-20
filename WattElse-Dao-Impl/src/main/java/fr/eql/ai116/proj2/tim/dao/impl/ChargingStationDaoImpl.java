@@ -2,14 +2,10 @@ package fr.eql.ai116.proj2.tim.dao.impl;
 
 import fr.eql.ai116.proj2.tim.dao.ChargingStationDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
-import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
-import fr.eql.ai116.proj2.tim.entity.WeekDay;
-import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
-import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,18 +18,12 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 @Remote(ChargingStationDao.class)
 @Stateless
@@ -128,7 +118,7 @@ private static final String REQ_GET_RESERVATION_TIMES =
                 resultSet.getFloat("longitude"),
                 resultSet.getFloat("latitude"),
                 phone,
-                PlugType.valueOf(resultSet.getString("plug_type")).getDisplayName(),
+                PlugType.valueOf(resultSet.getString("plug_type")).getLabel(),
                 PricingType.valueOf(resultSet.getString("type_pricing")).getLabel(),
                 resultSet.getFloat("price"));
     }

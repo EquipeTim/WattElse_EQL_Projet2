@@ -10,7 +10,9 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Remote(EnumLoadingDao.class)
@@ -99,18 +101,23 @@ public class EnumLoadingDaoImpl implements EnumLoadingDao {
      */
     private <T extends Enum<T>> Set<String> getMissingStrings(String reqStatement, String columnLabel,
                                           Connection connection , Class<T> enumClass) throws SQLException{
-        Set<String> dbTypes = new HashSet<>();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(reqStatement);
-        while (resultSet.next()) {
-            dbTypes.add(resultSet.getString(columnLabel));
+        List<String> dbTypes = new ArrayList<>(); // Changed to List
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(reqStatement)) {
+            while (resultSet.next()) {
+                dbTypes.add(resultSet.getString(columnLabel));
+            }
         }
-        Set<String> enumTypes = new HashSet<>();
+        List<String> enumTypes = new ArrayList<>(); // Changed to List
         for (T type : enumClass.getEnumConstants()) {
             enumTypes.add(type.name());
         }
-        Set<String> missingReasons = new HashSet<>(enumTypes);
-        missingReasons.removeAll(dbTypes);
+        Set<String> missingReasons = new HashSet<>(); // Still use a Set for the result
+        for (String enumType : enumTypes) {
+            if (!dbTypes.contains(enumType)) {
+                missingReasons.add(enumType);
+            }
+        }
         return missingReasons;
     }
 

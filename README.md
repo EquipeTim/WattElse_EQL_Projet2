@@ -176,6 +176,7 @@ GET\
 
 ## TERMINALS
 7.1 Find charging stations\
+Time must be provided in "HH:mm form"
 /terminals/find\
 POST\
 {
@@ -185,7 +186,7 @@ POST\
 "plugType" : "NACS",
 "timeZone":"Europe/Paris",
 "date":"2025-02-19",
-"time":"20:00"
+"time":"09:00"
 }\
 *time parameter is optional, if not provided, current server time is used\
 
