@@ -75,11 +75,12 @@ public class TransactionDaoImpl implements TransactionDao {
     @Override
     public Reservation reserveStation(ReservationDto reservationDto) {
         Reservation reservation = new Reservation();
+        Calendar utc = Calendar.getInstance(TimeZone.getTimeZone(reservationDto.getTimeZone()));
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(reservationDto.getTimeZone()));
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                Calendar utc = Calendar.getInstance(TimeZone.getTimeZone(reservationDto.getTimeZone()));
-                LocalDateTime now = LocalDateTime.now(ZoneId.of(reservationDto.getTimeZone()));
+
                 Long paymentId = addNewPayment(reservationDto, connection);
                 PreparedStatement statement = connection.prepareStatement(REQ_RESERVE_STATION,  Statement.RETURN_GENERATED_KEYS);
                 statement.setLong(1, reservationDto.getIdUser());

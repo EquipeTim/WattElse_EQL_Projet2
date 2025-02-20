@@ -19,6 +19,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Stateless
@@ -33,8 +35,10 @@ public class TransactionController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response reserve(ReservationDto reservationDto) {
-        if (reservationDto.getIdUserBankAccount() != null ||
-            reservationDto.getIdUserBankCard() != null) {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of(reservationDto.getTimeZone()));
+        if (reservationDto.getReservationDate().isAfter(now)
+                && (reservationDto.getIdUserBankAccount() != null
+                    || reservationDto.getIdUserBankCard() != null)) {
             Reservation reservation = transactionBusiness.reserveStation(reservationDto);
             if (reservation != null) {
                 return Response.ok(reservation).build();
