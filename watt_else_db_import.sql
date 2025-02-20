@@ -34,7 +34,13 @@ CREATE TABLE IF NOT EXISTS `bank_account` (
 
 -- Listage des données de la table wattelse.bank_account : ~0 rows (environ)
 INSERT INTO `bank_account` (`id_bank_account`, `id_user`, `iban`, `account_owner_name`, `bic_swift`, `account_registration_date`, `account_close_date`) VALUES
-	(1, 1, '6548311564694', 'Admin', 'LT1312', '2025-02-17 11:52:20', NULL);
+	(1, 1, '6548311564694', 'Admin', 'LT1312', '2025-02-17 11:52:20', NULL),
+	(2, 6, '5234-4321-5689-1312', 'sarah', '5', '2025-02-20 13:20:28', NULL),
+	(3, 5, '5555-4321-5689-1312', 'arvidas', '5', '2025-02-20 13:21:11', NULL),
+	(4, 4, '4444-4321-5689-1312', 'cyrine', '5', '2025-02-20 13:21:38', NULL),
+	(5, 3, '3333-4321-5689-1312', 'jules', '5', '2025-02-20 13:22:38', NULL),
+	(6, 2, '2222-4321-5689-1312', 'jules', '5', '2025-02-20 13:23:11', NULL),
+	(7, 2, '4444-4321-5689-1312', 'cyrine', '5', '2025-02-20 13:25:20', NULL);
 
 -- Listage de la structure de table wattelse. brand_car
 CREATE TABLE IF NOT EXISTS `brand_car` (
@@ -108,11 +114,17 @@ CREATE TABLE IF NOT EXISTS `charging_station` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.charging_station : ~0 rows (environ)
-INSERT INTO `charging_station` (`id_charging_station`, `id_station_closing_type`, `id_plug_type`, `id_city`, `id_user`, `id_owner_bank_account`, `id_owner_credit_card`, `power_charging_station`, `registration_station_date`, `closing_station_date`, `address_charging_station`, `longitude`, `latitude`, `emergency_phone`) VALUES
-	(1, NULL, 1, 1, 1, 1, NULL, NULL, '2025-02-11 00:00:00', NULL, '32 Rue Barbès', 2.32961, 48.8171, NULL),
-	(2, NULL, 3, 1, 1, 1, NULL, NULL, '2025-02-11 00:00:00', NULL, '6 Av. du Président Salvador', 2.32741, 48.8108, NULL),
-	(3, NULL, 5, 1, 1, NULL, NULL, NULL, '2025-02-11 00:00:00', NULL, '79 Av. du Général Leclerc', 2.31631, 48.7811, NULL);
-
+INSERT INTO `charging_station` (`id_charging_station`, `id_station_closing_type`, `id_plug_type`, `id_city`, `id_user`, `power_charging_station`, `registration_station_date`, `closing_station_date`, `address_charging_station`, `longitude`, `latitude`, `emergency_phone`) VALUES
+	    (1, NULL, 1, 1, 1, 1, NULL, NULL, '2025-02-10 23:00:00', NULL, '32 Rue Barbès', 2.32961, 48.8171, NULL),
+    	(2, NULL, 3, 1, 1, 1, NULL, NULL, '2025-02-10 23:00:00', NULL, '6 Av. du Président Salvador', 2.32741, 48.8108, NULL),
+    	(3, NULL, 5, 1, 1, 1, NULL, NULL, '2025-02-10 23:00:00', NULL, '79 Av. du Général Leclerc', 2.31631, 48.7811, NULL),
+    	(4, NULL, 1, 5, 2, 6, NULL, 4, '2024-02-14 22:00:00', NULL, '22-12 Rue Pierre de Ronsard', 47.587, 1.31853, '0687952568'),
+    	(5, NULL, 2, 4, 3, NULL, 1, 5, '2024-03-14 22:00:00', NULL, '12 Rue dArcole', 43.2897, 5.37675, '0687952568'),
+    	(6, NULL, 3, 3, 1, 1, NULL, 6, '2024-03-17 22:00:00', NULL, '78 Rue Saint-Jérôme', 45.7475, 4.8402, '0687958868'),
+    	(7, NULL, 4, 2, 2, 7, NULL, 7, '2024-04-17 20:00:00', NULL, '43 Rue Parmentier', 47.5774, 1.33592, '0787958868'),
+    	(8, NULL, 5, 1, 3, NULL, 3, 8, '2025-01-17 22:00:00', NULL, '14 rue Cujas', 48.8479, 2.34275, '0787958868'),
+    	(9, NULL, 5, 1, 6, NULL, 6, 8, '2025-01-17 22:00:00', NULL, '14 rue Cujas', 48.8479, 2.34275, '0787958868'),
+    	(10, NULL, 5, 1, 5, NULL, 5, 8, '2025-01-17 22:00:00', NULL, '14 rue Cujas', 48.8479, 2.34275, '0787958868');
 -- Listage de la structure de table wattelse. city
 CREATE TABLE IF NOT EXISTS `city` (
   `id_city` int(11) NOT NULL AUTO_INCREMENT,
@@ -123,7 +135,18 @@ CREATE TABLE IF NOT EXISTS `city` (
 
 -- Listage des données de la table wattelse.city : ~0 rows (environ)
 INSERT INTO `city` (`id_city`, `city`, `postal_code`) VALUES
-	(1, 'Paris', '75001');
+	(1, 'Paris', '75001'),
+	(2, 'Blois', '45000'),
+	(3, 'Lyon', '69000'),
+	(4, 'Marseille', '13001'),
+	(5, 'Cannes', '06400'),
+	(6, 'Blois', '45000'),
+	(7, 'Cannes', '06400'),
+	(8, 'Marseille', '13001'),
+	(9, 'Nice', '55000'),
+	(10, 'Bordeaux', '80000');
+
+
 
 -- Listage de la structure de table wattelse. closing_account_user_type
 CREATE TABLE IF NOT EXISTS `closing_account_user_type` (
@@ -149,6 +172,13 @@ CREATE TABLE IF NOT EXISTS `credit_card` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.credit_card : ~0 rows (environ)
+INSERT INTO `credit_card` (`id_credit_card`, `id_user`, `number_card`, `cardholder_name`, `expiration_date`, `cvv_number`, `registration_date_carte`, `withdrawal_date_card`) VALUES
+	(1, 3, '8924-4321-5689-1312', 'sara', '2025-10-12', 4588, '2025-02-20 13:14:13', NULL),
+	(2, 1, '1111-4321-5689-1312', 'adm', '2025-10-12', 1111, '2025-02-20 13:15:36', NULL),
+	(3, 3, '2222-4321-5689-1312', 'adm', '2025-10-12', 2222, '2025-02-20 13:16:42', NULL),
+	(4, 4, '4444-4321-5689-1312', 'adm', '2025-10-12', 4444, '2025-02-20 13:17:22', NULL),
+	(5, 5, '5555-4321-5689-1312', 'adm', '2025-10-12', 5555, '2025-02-20 13:18:57', NULL),
+	(6, 6, '6655-4321-5689-1312', 'adm', '2025-10-12', 6666, '2025-02-20 13:19:28', NULL);
 
 -- Listage de la structure de table wattelse. day
 CREATE TABLE IF NOT EXISTS `day` (
@@ -218,15 +248,30 @@ INSERT INTO `opening_hour` (`id_opening_hour`, `id_charging_station`, `id_day`, 
 	(4, 1, 1, '14:00:05', '18:00:00', '2025-02-01', NULL),
 	(5, 1, 3, '08:00:00', '18:00:00', '2025-02-01', NULL),
 	(6, 1, 6, '12:00:00', '15:00:00', '2025-02-01', NULL),
-	(7, 1, 7, '06:00:00', '24:00:00', '2025-02-01', '2025-02-17'),
+	(7, 1, 7, '06:00:00', '23:59:00', '2025-02-01', '2025-02-17'),
 	(8, 1, 4, '15:00:00', '20:00:00', '2025-02-01', NULL),
-	(9, 2, 2, '15:00:00', '20:00:00', '2025-02-01', NULL),
+	(9, 2, 2, '15:00:00', '20:00:00', '2025-02-01', '2025-05-20'),
 	(10, 2, 1, '10:08:00', '18:42:50', '2025-02-01', NULL),
-	(11, 2, 3, '00:00:00', '24:00:00', '2025-02-01', NULL),
+	(11, 2, 3, '00:00:00', '23:59:00', '2025-02-01', '2025-02-19'),
 	(12, 2, 6, '09:15:25', '17:35:00', '2025-02-01', NULL),
-	(13, 2, 7, '10:50:25', '21:21:21', '2025-03-21', NULL),
+	(13, 2, 7, '10:50:25', '21:21:21', '2025-03-21', '2025-06-20'),
 	(14, 2, 4, '09:30:00', '11:59:00', '2025-02-01', NULL),
-	(15, 3, 5, '10:30:00', '19:45:39', '2025-02-18', NULL);
+	(15, 3, 5, '10:30:00', '19:45:39', '2025-02-18', '2025-02-20'),
+	(16, 10, 3, '08:00:00', '17:00:00', '2025-02-02', NULL),
+	(17, 9, 4, '09:00:00', '18:00:00', '2025-02-03', '2025-03-20'),
+	(18, 8, 5, '10:00:00', '19:00:00', '2025-02-04', '2025-02-22'),
+	(19, 7, 6, '11:00:00', '20:00:00', '2025-02-05', NULL),
+	(20, 6, 1, '12:00:00', '21:00:00', '2025-02-06', '2025-02-10'),
+	(21, 10, 4, '08:00:00', '17:00:00', '2025-02-02', '2024-02-20'),
+	(22, 9, 5, '09:00:00', '18:00:00', '2025-02-03', NULL),
+	(23, 8, 6, '10:00:00', '19:00:00', '2025-02-04', '2026-02-21'),
+	(24, 7, 7, '11:00:00', '20:00:00', '2025-02-05', '2025-05-20'),
+	(25, 6, 2, '12:00:00', '21:00:00', '2025-02-06', '2027-02-20'),
+	(26, 10, 5, '08:00:00', '17:00:00', '2025-02-02', NULL),
+	(27, 9, 6, '09:00:00', '18:00:00', '2025-02-03', '2024-09-20'),
+	(28, 8, 7, '10:00:00', '19:00:00', '2025-02-04', '2024-05-20'),
+	(29, 7, 1, '11:00:00', '20:00:00', '2025-02-05', '2025-09-20'),
+	(30, 6, 3, '12:00:00', '21:00:00', '2025-02-06', '2025-02-05');
 
 -- Listage de la structure de table wattelse. payment
 CREATE TABLE IF NOT EXISTS `payment` (
@@ -277,7 +322,14 @@ CREATE TABLE IF NOT EXISTS `pricing` (
 INSERT INTO `pricing` (`id_pricing`, `id_type_pricing`, `id_charging_station`, `price`, `start_date_pricing`, `end_date_pricing`) VALUES
 	(1, 1, 1, 0.5, '2025-02-01', NULL),
 	(2, 2, 2, 1.01, '2025-02-18', NULL),
-	(3, 2, 3, 0.1, '2025-02-18', NULL);
+	(3, 2, 3, 0.1, '2025-02-18', NULL),
+	(4, 3, 10, 5.5, '2025-01-17', NULL),
+	(5, 2, 9, 4.5, '2025-01-17', NULL),
+	(6, 1, 8, 3.5, '2025-01-17', NULL),
+	(7, 3, 7, 6.5, '2024-04-17', NULL),
+	(8, 3, 6, 7.5, '2024-03-17', NULL),
+	(9, 2, 5, 5.5, '2024-03-14', NULL),
+	(10, 1, 4, 3.5, '2024-02-14', NULL);
 
 -- Listage de la structure de table wattelse. pricing_type
 CREATE TABLE IF NOT EXISTS `pricing_type` (
@@ -354,7 +406,14 @@ CREATE TABLE IF NOT EXISTS `unavailability` (
 
 -- Listage des données de la table wattelse.unavailability : ~0 rows (environ)
 INSERT INTO `unavailability` (`id_unavailability`, `id_unavailability_type`, `id_charging_station`, `start_date_unavailability`, `end_date_unavailability`) VALUES
-	(1, 1, 3, '2025-02-19', '2025-02-23');
+	(1, 1, 3, '2025-02-19', '2025-02-23'),
+	(2, 2, 10, '2025-02-19', '2025-02-20'),
+	(3, 3, 9, '2025-03-17', '2025-03-18'),
+	(4, 4, 8, '2025-07-17', '2025-07-18'),
+	(5, 5, 7, '2024-04-17', '2024-04-18'),
+	(6, 6, 6, '2024-05-17', '2024-05-18'),
+	(7, 7, 5, '2024-06-14', '2024-06-15'),
+	(8, 1, 4, '2024-02-14', '2024-02-15');
 
 -- Listage de la structure de table wattelse. unavailability_type
 CREATE TABLE IF NOT EXISTS `unavailability_type` (
@@ -387,8 +446,12 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 -- Listage des données de la table wattelse.user : ~0 rows (environ)
 INSERT INTO `user` (`id_user`, `id_city`, `id_label_closing_account_user`, `inscription_date_user`, `firstname_user`, `lastname_user`, `birthdate`, `phone_number`, `email`, `password`, `closing_date_account`, `address_user`, `role`) VALUES
-	(1, 1, NULL, '2025-02-11', 'Admin', 'administrator', '2025-02-12', '123456789', 'wattelseinc@proton.me', '-1402147925', NULL, NULL, 'ADMIN');
-
+	(1, 1, NULL, '2025-02-11 00:00:00', 'Admin', 'administrator', '2025-02-12', '123456789', 'wattelseinc@proton.me', '-1402147925', NULL, NULL, 'ADMIN'),
+	(2, 6, NULL, '2025-02-20 13:07:39', 'Jean', 'Tulliez', '1999-08-05', NULL, 'jt@gmail.com', '-677490036', NULL, '25 rue charles', 'USER'),
+	(3, 7, NULL, '2025-02-20 13:09:23', 'Jules', 'Tulliez', '1999-08-05', NULL, 'Mnt@gmail.com', '-677490036', NULL, '25 rue charles', 'USER'),
+	(4, 8, NULL, '2025-02-20 13:10:12', 'Cyrine', 'Tulliez', '1999-08-05', NULL, 'cyrine@gmail.com', '-677490036', NULL, '25 rue charles', 'USER'),
+	(5, 9, NULL, '2025-02-20 13:10:51', 'Arvidas', 'Tulliez', '1999-08-05', NULL, 'arvidas@gmail.com', '-677490036', NULL, '25 rue charles', 'USER'),
+	(6, 10, NULL, '2025-02-20 13:12:08', 'Sara', 'Tulliez', '1999-08-05', NULL, 'sara@gmail.com', '-677490036', NULL, '25 rue charles', 'USER');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
