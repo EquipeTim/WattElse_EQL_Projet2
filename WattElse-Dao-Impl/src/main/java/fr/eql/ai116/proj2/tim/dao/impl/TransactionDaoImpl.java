@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -63,7 +64,6 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_CALCULATE_TOTAL = "UPDATE transaction t " +
             "JOIN pricing p ON t.id_charging_station = p.id_charging_station " +
             "SET t.monetary_amount = p.price * t.consume_quantity WHERE t.id_transaction = ?";
-
     private static final String REQ_UPDATE_RESERVATION_PAYMENT_DATE =
             "UPDATE transaction SET date_payment = ? , id_payment_refuse_type  = NULL WHERE id_transaction = ?";
     private static final String REQ_EXECUTE_PAYMENT = "UPDATE payment SET id_credit_card = ?, id_bank_account = ? ," +
@@ -77,6 +77,9 @@ public class TransactionDaoImpl implements TransactionDao {
             "LEFT JOIN credit_card cc ON cc.id_credit_card = p.id_credit_card " +
             "LEFT JOIN payment_refuse_type prt ON prt.id_payment_refuse_type = t.id_payment_refuse_type " +
             "WHERE t.id_transaction = ?";
+    private static final String REQ_GET_USER_PAYMENTS =
+            "SELECT id_transaction FROM transaction WHERE id_user = ? " +
+            "AND reservation_date > ? AND end_date_charging IS NOT NULL";
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -332,6 +335,34 @@ public class TransactionDaoImpl implements TransactionDao {
 
     }
 
+    /**
+     * Return all user payments
+     * @param userId
+     * @param date
+     * @return
+     */
+    @Override
+    public List<Payment> getPayments(Long userId, String date) {
+        List<Payment> payments = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_USER_PAYMENTS);
+            statement.setLong(1, userId);
+            statement.setString(2, date);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                payments.add(generatePaymentInfo(resultSet.getLong("id_transaction")));
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return payments;
+    }
+
+    /**
+     * Generate payment obj
+     * @param reservationId
+     * @return
+     */
     private Payment generatePaymentInfo(Long reservationId){
         Payment payment = null;
         try (Connection connection = dataSource.getConnection()) {
@@ -384,7 +415,7 @@ public class TransactionDaoImpl implements TransactionDao {
     }
 
     /**
-     *      * Updates the transaction table and ,arks reservation as paid
+     * Updates the transaction table and ,arks reservation as paid
      * @param reservationId
      * @param now timestamp now
      * @param connection
