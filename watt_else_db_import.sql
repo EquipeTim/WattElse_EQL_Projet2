@@ -114,7 +114,9 @@ CREATE TABLE IF NOT EXISTS `charging_station` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.charging_station : ~0 rows (environ)
-INSERT INTO `charging_station` (`id_charging_station`, `id_station_closing_type`, `id_plug_type`, `id_city`, `id_user`, `power_charging_station`, `registration_station_date`, `closing_station_date`, `address_charging_station`, `longitude`, `latitude`, `emergency_phone`) VALUES
+INSERT INTO `charging_station` (`id_charging_station`, `id_station_closing_type`, `id_plug_type`, `id_city`, `id_user`,
+ `id_owner_bank_account`, `id_owner_credit_card`, `power_charging_station`, `registration_station_date`, `closing_station_date`,
+  `address_charging_station`, `longitude`, `latitude`, `emergency_phone`) VALUES
 	    (1, NULL, 1, 1, 1, 1, NULL, NULL, '2025-02-10 23:00:00', NULL, '32 Rue Barbès', 2.32961, 48.8171, NULL),
     	(2, NULL, 3, 1, 1, 1, NULL, NULL, '2025-02-10 23:00:00', NULL, '6 Av. du Président Salvador', 2.32741, 48.8108, NULL),
     	(3, NULL, 5, 1, 1, 1, NULL, NULL, '2025-02-10 23:00:00', NULL, '79 Av. du Général Leclerc', 2.31631, 48.7811, NULL),

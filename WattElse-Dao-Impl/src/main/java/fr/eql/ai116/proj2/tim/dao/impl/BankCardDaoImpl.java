@@ -109,23 +109,19 @@ public class BankCardDaoImpl implements BankCardDao {
     public boolean closeBankCard(Long bankCardId) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_CLOSE_CARD);
-
-                // Set the withdrawal date to the current date (using java.sql.Date)
-            statement.setTimestamp(1, Timestamp.from(Instant.now())); // Current date
-            statement.setLong(2, bankCardId); // Set the card ID to close
-            logger.error(statement);
+            statement.setTimestamp(1, Timestamp.from(Instant.now()));
+            statement.setLong(2, bankCardId);
             int rowsAffected = statement.executeUpdate();
                 if (rowsAffected > 0) {
-                    // Optionally, you could log or use the closeReasonId if necessary, like saving the reason to a log table
                     logger.info("Card with ID {} successfully closed", bankCardId);
-                    return true; // Successfully closed the card
+                    return true;
                 } else {
                     logger.warn("No card found with ID {}", bankCardId);
-                    return false; // No card found with the provided ID, or it couldn't be closed
+                    return false;
                 }
             } catch (SQLException e) {
                 logger.error("An error occurred while closing the card with ID {}", bankCardId, e);
-                return false; // An error occurred while closing the card
+                return false;
             }
         }
 
@@ -138,11 +134,11 @@ public class BankCardDaoImpl implements BankCardDao {
                 PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_CARD);
                 statement.setString(1, bankCard.getNumberCard());
                 statement.setString(2, bankCard.getCardHolderName());
-                statement.setDate(3, Date.valueOf(bankCard.getExpirationDate()));  // Date d'expiration
-                statement.setInt(4, bankCard.getCvvNumber());  //
-                statement.setLong(5, bankCard.getBankCardId()); // ID de la carte à modifier
+                statement.setDate(3, Date.valueOf(bankCard.getExpirationDate()));
+                statement.setInt(4, bankCard.getCvvNumber());
+                statement.setLong(5, bankCard.getBankCardId());
                 logger.error(statement);
-                int affectedRows = statement.executeUpdate();  // Exécuter la mise à jour
+                int affectedRows = statement.executeUpdate();
 
                 if (affectedRows > 0) {
                     success = true;
@@ -155,7 +151,7 @@ public class BankCardDaoImpl implements BankCardDao {
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion à la base de données", e);
         }
-        return success;  // Retourne true si la mise à jour a réussi, sinon false
+        return success;
     }
 
 
