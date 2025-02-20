@@ -47,14 +47,14 @@ public class TransactionDaoImpl implements TransactionDao {
             "WHERE id_user = ? AND reservation_date > ? ORDER BY reservation_date DESC";
     private static final String REQ_GET_TRANSACTION_DETAILS =
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
-                    "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
-                    "t.monetary_amount, t.reservation_date, cs.*, pr.*, p.*, pt.* " +
-                    "FROM transaction t " +
-                    "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
-                    "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station " +
-                    "JOIN pricing_type pt ON pt.id_type_pricing = pr.id_type_pricing " +
-                    "JOIN payment p ON p.id_payment = t.id_payment " +
-                    "WHERE id_transaction = ?";
+            "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
+            "t.monetary_amount, t.reservation_date, cs.*, pr.*, p.*, pt.* " +
+            "FROM transaction t " +
+            "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
+            "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station " +
+            "JOIN pricing_type pt ON pt.id_type_pricing = pr.id_type_pricing " +
+            "JOIN payment p ON p.id_payment = t.id_payment " +
+            "WHERE id_transaction = ?";
 
     private static final String REQ_FILL_CONSUMPTION = "UPDATE transaction SET consume_quantity = ? " +
             "WHERE id_transaction = ?";
