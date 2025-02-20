@@ -20,6 +20,7 @@ public interface TransactionBusiness {
     Transaction getTransactionDetails(Long reservationId);
     List<Transaction> getUserTransactions(SearchDto searchDto);
     Payment pay(PaymentDto paymentDto);
+    List<Payment> getUserPayments(SearchDto searchDto);
     //void cancelReservation(ReservationCancelDto reservationCancelDto);
 
 }

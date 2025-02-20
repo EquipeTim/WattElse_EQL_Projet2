@@ -79,12 +79,21 @@ public class TransactionController {
     }
 
     @POST
-    @Path("/info/user/history")
+    @Path("/info/user/history/reservations")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getUserTransactions(SearchDto searchDto) {
         List<Transaction> transactions = transactionBusiness.getUserTransactions(searchDto);
         return Response.ok(transactions).build();
+    }
+
+    @POST
+    @Path("/info/user/history/payments")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getUserPayments(SearchDto searchDto) {
+        List<Payment> payments = transactionBusiness.getUserPayments(searchDto);
+        return Response.ok( payments).build();
     }
 
     @POST

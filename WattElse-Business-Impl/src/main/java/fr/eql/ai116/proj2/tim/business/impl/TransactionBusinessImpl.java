@@ -55,4 +55,9 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     public Payment pay(PaymentDto paymentDto) {
         return transactionDao.pay(paymentDto);
     }
+
+    @Override
+    public List<Payment> getUserPayments(SearchDto searchDto) {
+        return transactionDao.getPayments(searchDto.getUserId(), searchDto.getDate());
+    }
 }
