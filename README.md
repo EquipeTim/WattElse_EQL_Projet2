@@ -253,6 +253,18 @@ POST\
 "date" : "2025-02-19"
 }\
 
+7.5 Get opening hours of specific terminal on specific day\
+*/terminals/info/day/hours\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-19"
+}\
+
+7.6 Get closed days of the charging station
+*/terminals/info/day/occupied/{id}\
+GET\
+
 
 ## TRANSACTIONS
 8.1 Reserve a charging station\
