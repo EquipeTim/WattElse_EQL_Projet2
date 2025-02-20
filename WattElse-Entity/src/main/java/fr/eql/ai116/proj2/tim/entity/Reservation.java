@@ -15,32 +15,39 @@ public class Reservation implements Serializable {
     private int reservationDuration;
     private Timestamp rechargeStartTime;
     private Timestamp rechargeEndTime;
+    private Timestamp reservationCancelTime;
+
 
     public Reservation(){}
 
     public Reservation(Long userId, Long reservationId, Timestamp reservationTime,
-                       int reservationDuration, Timestamp rechargeStartTime, Timestamp rechargeEndTime) {
+                       int reservationDuration, Timestamp rechargeStartTime, Timestamp rechargeEndTime,
+                       Timestamp reservationCancelTime) {
         this.userId = userId;
         this.reservationId = reservationId;
         this.reservationTime = reservationTime;
         this.reservationDuration = reservationDuration;
         this.rechargeStartTime = rechargeStartTime;
         this.rechargeEndTime = rechargeEndTime;
+        this.reservationCancelTime = reservationCancelTime;
     }
 
     /**
      * Checks if reservation is valid; Allows 15 min late
      * @param time
-     * @return true if time indicated is within the reservation duration
+     * @return 1 if time indicated is within 15 min of reservation( +/- 15 min from reservation time),
+     * -1 : indicated below the reserved time window
+     * 0 : indicated time is above the reserved time window
      */
-    public boolean reservationValid(Timestamp time){
+    public int reservationValid(Timestamp time){
         long timePassed_ms = time.getTime() -reservationTime.getTime();
 
         long timePassed_min = ((timePassed_ms/1000)) / 60;
-        if (timePassed_min < OVERDUE_ALLOWED){
-            return true;
+        if (timePassed_min < OVERDUE_ALLOWED && timePassed_min > -OVERDUE_ALLOWED){
+            return 1;
         }
-        return false;
+        if (timePassed_min < -OVERDUE_ALLOWED) {return -1;}
+        return 0;
     }
 
     public void setReservationId(Long reservationId) {
@@ -64,6 +71,10 @@ public class Reservation implements Serializable {
         return rechargeStartTime;
     }
 
+    public Timestamp getReservationTime() {
+        return reservationTime;
+    }
+
     public Timestamp getRechargeEndTime() {
         return rechargeEndTime;
     }
@@ -74,6 +85,10 @@ public class Reservation implements Serializable {
 
     public int getReservationDuration() {
         return reservationDuration;
+    }
+
+    public Timestamp getReservationCancelTime() {
+        return reservationCancelTime;
     }
 
     @Override

@@ -254,6 +254,18 @@ POST\
 "date" : "2025-02-19"
 }\
 
+7.5 Get opening hours of specific terminal on specific day\
+*/terminals/info/day/hours\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-19"
+}\
+
+7.6 Get closed days of the charging station
+*/terminals/info/day/occupied/{id}\
+GET\
+
 
 ## TRANSACTIONS
 8.1 Reserve a charging station\
@@ -285,14 +297,20 @@ POST\
 8.4 Get information on specific transaction\
 /transaction/info/reservation/{reservation_id}\
 GET\
-8.5 Get transaction made by user from date\
-/transaction/info/user/history\
+8.5 Get reservations made by user from date\
+/transaction/info/user/history/reservations
 POST\
 {
 "userId":2,
 "date":"2025-02-18"
 }\
-
+8.6 Get payments made by user from date\
+/transaction/info/user/history/payments
+POST\
+{
+"userId":2,
+"date":"2025-02-18"
+}\
 
 
 ### Architecture
