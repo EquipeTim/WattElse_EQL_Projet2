@@ -247,6 +247,16 @@ POST\
 "userId":2,
 "date":"2025-02-18"
 }\
+8.6 Pay for the transaction\
+Need to send again the method of payment:\
+"idUserBankAccount" or "idUserBankCard". This permits to change the method of payment just before the payment.\
+
+/transaction/pay\
+POST\
+{
+"idReservation":38,
+"idAccountForPayment":1
+}
 
 
 

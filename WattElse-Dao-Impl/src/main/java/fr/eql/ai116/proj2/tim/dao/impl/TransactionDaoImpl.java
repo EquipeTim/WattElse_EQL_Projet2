@@ -1,16 +1,14 @@
 package fr.eql.ai116.proj2.tim.dao.impl;
 
-import fr.eql.ai116.proj2.tim.dao.CarDao;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
-import fr.eql.ai116.proj2.tim.entity.AccountCloseType;
-import fr.eql.ai116.proj2.tim.entity.OpeningHour;
+import fr.eql.ai116.proj2.tim.entity.Payment;
+import fr.eql.ai116.proj2.tim.entity.PaymentRefusalType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
-import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
+import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
-import fr.eql.ai116.proj2.tim.entity.dto.TransactionDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,20 +18,12 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.TimeZone;
 
 
@@ -72,7 +62,12 @@ public class TransactionDaoImpl implements TransactionDao {
             "JOIN pricing p ON t.id_charging_station = p.id_charging_station " +
             "SET t.monetary_amount = p.price * t.consume_quantity WHERE t.id_transaction = ?";
 
-
+    private static final String REQ_UPDATE_RESERVATION_PAYMENT_DATE =
+            "UPDATE transaction SET date_payment = ? WHERE id_transaction = ?";
+    private static final String REQ_EXECUTE_PAYMENT = "UPDATE payment SET id_credit_card = ?, id_bank_account = ? ," +
+            "payment_date = ?, payment_amount = ? WHERE id_payment = ?";
+    private static final String REQ_REFUSE_PAYMENT =
+            "UPDATE transaction SET id_payment_refuse_type = ? WHERE id_transaction = ?";
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -232,6 +227,7 @@ public class TransactionDaoImpl implements TransactionDao {
                 LocalDateTime startDate = startTime != null ? startTime.toLocalDateTime() : null;
                 LocalDateTime endDate = endTime != null ? endTime.toLocalDateTime() : null;
                 Transaction transaction = new Transaction(
+                        resultSet.getLong("id_payment"),
                         resultSet.getLong("id_transaction"),
                         resultSet.getLong("id_client"),
                         resultSet.getLong("id_user"),
@@ -266,6 +262,99 @@ public class TransactionDaoImpl implements TransactionDao {
         }
         return transactions;
     }
+
+    /**
+     * Does the payment for the reservation
+     * @param paymentDto
+     * @return
+     */
+    @Override
+    public Payment pay(PaymentDto paymentDto) {
+        Payment payment = null;
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                //LocalDateTime now = LocalDateTime.now(ZoneId.of(paymentDto.getTimeZone()));
+                Timestamp now = Timestamp.from(Instant.now());
+                System.out.println(paymentDto.toString());
+                executePayment(paymentDto.getIdReservation(), paymentDto.getIdAccountForPayment(),
+                        paymentDto.getIdCardForPayment(), now, connection);
+                updateTransaction(paymentDto.getIdReservation(), now, connection);
+                processPayment(paymentDto.getIdReservation(), connection);
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                logger.error("Une erreur s'est produite lors de paiement pour la transaction: "
+                        + paymentDto.getIdReservation(), e);
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return payment;
+    }
+
+    /**
+     * Simulates payment processing x% chance to refuse a payment
+     * @param reservationId
+     * @param connection
+     * @throws SQLException
+     */
+    private void processPayment(Long reservationId, Connection connection) throws SQLException{
+        if (new Random().nextDouble() < 0.1) {
+            Random random = new Random();
+            int reasonId =  random.nextInt(PaymentRefusalType.values().length)+1;
+            PreparedStatement statement = connection.prepareStatement(REQ_REFUSE_PAYMENT);
+            statement.setLong(1, reasonId);
+            statement.setLong(2, reservationId);
+            statement.executeUpdate();
+        }
+    }
+
+    /**
+     *      * Updates the transaction table and ,arks reservation as paid
+     * @param reservationId
+     * @param now timestamp now
+     * @param connection
+     * @throws SQLException
+     */
+    private void updateTransaction(Long reservationId, Timestamp now,
+                                   Connection connection) throws SQLException{
+        PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_RESERVATION_PAYMENT_DATE);
+        statement.setTimestamp(1, now);
+        statement.setLong(2, reservationId);
+        statement.executeUpdate();
+    }
+
+    /**
+     * Executes the payment (changes the payment table)
+     * @param idReservation
+     * @param idAccount
+     * @param idCard
+     * @param now
+     * @param connection
+     * @throws SQLException
+     */
+    private void executePayment(Long idReservation, Long idAccount, Long idCard, Timestamp now, Connection connection)
+            throws SQLException{
+        System.out.println("executing payment");
+        Transaction transaction = generateTransactionInfo(idReservation);
+        PreparedStatement statement = connection.prepareStatement(REQ_EXECUTE_PAYMENT);
+        if (idCard != null) {
+            statement.setLong(1, idCard);
+        } else {
+            statement.setNull(1, Types.INTEGER);
+        }
+        if (idAccount != null) {
+            statement.setLong(2, idAccount);
+        } else {
+            statement.setNull(2, Types.INTEGER);
+        }
+        statement.setTimestamp(3, now);
+        statement.setFloat(4,transaction.getMonetaryAmount());
+        statement.setLong(5, transaction.getIdPayment());
+        statement.executeUpdate();
+    }
+
 
     /**
      * Gets reservation by the ID
