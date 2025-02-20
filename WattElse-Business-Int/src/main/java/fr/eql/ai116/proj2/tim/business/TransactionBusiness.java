@@ -1,10 +1,12 @@
 package fr.eql.ai116.proj2.tim.business;
 
 
+import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
+import fr.eql.ai116.proj2.tim.entity.dto.ReservationCancelDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
@@ -17,6 +19,7 @@ public interface TransactionBusiness {
     Transaction indicateStopCharging(ReservationDto reservationDto);
     Transaction getTransactionDetails(Long reservationId);
     List<Transaction> getUserTransactions(SearchDto searchDto);
-    void pay(PaymentDto paymentDto);
+    Payment pay(PaymentDto paymentDto);
+    //void cancelReservation(ReservationCancelDto reservationCancelDto);
 
 }

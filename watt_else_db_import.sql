@@ -149,6 +149,8 @@ CREATE TABLE IF NOT EXISTS `credit_card` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Listage des données de la table wattelse.credit_card : ~0 rows (environ)
+INSERT INTO `credit_card` (`id_credit_card`, `id_user`, `number_card`, `cardholder_name`, `expiration_date`, `cvv_number`, `registration_date_carte`, `withdrawal_date_card`) VALUES
+	(1, 1, '12345678979', 'Adminer le admin', '2025-02-20', 1312, '2025-02-18 13:19:37', NULL);
 
 -- Listage de la structure de table wattelse. day
 CREATE TABLE IF NOT EXISTS `day` (

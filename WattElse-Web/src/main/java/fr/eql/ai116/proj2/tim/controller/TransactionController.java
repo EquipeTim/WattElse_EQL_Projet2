@@ -1,6 +1,7 @@
 package fr.eql.ai116.proj2.tim.controller;
 
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
+import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
@@ -88,12 +89,13 @@ public class TransactionController {
 
     @POST
     @Path("/pay")
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response pay(PaymentDto paymentDto) {
         if (paymentDto.getIdAccountForPayment() != null
            || paymentDto.getIdCardForPayment() != null){
-                transactionBusiness.pay(paymentDto);
-                return Response.ok().build();
+                Payment payment = transactionBusiness.pay(paymentDto);
+                return Response.ok(payment).build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
 
