@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS `payment` (
   `id_bank_account` int(11) DEFAULT NULL,
   `id_credit_card` int(11) DEFAULT NULL,
   `payment_date` datetime DEFAULT NULL,
-  `payment_amount` int(11) DEFAULT NULL,
+  `payment_amount` float DEFAULT NULL,
   PRIMARY KEY (`id_payment`),
   KEY `FK_crediter` (`id_bank_account`),
   KEY `FK_verser` (`id_credit_card`)
