@@ -99,10 +99,4 @@ public class UserController {
         }
     }
 
-/*    @GET
-    @Path("/modify")
-    public Response modify() {
-        System.out.println("ok");
-        return Response.ok().build();
-    }*/
 }

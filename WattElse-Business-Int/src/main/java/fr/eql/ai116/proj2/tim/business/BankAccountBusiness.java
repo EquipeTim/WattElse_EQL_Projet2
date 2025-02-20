@@ -10,4 +10,5 @@ public interface BankAccountBusiness {
     boolean registerBankAccount(BankAccountDto bankAccountDto, Long userId);
     List<BankAccount> getBankAccounts(String token);
     boolean closeBankAccount(PaymentCloseDto paymentCloseDto, Long idBankAccount);
+    boolean modifyBankAccount (BankAccountDto bankAccountDto);
 }

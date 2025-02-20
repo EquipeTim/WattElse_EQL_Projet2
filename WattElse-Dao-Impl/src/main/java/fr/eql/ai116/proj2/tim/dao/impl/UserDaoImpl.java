@@ -156,6 +156,7 @@ public class UserDaoImpl implements UserDao {
                         resultSet.getString("phone_number"),
                         resultSet.getString("password"),
                         Role.valueOf(resultSet.getString("role"))
+
                 );
             }
         } catch (SQLException e) {
@@ -230,6 +231,7 @@ public class UserDaoImpl implements UserDao {
                         statement.setString(7, newUser.getAddress());
                         statement.setLong(8, cityId);
                         statement.setLong(9, session.getUserId());
+
                         int affectedRows = statement.executeUpdate();
                         connection.commit();
                         if (affectedRows > 0) {
