@@ -9,7 +9,7 @@ Cyrine Said Ali
 Starts by: /api/rest
 ## Authentification
 1. Authenticate using user already registered in the system (DB)
-*/connection/authenticate
+/connection/authenticate
 POST: send credentials
 {
 "email":"example@mail.mdr",
@@ -17,7 +17,7 @@ POST: send credentials
 }
 ## User details
 2.1 Register user in the system (DB)\
-*/user/registration\
+/user/registration\
 POST:\
 {
 "name":"myName",
@@ -31,8 +31,8 @@ POST:\
 "postal_code":"75020"
 }\
 2.2 Close the User Account\
-Header must contain token\
-*/user/close\
+*Header must contain token\
+/user/close\
 POST:\
 {
 "userId":15,
@@ -40,8 +40,8 @@ POST:\
 "reasonId":1
 }\
 2.3 Modify user details\
-Header must contain token\
-*/user/modify\
+*Header must contain token\
+/user/modify\
 POST\
 {
 "id":54,
@@ -57,11 +57,11 @@ POST\
 }\
 2.4 GET user details\
 *Header must contain token\
-*/user/details\
+/user/details\
 GET\
 ## Bank Card
 3.1 Add credit card to DB\
-*/payment_methods/card/add\
+/payment_methods/card/add\
 POST\
 {
 "numberCard":"1234-4321-5689-1312",
@@ -72,19 +72,32 @@ POST\
 }\
 
 3.2 show all credit cards per user\
-*/payment_methods/card/all\
+/payment_methods/card/all\
 GET\
 /activate bearer token\
+
 3.3 Remove a credit card from DB\
-*/payment_methods/card/close
+/payment_methods/card/close
 POST\
 {
 "bankCardId":6
 }\
+
+3.4 Modify a credit card \
+/payment_methods/card/modify
+POST\
+{
+"idCreditCard": 1,
+"cardHolderName": "Jean Marie",
+"cvvNumber": 254578,
+"expirationDate": "2022-02-15",
+"numberCard": "2154"
+}
+
 ## Bank Account
 4.1 Add Bank Account to DB\
-Header must contain token\
-*/payment_methods/account/add\
+*Header must contain token\
+/payment_methods/account/add\
 POST\
 {
 "iban":"1234-4321-5689-1312",
@@ -92,21 +105,32 @@ POST\
 "swift" : 666,
 "userId":2
 }\
-\
+
 4.2 Show all accounts \
-*/payment_methods/account/all
+/payment_methods/account/all
 GET\
-\
+
 4.3 Remove an account from DB\
-*/payment_methods/account/close\
+/payment_methods/account/close\
 POST\
 {
 "idBankAccount":10
 }\
+
+4.4 Modify bank account\
+/payment_methods/account/modify
+POST\
+{
+"ownerName": "Chipmunk Le great",
+"swift": "111",
+"iban": "1312",
+"idAccount": 1
+}\
+
 ## CARS
 5.1 Add Car to DB\
 Detect plug type by "brand" and "carModel". If one or both are missing uses "plug"
-*/car/add\
+/car/add\
 POST\
 {
 "brand":"Tesla",
@@ -118,10 +142,29 @@ POST\
 }\
 
 5.2 Get all user cars\
-Header must contain token\
-*/car/get/all
+*Header must contain token\
+/car/get/all
 GET\
 
+5.3 Modify a car\
+/car/modify\
+POST\
+{
+"brand": "AUTRE",
+"carModel": "Autre",
+"idCar": 2,
+"licensePlateNumber": "7779",
+"maxElectricPower": 130,
+"plug": "NACS"
+}
+
+5.4 Delete a car\
+/car/remove
+POST\
+{
+"idCar":4,
+"reasonId": 1
+}\
 ## COMPONENTS
 6.1 Recover all plug types recorded in system\
 /components/plugs/all\
@@ -178,8 +221,7 @@ GET\
 
 ## TERMINALS
 7.1 Find charging stations\
-Time must be provided in "HH:mm form"
-*/terminals/find\
+/terminals/find\
 POST\
 {
 "searchRadius":5,
@@ -188,16 +230,16 @@ POST\
 "plugType" : "NACS",
 "timeZone":"Europe/Paris",
 "date":"2025-02-19",
-"time":"09:00"
+"time":"20:00"
 }\
 *time parameter is optional, if not provided, current server time is used\
 
 7.2 Get info of specific Charging Station\
-*/terminals/info/{id}\
+/info/{id}\
 GET/
 
 7.3 Get opening hours of specific Charging Station\
-*/terminals/info/hours\
+/info/hours\
 POST\
 {
 "stationId" :1,
@@ -205,24 +247,12 @@ POST\
 }\
 
 7.4 Get reservation hours of specific charging station\
-*/terminals/info/occupied\
+/info/occupied\
 POST\
 {
 "stationId" :1,
 "date" : "2025-02-19"
 }\
-
-7.5 Get opening hours of specific terminal on specific day\
-*/terminals/info/day/hours\
-POST\
-{
-"stationId" :1,
-"date" : "2025-02-19"
-}\
-
-7.6 Get closed days of the charging station
-*/terminals/info/day/occupied/{id}\
-GET\
 
 
 ## TRANSACTIONS
@@ -262,16 +292,6 @@ POST\
 "userId":2,
 "date":"2025-02-18"
 }\
-8.6 Pay for the transaction\
-Need to send again the method of payment:\
-"idUserBankAccount" or "idUserBankCard". This permits to change the method of payment just before the payment.\
-
-/transaction/pay\
-POST\
-{
-"idReservation":38,
-"idAccountForPayment":1
-}
 
 
 

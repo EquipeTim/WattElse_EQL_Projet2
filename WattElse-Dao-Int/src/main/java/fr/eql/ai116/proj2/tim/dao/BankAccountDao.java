@@ -9,7 +9,7 @@ import java.util.List;
 public interface BankAccountDao {
     boolean registerBankAccount(BankAccount bankAccount, Long userId);
     boolean closeBankAccount(Long bankAccountId);
-    void modifyBankAccount(BankAccount bankAccount);
+    boolean modifyBankAccount(BankAccount bankAccount);
     List<BankAccount> getBankAccounts(String token);
     BankAccount getBankAccountById(Long idBankAccount);
 

@@ -29,6 +29,9 @@ public class Car implements Serializable {
         this.plug = plug;
     }
 
+
+
+
     ///getters///
 
     public Long getIdCar() {
