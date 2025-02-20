@@ -42,4 +42,9 @@ public class TerminalBusinessImpl implements TerminalBusiness {
     public List<OpeningHour> getReservedTimeSlots(SearchDto searchDto) {
         return chargingStationDao.getReservedTimeSlots(searchDto.getStationId(), searchDto.getDate());
     }
+
+    @Override
+    public List<OpeningHour> getSpecificDayOpeningHours(SearchDto searchDto) {
+        return chargingStationDao.getSpecificDayOpeningHours(searchDto.getStationId(), searchDto.getDate());
+    }
 }

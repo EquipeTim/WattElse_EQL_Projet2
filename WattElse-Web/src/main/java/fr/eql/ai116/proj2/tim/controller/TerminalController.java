@@ -53,8 +53,18 @@ public class TerminalController {
     @POST
     @Path("/info/occupied")
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response getReservedSlots(SearchDto searchDto) {
         List<OpeningHour> slots = terminalBusiness.getReservedTimeSlots(searchDto);
         return Response.ok(slots).build();
+    }
+
+    @POST
+    @Path("/info/day/hours")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getDayOpeningHours(SearchDto searchDto) {
+        List<OpeningHour> hours = terminalBusiness.getSpecificDayOpeningHours(searchDto);
+        return Response.ok(hours).build();
     }
 }

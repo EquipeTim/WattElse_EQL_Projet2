@@ -23,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 @Remote(ChargingStationDao.class)
@@ -67,7 +69,14 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         "WHERE cs.id_charging_station = ?";
 
 private static final String REQ_GET_RESERVATION_TIMES =
-            "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ?";
+        "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ?";
+private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
+        "SELECT * FROM opening_hour oh " +
+        "LEFT JOIN unavailability una ON oh.id_charging_station = una.id_charging_station " +
+        "JOIN day d ON oh.id_day = d.id_day " +
+        "WHERE oh.id_charging_station = ? AND day = ? " +
+        "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
+        "AND (una.start_date_unavailability IS NULL OR ? > una.end_date_unavailability)";
 
     @Override
     public List<ChargingStation> findChargingStation(SearchDto searchDto) {
@@ -208,6 +217,31 @@ private static final String REQ_GET_RESERVATION_TIMES =
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return occupied;
+    }
+
+    @Override
+    public List<OpeningHour> getSpecificDayOpeningHours(Long stationId, String date) {
+        List<OpeningHour> openingHours = new ArrayList<>();
+        String dayOfWeek = String.valueOf(LocalDate.parse(date).getDayOfWeek());
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_STATION_OPENING_HOURS_ON_DAY);
+            statement.setLong(1, stationId);
+            statement.setString(2, dayOfWeek);
+            statement.setString(3, date);
+            statement.setString(4, date);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                openingHours.add(new OpeningHour(resultSet.getString("day"),
+                                                resultSet.getTimestamp("start_hour").toLocalDateTime().toLocalTime(),
+                                                resultSet.getTimestamp("end_hour").toLocalDateTime().toLocalTime(),
+                                                null,
+                                                null));
+
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return openingHours;
     }
 
 }
