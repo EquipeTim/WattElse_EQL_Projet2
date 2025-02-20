@@ -24,6 +24,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -303,13 +304,18 @@ public class TransactionDaoImpl implements TransactionDao {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                Timestamp now = Timestamp.from(Instant.now());
-                executePayment(paymentDto.getIdReservation(), paymentDto.getIdAccountForPayment(),
-                        paymentDto.getIdCardForPayment(), now, connection);
-                updateTransaction(paymentDto.getIdReservation(), now, connection);
-                processPayment(paymentDto.getIdReservation(), connection);
                 payment = generatePaymentInfo(paymentDto.getIdReservation());
-                connection.commit();
+                if (payment.getPaymentDate() == null
+                    || !Objects.equals(payment.getPaymentRefuseReason(), "")){
+                    Timestamp now = Timestamp.from(Instant.now());
+                    executePayment(paymentDto.getIdReservation(), paymentDto.getIdAccountForPayment(),
+                            paymentDto.getIdCardForPayment(), now, connection);
+                    updateTransaction(paymentDto.getIdReservation(), now, connection);
+                    processPayment(paymentDto.getIdReservation(), connection);
+                    payment = generatePaymentInfo(paymentDto.getIdReservation());
+                    connection.commit();
+                    logger.info("Transaction id {} a été réglé", paymentDto.getIdReservation());
+                }
             } catch (SQLException e) {
                 connection.rollback();
                 logger.error("Une erreur s'est produite lors de paiement pour la transaction: "
@@ -340,12 +346,14 @@ public class TransactionDaoImpl implements TransactionDao {
                 String payRefuseReason = resultSet.getString("refuse_payment_label") != null
                         ? PaymentRefusalType.valueOf(resultSet.getString("refuse_payment_label")).getLabel()
                         : "";
+                Timestamp paymentDay = resultSet.getTimestamp("payment_date");
+                LocalDateTime paymentDate = paymentDay != null ? paymentDay.toLocalDateTime() : null;
                 payment = new Payment(resultSet.getLong("id_bank_account"),
                         resultSet.getLong("id_credit_card"),
                         resultSet.getLong("id_payment_refuse_type"),
                         resultSet.getLong("id_transaction"),
                         resultSet.getLong("id_user"),
-                        resultSet.getTimestamp("payment_date").toLocalDateTime(),
+                        paymentDate,
                         resultSet.getTimestamp("reservation_date").toLocalDateTime(),
                         iban, cardNumber, payRefuseReason,
                         resultSet.getFloat("payment_amount")
@@ -371,6 +379,7 @@ public class TransactionDaoImpl implements TransactionDao {
             statement.setLong(1, reasonId);
             statement.setLong(2, reservationId);
             statement.executeUpdate();
+            logger.info("Paiement pour la réservation {} a été refusé", reservationId);
         }
     }
 

@@ -99,6 +99,10 @@ public class Payment implements Serializable {
         this.idPaymentRefuseReason = idPaymentRefuseReason;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public void setIdReservation(Long idReservation) {
         this.idReservation = idReservation;
     }
