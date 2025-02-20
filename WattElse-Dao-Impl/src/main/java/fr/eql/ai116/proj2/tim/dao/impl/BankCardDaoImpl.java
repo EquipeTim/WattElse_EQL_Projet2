@@ -38,6 +38,8 @@ public class BankCardDaoImpl implements BankCardDao {
     private static final String REQ_CARD_EXISTS = "SELECT * FROM credit_card WHERE number_card = ? and id_user =? and withdrawal_date_card IS NULL";
     private static final String REQ_CLOSE_CARD = "UPDATE credit_card SET withdrawal_date_card =? WHERE id_credit_card = ?";
     private static final String REQ_FIND_CARD_BY_ID ="SELECT * FROM credit_card WHERE id_credit_card = ?";
+    private static final String REQ_UPDATE_CARD = "UPDATE credit_card SET number_card = ?, cardholder_name = ?, expiration_date = ?, cvv_number = ? WHERE id_credit_card = ?";
+
 
 
 
@@ -127,12 +129,38 @@ public class BankCardDaoImpl implements BankCardDao {
             }
         }
 
-
-
     @Override
-    public void modifyBankCard(BankCard creditCard) {
+    public boolean modifyBankCard(BankCard bankCard) {
+        boolean success = false;
+        try (Connection connection = dataSource.getConnection()) {
 
+                // Préparer la mise à jour des informations de la carte bancaire
+                PreparedStatement statement = connection.prepareStatement(REQ_UPDATE_CARD);
+                statement.setString(1, bankCard.getNumberCard());
+                statement.setString(2, bankCard.getCardHolderName());
+                statement.setDate(3, Date.valueOf(bankCard.getExpirationDate()));  // Date d'expiration
+                statement.setInt(4, bankCard.getCvvNumber());  //
+                statement.setLong(5, bankCard.getBankCardId()); // ID de la carte à modifier
+                logger.error(statement);
+                int affectedRows = statement.executeUpdate();  // Exécuter la mise à jour
+
+                if (affectedRows > 0) {
+                    success = true;
+                    logger.info("La carte bancaire avec ID {} a été bien modifiée", bankCard.getBankCardId());
+                }else{
+                    logger.warn("Aucune carte bancaire trouvée avec l'ID {}", bankCard.getBankCardId());
+                }
+
+
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion à la base de données", e);
+        }
+        return success;  // Retourne true si la mise à jour a réussi, sinon false
     }
+
+
+
+
 
     @Override
     public List<BankCard> getBankCards(String token) {

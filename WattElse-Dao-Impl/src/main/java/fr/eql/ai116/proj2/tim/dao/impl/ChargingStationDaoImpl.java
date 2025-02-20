@@ -6,6 +6,8 @@ import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
+import fr.eql.ai116.proj2.tim.entity.Unavailability;
+import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -69,7 +71,8 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         "WHERE cs.id_charging_station = ?";
 
 private static final String REQ_GET_RESERVATION_TIMES =
-        "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ?";
+        "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ? " +
+        "AND id_cancellation_type IS NULL";
 private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "SELECT * FROM opening_hour oh " +
         "LEFT JOIN unavailability una ON oh.id_charging_station = una.id_charging_station " +
@@ -77,6 +80,8 @@ private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "WHERE oh.id_charging_station = ? AND day = ? " +
         "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
         "AND (una.start_date_unavailability IS NULL OR ? > una.end_date_unavailability)";
+private static final String REQ_GET_STATION_CLOSE_DAYS =
+        "SELECT * FROM unavailability WHERE id_charging_station = ?";
 
     @Override
     public List<ChargingStation> findChargingStation(SearchDto searchDto) {
@@ -242,6 +247,26 @@ private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return openingHours;
+    }
+
+    @Override
+    public List<Unavailability> getUnavailableDays(Long stationId) {
+        List<Unavailability> unavailability = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_STATION_CLOSE_DAYS);
+            statement.setLong(1, stationId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                unavailability.add(new Unavailability(
+                        resultSet.getTimestamp("start_date_unavailability").toLocalDateTime().toLocalDate(),
+                        resultSet.getTimestamp("end_date_unavailability").toLocalDateTime().toLocalDate(),
+                        resultSet.getLong("id_unavailability_type")
+                        ));
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return unavailability;
     }
 
 }

@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.entity;
 // jour-semaine
 public enum WeekDay {
 
+
     MONDAY("Lundi"),
     TUESDAY("Mardi"),
     WEDNESDAY("Mercredi"),
@@ -9,6 +10,7 @@ public enum WeekDay {
     FRIDAY("Vendredi"),
     SATURDAY("Samedi"),
     SUNDAY("Dimanche");
+
 
     private final String label;
 
