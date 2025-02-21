@@ -51,7 +51,8 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_GET_TRANSACTION_DETAILS =
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
             "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
-            "t.monetary_amount, t.reservation_date, cs.*, pr.*, p.*, pt.* " +
+            "t.monetary_amount, t.reservation_date, t.reservation_cancellation_date, " +
+            "cs.*, pr.*, p.*, pt.* " +
             "FROM transaction t " +
             "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
             "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station " +
@@ -79,7 +80,8 @@ public class TransactionDaoImpl implements TransactionDao {
             "WHERE t.id_transaction = ?";
     private static final String REQ_GET_USER_PAYMENTS =
             "SELECT id_transaction FROM transaction WHERE id_user = ? " +
-            "AND reservation_date > ? AND end_date_charging IS NOT NULL";
+            "AND reservation_date > ? AND end_date_charging IS NOT NULL " +
+            "AND reservation_cancellation_date IS NULL";
     private static final String REQ_GET_TARIF_TYPE =
             "SELECT * FROM pricing p " +
             "JOIN pricing_type pt ON pt.id_type_pricing = p.id_type_pricing " +
@@ -90,6 +92,9 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_GET_CHARGE_DURATION =
             "SELECT TIMESTAMPDIFF(HOUR, start_date_charging, end_date_charging) AS charging_time " +
             "FROM transaction WHERE id_transaction = ? ";
+    private static final String REQ_GET_CANCEL_RESERVATION =
+            "UPDATE transaction SET id_cancellation_type = ?, reservation_cancellation_date = ? " +
+            "WHERE id_transaction = ? AND start_date_charging IS NULL";
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -159,9 +164,9 @@ public class TransactionDaoImpl implements TransactionDao {
                 if (reservationStatus == 1) {
                     return executeStartCharging(now, reservationId);
                 } else if (reservationStatus == 0){
-                    return new Transaction(2L, "La durée de réservation épuisé", reservationId);
+                    return new Transaction(2L, "La durée de réservation est déjà épuisée.", reservationId);
                 } else {
-                    return new Transaction(4L, "Votre réservation est prevue pour: " +
+                    return new Transaction(4L, "Votre réservation est prévue pour le : " +
                             reservation.getReservationTime(), reservationId);
                 }
             }
@@ -305,19 +310,22 @@ public class TransactionDaoImpl implements TransactionDao {
             if (resultSet.next()) {
                 Timestamp startTime = resultSet.getTimestamp("start_date_charging");
                 Timestamp endTime = resultSet.getTimestamp("end_date_charging");
+                Timestamp reservationCancelTime = resultSet.getTimestamp("reservation_cancellation_date");
                 LocalDateTime startDate = startTime != null ? startTime.toLocalDateTime() : null;
                 LocalDateTime endDate = endTime != null ? endTime.toLocalDateTime() : null;
+                LocalDateTime reservationCancelDate = reservationCancelTime != null
+                        ? reservationCancelTime.toLocalDateTime() : null;
                 Transaction transaction = new Transaction(
                         resultSet.getLong("id_payment"),
                         resultSet.getLong("id_transaction"),
                         resultSet.getLong("id_client"),
                         resultSet.getLong("id_user"),
                         resultSet.getTimestamp("reservation_date").toLocalDateTime(),
-                        startDate,
-                        endDate,
+                        reservationCancelDate, startDate, endDate,
                         resultSet.getFloat("consume_quantity"),
                         PricingType.valueOf(resultSet.getString("type_pricing")).getLabel(),
-                        resultSet.getFloat("price"));
+                        resultSet.getFloat("price"),
+                        resultSet.getFloat("monetary_amount"));
                 return transaction;
 
             }
@@ -383,7 +391,19 @@ public class TransactionDaoImpl implements TransactionDao {
      * @param reservationId
      */
     @Override
-    public void cancelReservation(Long reservationId) {
+    public boolean cancelReservation(Long reservationId, Long reasonId) {
+        boolean cancelled = false;
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_CANCEL_RESERVATION);
+            statement.setLong(1, reasonId);
+            statement.setTimestamp(2, Timestamp.from(Instant.now()));
+            statement.setLong(3, reservationId);
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows > 0){cancelled = true;}
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return cancelled;
 
     }
 

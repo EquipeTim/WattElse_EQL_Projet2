@@ -280,8 +280,8 @@ CREATE TABLE IF NOT EXISTS `payment` (
   `id_payment` int(11) NOT NULL AUTO_INCREMENT,
   `id_bank_account` int(11) DEFAULT NULL,
   `id_credit_card` int(11) DEFAULT NULL,
-  `payement_date` datetime DEFAULT NULL,
-  `payement_amount` int(11) DEFAULT NULL,
+  `payment_date` datetime DEFAULT NULL,
+  `payment_amount` float DEFAULT NULL,
   PRIMARY KEY (`id_payment`),
   KEY `FK_crediter` (`id_bank_account`),
   KEY `FK_verser` (`id_credit_card`)
