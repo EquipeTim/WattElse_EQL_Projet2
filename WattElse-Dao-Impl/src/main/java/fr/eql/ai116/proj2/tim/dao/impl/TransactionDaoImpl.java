@@ -52,12 +52,13 @@ public class TransactionDaoImpl implements TransactionDao {
             "SELECT t.id_transaction,t.id_payment,t.id_user as id_client, " +
             "t.start_date_charging,t.end_date_charging,t.consume_quantity, " +
             "t.monetary_amount, t.reservation_date, t.reservation_cancellation_date, " +
-            "cs.*, pr.*, p.*, pt.* " +
+            "t.id_payment_refuse_type, t.date_payment,  cs.*, pr.*, p.*, pt.*, prt.refuse_payment_label " +
             "FROM transaction t " +
             "JOIN charging_station cs ON t.id_charging_station = cs.id_charging_station " +
             "JOIN pricing pr ON pr.id_charging_station  = cs.id_charging_station " +
             "JOIN pricing_type pt ON pt.id_type_pricing = pr.id_type_pricing " +
             "JOIN payment p ON p.id_payment = t.id_payment " +
+            "LEFT JOIN payment_refuse_type prt ON prt.id_payment_refuse_type = t.id_payment_refuse_type " +
             "WHERE id_transaction = ?";
 
     private static final String REQ_FILL_CONSUMPTION = "UPDATE transaction SET consume_quantity = ? " +
@@ -311,10 +312,14 @@ public class TransactionDaoImpl implements TransactionDao {
                 Timestamp startTime = resultSet.getTimestamp("start_date_charging");
                 Timestamp endTime = resultSet.getTimestamp("end_date_charging");
                 Timestamp reservationCancelTime = resultSet.getTimestamp("reservation_cancellation_date");
+                Timestamp paymentTime = resultSet.getTimestamp("date_payment");
                 LocalDateTime startDate = startTime != null ? startTime.toLocalDateTime() : null;
                 LocalDateTime endDate = endTime != null ? endTime.toLocalDateTime() : null;
                 LocalDateTime reservationCancelDate = reservationCancelTime != null
                         ? reservationCancelTime.toLocalDateTime() : null;
+                LocalDateTime paymentDate = paymentTime != null ? paymentTime.toLocalDateTime() : null;
+                String refuseReason = resultSet.getString("refuse_payment_label");
+                refuseReason = refuseReason != null ? PaymentRefusalType.valueOf(refuseReason).getLabel() : "";
                 Transaction transaction = new Transaction(
                         resultSet.getLong("id_payment"),
                         resultSet.getLong("id_transaction"),
@@ -325,7 +330,9 @@ public class TransactionDaoImpl implements TransactionDao {
                         resultSet.getFloat("consume_quantity"),
                         PricingType.valueOf(resultSet.getString("type_pricing")).getLabel(),
                         resultSet.getFloat("price"),
-                        resultSet.getFloat("monetary_amount"));
+                        resultSet.getFloat("monetary_amount"),
+                        resultSet.getLong("id_payment_refuse_type"),
+                        paymentDate,refuseReason);
                 return transaction;
 
             }

@@ -29,6 +29,10 @@ public class Transaction implements Serializable {
     private String status;
     private Long statusId;
     private LocalTime chargeDurationMin;
+    private Long idPaymentRefuseReason;
+    private LocalDateTime paymentDate;
+    private String paymentRefuseReason;
+
 
 
     /// Constructor///
@@ -42,7 +46,8 @@ public class Transaction implements Serializable {
     public Transaction(Long idPayment, long idTransaction, Long idUser, Long idOwner, LocalDateTime reservationDate,
                        LocalDateTime reservationCancelDate, LocalDateTime startDateCharging,
                        LocalDateTime endDateCharging, Float consumeQuantity,
-                       String priceType, Float price, Float amountToPay) {
+                       String priceType, Float price, Float amountToPay,
+                       Long idPaymentRefuseReason, LocalDateTime paymentDate, String paymentRefuseReason) {
         this.idPayment = idPayment;
         this.idTransaction = idTransaction;
         this.idUser = idUser;
@@ -55,6 +60,9 @@ public class Transaction implements Serializable {
         this.priceType = priceType;
         this.price = price;
         this.monetaryAmount = amountToPay;
+        this.idPaymentRefuseReason = idPaymentRefuseReason;
+        this.paymentDate = paymentDate;
+        this.paymentRefuseReason = paymentRefuseReason;
         if (startDateCharging != null && endDateCharging != null) {
             chargeDurationMin = calculateDuration(endDateCharging, startDateCharging);
         }
@@ -136,6 +144,18 @@ public class Transaction implements Serializable {
 
     public void setChargeDurationMin(LocalTime chargeDurationMin) {
         this.chargeDurationMin = chargeDurationMin;
+    }
+
+    public Long getIdPaymentRefuseReason() {
+        return idPaymentRefuseReason;
+    }
+
+    public LocalDateTime getPaymentDate() {
+        return paymentDate;
+    }
+
+    public String getPaymentRefuseReason() {
+        return paymentRefuseReason;
     }
 
     @Override
