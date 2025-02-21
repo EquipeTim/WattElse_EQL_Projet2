@@ -58,7 +58,6 @@ private static final String REQ_FIND_TERMINAL =
         "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND plug_type = ? " +
         "AND cs.closing_station_date IS NULL AND d.day = ? " +
         "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
-        "AND (? BETWEEN oh.start_hour AND oh.end_hour) " +
         "AND ((? NOT BETWEEN una.start_date_unavailability AND una.end_date_unavailability) OR una.start_date_unavailability IS NULL) ";
 
 private static final String REQ_GET_TERMINAL_BY_ID =
@@ -88,11 +87,15 @@ private static final String REQ_GET_STATION_CLOSE_DAYS =
         List<ChargingStation> stations = new ArrayList<>();
         LocalTime now = LocalTime.now(ZoneId.of(searchDto.getTimeZone()));
         LocalTime time = LocalTime.parse("00:00");
+        String searchRequest;
         if (searchDto.getDate().equals(LocalDate.now())){
             time = searchDto.getTime() != null ? LocalTime.parse(searchDto.getTime()) : now;
+            searchRequest = REQ_FIND_TERMINAL + " AND (? BETWEEN oh.start_hour AND oh.end_hour)";
+        } else {
+            searchRequest = REQ_FIND_TERMINAL + " AND (? < oh.end_hour)";
         }
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(REQ_FIND_TERMINAL);
+            PreparedStatement statement = connection.prepareStatement(searchRequest);
             statement.setFloat(1, searchDto.getStartingLat());
             statement.setFloat(2, searchDto.getStartingLat());
             statement.setFloat(3, searchDto.getStartingLong());
@@ -100,8 +103,9 @@ private static final String REQ_GET_STATION_CLOSE_DAYS =
             statement.setString(5, searchDto.getPlugType().name());
             statement.setString(6, searchDto.getWeekDay());
             statement.setString(7, searchDto.getDate());
-            statement.setString(8, String.valueOf(time));
-            statement.setString(9, searchDto.getDate());
+            statement.setString(8, searchDto.getDate());
+            statement.setString(9, String.valueOf(time));
+            logger.error(statement);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String phone;
