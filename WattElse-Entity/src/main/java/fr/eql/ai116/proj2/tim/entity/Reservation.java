@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 public class Reservation implements Serializable {
-    private static final int OVERDUE_ALLOWED = 15;
+    public static final int OVERDUE_ALLOWED = 15;
     private Long userId;
     private Long reservationId;
     private Timestamp reservationTime;

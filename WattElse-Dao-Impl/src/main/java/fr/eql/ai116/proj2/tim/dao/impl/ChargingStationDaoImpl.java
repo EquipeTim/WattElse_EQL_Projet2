@@ -6,9 +6,10 @@ import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
+import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Unavailability;
-import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
+import fr.eql.ai116.proj2.tim.entity.WeekDay;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,13 +22,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Remote(ChargingStationDao.class)
@@ -208,7 +210,7 @@ private static final String REQ_GET_REVENUES =
                 } else {
                     endDate = LocalDate.parse(resultSet.getDate("end_validity_date_opening_hour").toString());
                 }
-                openingHours.add(new OpeningHour(day,LocalTime.parse(startHour),
+                openingHours.add(new OpeningHour(WeekDay.valueOf(day).getLabel(),LocalTime.parse(startHour),
                         LocalTime.parse(endHour),startDate,endDate));
             }
         } catch (SQLException e) {
@@ -299,6 +301,43 @@ private static final String REQ_GET_REVENUES =
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return revenues;
+    }
+
+    @Override
+    public List<OpeningHour> getAvailableTimeSlots(Long stationId, String date) {
+        int minimul_interval = 30;
+        List<OpeningHour> availableSlots = new ArrayList<>();
+        List<OpeningHour> openingHours = getSpecificDayOpeningHours(stationId, date);
+        List<OpeningHour> reservedSlots = getReservedTimeSlots(stationId, date);
+        Collections.sort(openingHours, Comparator.comparing(OpeningHour::getStartHour));
+        Collections.sort(reservedSlots, Comparator.comparing(OpeningHour::getStartHour));
+        System.out.println(openingHours);
+        System.out.println(reservedSlots);
+        for (int i = 0; i < openingHours.size(); i++) {
+            LocalTime intervalStartTime = openingHours.get(i).getStartHour();
+            LocalTime intervalEndTime = openingHours.get(i).getEndHour();
+            for (int j = 0; j < reservedSlots.size(); j++) {
+                LocalTime reservedStart = reservedSlots.get(j).getStartHour();
+                LocalTime reservedEnd = reservedSlots.get(j).getEndHour();
+                int comparisonStartAfterStart = reservedStart.compareTo(intervalStartTime);
+                int comparisonStartBeforeEnd = reservedStart.compareTo(intervalEndTime);
+                if (comparisonStartAfterStart > 0 && comparisonStartBeforeEnd < 0) {
+                    LocalTime availableEndTime = reservedStart;
+
+                    availableSlots.add(new OpeningHour(
+                            null, intervalStartTime, availableEndTime,
+                            null, null));
+                    intervalStartTime = reservedEnd.plusMinutes(Reservation.OVERDUE_ALLOWED);
+                    // interval between reservations
+
+                }
+            }
+            if (Duration.between(intervalStartTime, intervalEndTime).toMinutes() >= minimul_interval) {
+                availableSlots.add(new OpeningHour(null, intervalStartTime, intervalEndTime, null, null));
+            }
+            break;
+        }
+        return availableSlots;
     }
 
 }

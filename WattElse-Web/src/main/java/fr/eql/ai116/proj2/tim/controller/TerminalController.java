@@ -79,6 +79,15 @@ public class TerminalController {
     }
 
     @POST
+    @Path("/info/day/available")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getAvailableSlots(SearchDto searchDto) {
+        List<OpeningHour> available = terminalBusiness.getAvailableTimeSlots(searchDto);
+        return Response.ok(available).build();
+    }
+
+    @POST
     @Path("/info/revenue")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getRevenues(@Context HttpHeaders headers, SearchDto searchDto) {
