@@ -15,6 +15,7 @@ import java.util.List;
 
 public interface TransactionBusiness {
     Reservation reserveStation(ReservationDto reservationDto);
+    boolean cancelReservation(ReservationCancelDto reservationCancelDto);
     Transaction indicateStartCharging(ReservationDto reservationDto);
     Transaction indicateStopCharging(ReservationDto reservationDto);
     Transaction getTransactionDetails(Long reservationId);

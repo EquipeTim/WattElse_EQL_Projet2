@@ -7,6 +7,7 @@ import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
+import fr.eql.ai116.proj2.tim.entity.dto.ReservationCancelDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import fr.eql.ai116.proj2.tim.entity.dto.UserDto;
@@ -29,6 +30,12 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     @Override
     public Reservation reserveStation(ReservationDto reservationDto) {
         return transactionDao.reserveStation(reservationDto);
+    }
+
+    @Override
+    public boolean cancelReservation(ReservationCancelDto reservationCancelDto) {
+        return transactionDao.cancelReservation(reservationCancelDto.getIdReservation(),
+                reservationCancelDto.getIdCancelReason());
     }
 
     @Override
