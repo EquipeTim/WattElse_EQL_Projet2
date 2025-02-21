@@ -24,7 +24,7 @@ POST:\
 "surname":"mySillySurname",
 "birthdate":"1990-08-01",
 "email":"example@mail.mdr",
-"password":"theSecretWord",
+"password":"theSecretWord", // pour les autres utilisateurs password : form330
 "address":"141 Boulevard Mortier",
 "phone_number":"123456-89",
 "city":"Paris",
@@ -159,6 +159,7 @@ POST\
 }
 
 5.4 Delete a car\
+*Header must contain token\
 /car/remove
 POST\
 {

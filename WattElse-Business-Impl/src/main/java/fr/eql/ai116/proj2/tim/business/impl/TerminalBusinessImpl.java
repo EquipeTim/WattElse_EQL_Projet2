@@ -4,6 +4,7 @@ import fr.eql.ai116.proj2.tim.business.TerminalBusiness;
 import fr.eql.ai116.proj2.tim.dao.ChargingStationDao;
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Unavailability;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
@@ -45,6 +46,11 @@ public class TerminalBusinessImpl implements TerminalBusiness {
     }
 
     @Override
+    public List<OpeningHour> getAvailableTimeSlots(SearchDto searchDto) {
+        return chargingStationDao.getAvailableTimeSlots(searchDto.getStationId(), searchDto.getDate());
+    }
+
+    @Override
     public List<OpeningHour> getSpecificDayOpeningHours(SearchDto searchDto) {
         return chargingStationDao.getSpecificDayOpeningHours(searchDto.getStationId(), searchDto.getDate());
     }
@@ -52,5 +58,10 @@ public class TerminalBusinessImpl implements TerminalBusiness {
     @Override
     public List<Unavailability> getUnavailableDays(Long stationId) {
         return chargingStationDao.getUnavailableDays(stationId);
+    }
+
+    @Override
+    public List<Revenue> getUserRevenues(SearchDto searchDto, String token) {
+        return chargingStationDao.getUserRevenues(searchDto.getUserId(), searchDto.getDate(), token);
     }
 }

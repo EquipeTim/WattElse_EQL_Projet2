@@ -6,8 +6,10 @@ import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
+import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Unavailability;
-import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
+import fr.eql.ai116.proj2.tim.entity.WeekDay;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,13 +22,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Remote(ChargingStationDao.class)
@@ -55,12 +58,10 @@ private static final String REQ_FIND_TERMINAL =
         "LEFT JOIN unavailability una ON una.id_charging_station = cs.id_charging_station " +
         "WHERE " +
         "acos(sin(radians(latitude)) * sin(radians(?)) + cos(radians(latitude)) * " +
-        "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND plug_type = ? " +
+        "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND pt.id_plug_type = ? " +
         "AND cs.closing_station_date IS NULL AND d.day = ? " +
         "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
-        "AND (? BETWEEN oh.start_hour AND oh.end_hour) " +
         "AND ((? NOT BETWEEN una.start_date_unavailability AND una.end_date_unavailability) OR una.start_date_unavailability IS NULL) ";
-
 private static final String REQ_GET_TERMINAL_BY_ID =
         "SELECT * FROM charging_station cs " +
         "JOIN plug_type pt ON cs.id_plug_type = pt.id_plug_type " +
@@ -69,7 +70,6 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         "JOIN pricing p ON p.id_charging_station = cs.id_charging_station " +
         "JOIN pricing_type prt ON prt.id_type_pricing = p.id_type_pricing " +
         "WHERE cs.id_charging_station = ?";
-
 private static final String REQ_GET_RESERVATION_TIMES =
         "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ? " +
         "AND id_cancellation_type IS NULL";
@@ -82,23 +82,38 @@ private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "AND (una.start_date_unavailability IS NULL OR ? > una.end_date_unavailability)";
 private static final String REQ_GET_STATION_CLOSE_DAYS =
         "SELECT * FROM unavailability WHERE id_charging_station = ?";
+private static final String REQ_GET_REVENUES =
+        "SELECT t.id_charging_station,SUM(monetary_amount) AS revenue FROM transaction t " +
+        "JOIN charging_station cs ON cs.id_charging_station = t.id_charging_station " +
+        "JOIN session s ON s.id_user = cs.id_user " +
+        "WHERE cs.id_user = ? AND t.reservation_date >= ? AND s.token = ?" +
+        "GROUP BY t.id_charging_station";
+
 
     @Override
     public List<ChargingStation> findChargingStation(SearchDto searchDto) {
         List<ChargingStation> stations = new ArrayList<>();
         LocalTime now = LocalTime.now(ZoneId.of(searchDto.getTimeZone()));
-        LocalTime time = searchDto.getTime() != null ? LocalTime.parse(searchDto.getTime()) : now;
+        LocalTime time = LocalTime.parse("00:00");
+        String searchRequest;
+        if (searchDto.getDate().equals(LocalDate.now())){
+            time = searchDto.getTime() != null ? LocalTime.parse(searchDto.getTime()) : now;
+            searchRequest = REQ_FIND_TERMINAL + " AND (? BETWEEN oh.start_hour AND oh.end_hour)";
+        } else {
+            searchRequest = REQ_FIND_TERMINAL + " AND (? < oh.end_hour)";
+        }
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(REQ_FIND_TERMINAL);
+            PreparedStatement statement = connection.prepareStatement(searchRequest);
             statement.setFloat(1, searchDto.getStartingLat());
             statement.setFloat(2, searchDto.getStartingLat());
             statement.setFloat(3, searchDto.getStartingLong());
             statement.setInt(4, searchDto.getSearchRadius());
-            statement.setString(5, searchDto.getPlugType().name());
+            statement.setInt(5, searchDto.getPlugId());
             statement.setString(6, searchDto.getWeekDay());
             statement.setString(7, searchDto.getDate());
-            statement.setString(8, String.valueOf(time));
-            statement.setString(9, searchDto.getDate());
+            statement.setString(8, searchDto.getDate());
+            statement.setString(9, String.valueOf(time));
+            logger.error(statement);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 String phone;
@@ -195,7 +210,7 @@ private static final String REQ_GET_STATION_CLOSE_DAYS =
                 } else {
                     endDate = LocalDate.parse(resultSet.getDate("end_validity_date_opening_hour").toString());
                 }
-                openingHours.add(new OpeningHour(day,LocalTime.parse(startHour),
+                openingHours.add(new OpeningHour(WeekDay.valueOf(day).getLabel(),LocalTime.parse(startHour),
                         LocalTime.parse(endHour),startDate,endDate));
             }
         } catch (SQLException e) {
@@ -267,6 +282,62 @@ private static final String REQ_GET_STATION_CLOSE_DAYS =
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return unavailability;
+    }
+
+    @Override
+    public List<Revenue> getUserRevenues(Long userId, String date, String token) {
+        List<Revenue> revenues = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_REVENUES);
+            statement.setLong(1, userId);
+            statement.setString(2, date);
+            statement.setString(3, token);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                revenues.add(new Revenue(resultSet.getLong("id_charging_station"),
+                        resultSet.getFloat("revenue")));
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return revenues;
+    }
+
+    @Override
+    public List<OpeningHour> getAvailableTimeSlots(Long stationId, String date) {
+        int minimul_interval = 30;
+        List<OpeningHour> availableSlots = new ArrayList<>();
+        List<OpeningHour> openingHours = getSpecificDayOpeningHours(stationId, date);
+        List<OpeningHour> reservedSlots = getReservedTimeSlots(stationId, date);
+        Collections.sort(openingHours, Comparator.comparing(OpeningHour::getStartHour));
+        Collections.sort(reservedSlots, Comparator.comparing(OpeningHour::getStartHour));
+        System.out.println(openingHours);
+        System.out.println(reservedSlots);
+        for (int i = 0; i < openingHours.size(); i++) {
+            LocalTime intervalStartTime = openingHours.get(i).getStartHour();
+            LocalTime intervalEndTime = openingHours.get(i).getEndHour();
+            for (int j = 0; j < reservedSlots.size(); j++) {
+                LocalTime reservedStart = reservedSlots.get(j).getStartHour();
+                LocalTime reservedEnd = reservedSlots.get(j).getEndHour();
+                int comparisonStartAfterStart = reservedStart.compareTo(intervalStartTime);
+                int comparisonStartBeforeEnd = reservedStart.compareTo(intervalEndTime);
+                if (comparisonStartAfterStart > 0 && comparisonStartBeforeEnd < 0) {
+                    LocalTime availableEndTime = reservedStart;
+
+                    availableSlots.add(new OpeningHour(
+                            null, intervalStartTime, availableEndTime,
+                            null, null));
+                    intervalStartTime = reservedEnd.plusMinutes(Reservation.OVERDUE_ALLOWED);
+                    // interval between reservations
+
+                }
+            }
+            if (Duration.between(intervalStartTime, intervalEndTime).toMinutes() >= minimul_interval) {
+                availableSlots.add(new OpeningHour(null, intervalStartTime, intervalEndTime, null, null));
+            }
+            break;
+        }
+        return availableSlots;
     }
 
 }
