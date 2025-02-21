@@ -3,6 +3,7 @@ package fr.eql.ai116.proj2.tim.dao;
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Unavailability;
 import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
@@ -21,5 +22,6 @@ public interface ChargingStationDao {
     List<OpeningHour> getReservedTimeSlots(Long stationId, String date);
     List<OpeningHour> getSpecificDayOpeningHours(Long stationId, String date);
     List<Unavailability> getUnavailableDays(Long stationId);
+    List<Revenue> getUserRevenues(Long userId, String date, String token);
 
 }

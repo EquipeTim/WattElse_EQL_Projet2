@@ -6,6 +6,7 @@ import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Unavailability;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
@@ -59,7 +60,6 @@ private static final String REQ_FIND_TERMINAL =
         "AND cs.closing_station_date IS NULL AND d.day = ? " +
         "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
         "AND ((? NOT BETWEEN una.start_date_unavailability AND una.end_date_unavailability) OR una.start_date_unavailability IS NULL) ";
-
 private static final String REQ_GET_TERMINAL_BY_ID =
         "SELECT * FROM charging_station cs " +
         "JOIN plug_type pt ON cs.id_plug_type = pt.id_plug_type " +
@@ -68,7 +68,6 @@ private static final String REQ_GET_TERMINAL_BY_ID =
         "JOIN pricing p ON p.id_charging_station = cs.id_charging_station " +
         "JOIN pricing_type prt ON prt.id_type_pricing = p.id_type_pricing " +
         "WHERE cs.id_charging_station = ?";
-
 private static final String REQ_GET_RESERVATION_TIMES =
         "SELECT * FROM transaction WHERE id_charging_station = ? AND DATE(reservation_date) = ? " +
         "AND id_cancellation_type IS NULL";
@@ -81,6 +80,13 @@ private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "AND (una.start_date_unavailability IS NULL OR ? > una.end_date_unavailability)";
 private static final String REQ_GET_STATION_CLOSE_DAYS =
         "SELECT * FROM unavailability WHERE id_charging_station = ?";
+private static final String REQ_GET_REVENUES =
+        "SELECT t.id_charging_station,SUM(monetary_amount) AS revenue FROM transaction t " +
+        "JOIN charging_station cs ON cs.id_charging_station = t.id_charging_station " +
+        "JOIN session s ON s.id_user = cs.id_user " +
+        "WHERE cs.id_user = ? AND t.reservation_date >= ? AND s.token = ?" +
+        "GROUP BY t.id_charging_station";
+
 
     @Override
     public List<ChargingStation> findChargingStation(SearchDto searchDto) {
@@ -274,6 +280,25 @@ private static final String REQ_GET_STATION_CLOSE_DAYS =
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return unavailability;
+    }
+
+    @Override
+    public List<Revenue> getUserRevenues(Long userId, String date, String token) {
+        List<Revenue> revenues = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_REVENUES);
+            statement.setLong(1, userId);
+            statement.setString(2, date);
+            statement.setString(3, token);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                revenues.add(new Revenue(resultSet.getLong("id_charging_station"),
+                        resultSet.getFloat("revenue")));
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return revenues;
     }
 
 }
