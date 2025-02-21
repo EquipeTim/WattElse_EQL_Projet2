@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.business;
 
 import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Unavailability;
 import fr.eql.ai116.proj2.tim.entity.dto.ChargingStationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
@@ -16,5 +17,5 @@ public interface TerminalBusiness {
     List<OpeningHour> getReservedTimeSlots(SearchDto searchDto);
     List<OpeningHour> getSpecificDayOpeningHours(SearchDto searchDto);
     List<Unavailability> getUnavailableDays(Long stationId);
-
+    List<Revenue> getUserRevenues(SearchDto searchDto, String token);
 }

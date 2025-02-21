@@ -18,7 +18,7 @@ public interface TransactionDao {
     Transaction generateTransactionInfo(Long reservationId);
     List<Transaction> getUserTransactions(Long userId, String date);
     Payment pay(PaymentDto paymentDto);
-    void cancelReservation(Long reservationId);
+    boolean cancelReservation(Long reservationId, Long reasonId);
     List<Payment> getPayments(Long userId, String date);
 
 

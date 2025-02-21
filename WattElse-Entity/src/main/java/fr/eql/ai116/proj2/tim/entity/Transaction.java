@@ -21,6 +21,7 @@ public class Transaction implements Serializable {
     private LocalDateTime startDateCharging;
     private LocalDateTime endDateCharging;
     private LocalDateTime reservationDate;
+    private LocalDateTime reservationCancelDate;
     private Float consumeQuantity;
     private String priceType;
     private Float price;
@@ -28,6 +29,10 @@ public class Transaction implements Serializable {
     private String status;
     private Long statusId;
     private LocalTime chargeDurationMin;
+    private Long idPaymentRefuseReason;
+    private LocalDateTime paymentDate;
+    private String paymentRefuseReason;
+
 
 
     /// Constructor///
@@ -39,20 +44,25 @@ public class Transaction implements Serializable {
     }
 
     public Transaction(Long idPayment, long idTransaction, Long idUser, Long idOwner, LocalDateTime reservationDate,
-                       LocalDateTime startDateCharging,
+                       LocalDateTime reservationCancelDate, LocalDateTime startDateCharging,
                        LocalDateTime endDateCharging, Float consumeQuantity,
-                       String priceType, Float price) {
+                       String priceType, Float price, Float amountToPay,
+                       Long idPaymentRefuseReason, LocalDateTime paymentDate, String paymentRefuseReason) {
         this.idPayment = idPayment;
         this.idTransaction = idTransaction;
         this.idUser = idUser;
         this.idOwner = idOwner;
         this.startDateCharging = startDateCharging;
         this.reservationDate = reservationDate;
+        this.reservationCancelDate = reservationCancelDate;
         this.endDateCharging = endDateCharging;
         this.consumeQuantity = consumeQuantity;
         this.priceType = priceType;
         this.price = price;
-        this.monetaryAmount = price * consumeQuantity;
+        this.monetaryAmount = amountToPay;
+        this.idPaymentRefuseReason = idPaymentRefuseReason;
+        this.paymentDate = paymentDate;
+        this.paymentRefuseReason = paymentRefuseReason;
         if (startDateCharging != null && endDateCharging != null) {
             chargeDurationMin = calculateDuration(endDateCharging, startDateCharging);
         }
@@ -126,6 +136,26 @@ public class Transaction implements Serializable {
 
     public LocalTime getChargeDurationMin() {
         return chargeDurationMin;
+    }
+
+    public LocalDateTime getReservationCancelDate() {
+        return reservationCancelDate;
+    }
+
+    public void setChargeDurationMin(LocalTime chargeDurationMin) {
+        this.chargeDurationMin = chargeDurationMin;
+    }
+
+    public Long getIdPaymentRefuseReason() {
+        return idPaymentRefuseReason;
+    }
+
+    public LocalDateTime getPaymentDate() {
+        return paymentDate;
+    }
+
+    public String getPaymentRefuseReason() {
+        return paymentRefuseReason;
     }
 
     @Override

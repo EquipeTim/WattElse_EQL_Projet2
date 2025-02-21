@@ -14,6 +14,8 @@ public class SearchDto implements Serializable {
     private Float startingLat;
     private Float startingLong;
     private PlugType plugType;
+    private Integer plugId;
+
     private String date;
     private String time;
     private String timeZone;
@@ -55,6 +57,10 @@ public class SearchDto implements Serializable {
         this.time = time;
     }
 
+    public void setPlugId(Integer plugId) {
+        this.plugId = plugId;
+    }
+
     /// Getters///
 
     public Integer getSearchRadius() {
@@ -75,6 +81,10 @@ public class SearchDto implements Serializable {
 
     public String getDate() {
         return date;
+    }
+
+    public Integer getPlugId() {
+        return plugId;
     }
 
     public String getWeekDay() {
