@@ -188,6 +188,7 @@ GET\
 
 6.5 Get account closing reasons\
 components/reasons/accountClose\
+GET\
 
 6.6 Get car withdrawal reasons\
 components/reasons/car_withdrawal\
@@ -296,15 +297,20 @@ POST\
 8.4 Get information on specific transaction\
 /transaction/info/reservation/{reservation_id}\
 GET\
-
-8.5 Get transaction made by user from date\
-/transaction/info/user/history\
+8.5 Get reservations made by user from date\
+/transaction/info/user/history/reservations
 POST\
 {
 "userId":2,
 "date":"2025-02-18"
 }\
-
+8.6 Get payments made by user from date\
+/transaction/info/user/history/payments
+POST\
+{
+"userId":2,
+"date":"2025-02-18"
+}\
 
 
 ### Architecture

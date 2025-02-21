@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.business.impl;
 
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
+import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
@@ -51,7 +52,12 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     }
 
     @Override
-    public void pay(PaymentDto paymentDto) {
-        transactionDao.pay(paymentDto);
+    public Payment pay(PaymentDto paymentDto) {
+        return transactionDao.pay(paymentDto);
+    }
+
+    @Override
+    public List<Payment> getUserPayments(SearchDto searchDto) {
+        return transactionDao.getPayments(searchDto.getUserId(), searchDto.getDate());
     }
 }

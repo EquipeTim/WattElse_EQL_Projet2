@@ -159,11 +159,6 @@ public class CarDaoImpl implements CarDao {
     }
 
     @Override
-    public boolean exists(Car car) {
-        return false;
-    }
-
-    @Override
     public boolean removeCar(Long idCar, Long closeReasonId) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_CLOSE_CAR);
@@ -195,7 +190,6 @@ public class CarDaoImpl implements CarDao {
             statement.setString(1,car.getLicensePlate());
             statement.setLong(2, car.getMaxElectricPower());
             statement.setLong(3,car.getIdCar());
-           // "UPDATE car SET id_model_car = ?, license_plate_number = ?, max_electric_power = ? WHERE id_car = ?";
         int affectedRows = statement.executeUpdate();
         if(affectedRows>0){
             success = true;
@@ -211,7 +205,6 @@ public class CarDaoImpl implements CarDao {
 
     /**
      * Get vehicles owned by user
-     *
      * @param token
      * @return List of cars owned by user
      */
