@@ -56,7 +56,7 @@ private static final String REQ_FIND_TERMINAL =
         "LEFT JOIN unavailability una ON una.id_charging_station = cs.id_charging_station " +
         "WHERE " +
         "acos(sin(radians(latitude)) * sin(radians(?)) + cos(radians(latitude)) * " +
-        "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND plug_type = ? " +
+        "cos(radians(?)) * cos(radians(longitude) - radians(?))) * 6371 <= ? AND pt.id_plug_type = ? " +
         "AND cs.closing_station_date IS NULL AND d.day = ? " +
         "AND ( ? < oh.end_validity_date_opening_hour OR oh.end_validity_date_opening_hour IS NULL ) " +
         "AND ((? NOT BETWEEN una.start_date_unavailability AND una.end_date_unavailability) OR una.start_date_unavailability IS NULL) ";
@@ -106,7 +106,7 @@ private static final String REQ_GET_REVENUES =
             statement.setFloat(2, searchDto.getStartingLat());
             statement.setFloat(3, searchDto.getStartingLong());
             statement.setInt(4, searchDto.getSearchRadius());
-            statement.setString(5, searchDto.getPlugType().name());
+            statement.setInt(5, searchDto.getPlugId());
             statement.setString(6, searchDto.getWeekDay());
             statement.setString(7, searchDto.getDate());
             statement.setString(8, searchDto.getDate());
