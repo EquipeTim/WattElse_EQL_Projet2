@@ -12,7 +12,7 @@ Starts by: /api/rest
 /connection/authenticate
 POST: send credentials
 {
-"email":"example@mail.mdr",
+"e1mail":"example@mail.mdr",
 "password":"theSecretWord"
 }
 ## User details
