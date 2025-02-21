@@ -60,8 +60,4 @@ public class TerminalBusinessImpl implements TerminalBusiness {
         return chargingStationDao.getUnavailableDays(stationId);
     }
 
-    @Override
-    public List<Revenue> getUserRevenues(SearchDto searchDto, String token) {
-        return chargingStationDao.getUserRevenues(searchDto.getUserId(), searchDto.getDate(), token);
-    }
 }

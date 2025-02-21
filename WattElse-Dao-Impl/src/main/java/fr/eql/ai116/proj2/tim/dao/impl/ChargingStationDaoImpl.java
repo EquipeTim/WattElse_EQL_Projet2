@@ -82,12 +82,6 @@ private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "AND (una.start_date_unavailability IS NULL OR ? > una.end_date_unavailability)";
 private static final String REQ_GET_STATION_CLOSE_DAYS =
         "SELECT * FROM unavailability WHERE id_charging_station = ?";
-private static final String REQ_GET_REVENUES =
-        "SELECT t.id_charging_station,SUM(monetary_amount) AS revenue FROM transaction t " +
-        "JOIN charging_station cs ON cs.id_charging_station = t.id_charging_station " +
-        "JOIN session s ON s.id_user = cs.id_user " +
-        "WHERE cs.id_user = ? AND t.reservation_date >= ? AND s.token = ?" +
-        "GROUP BY t.id_charging_station";
 
 
     @Override
@@ -282,25 +276,6 @@ private static final String REQ_GET_REVENUES =
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
         }
         return unavailability;
-    }
-
-    @Override
-    public List<Revenue> getUserRevenues(Long userId, String date, String token) {
-        List<Revenue> revenues = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(REQ_GET_REVENUES);
-            statement.setLong(1, userId);
-            statement.setString(2, date);
-            statement.setString(3, token);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                revenues.add(new Revenue(resultSet.getLong("id_charging_station"),
-                        resultSet.getFloat("revenue")));
-            }
-        } catch (SQLException e) {
-            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
-        }
-        return revenues;
     }
 
     @Override

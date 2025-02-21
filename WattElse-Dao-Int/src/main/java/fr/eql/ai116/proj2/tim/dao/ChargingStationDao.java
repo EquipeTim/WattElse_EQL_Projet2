@@ -19,7 +19,6 @@ public interface ChargingStationDao {
     List<OpeningHour> getReservedTimeSlots(Long stationId, String date);
     List<OpeningHour> getSpecificDayOpeningHours(Long stationId, String date);
     List<Unavailability> getUnavailableDays(Long stationId);
-    List<Revenue> getUserRevenues(Long userId, String date, String token);
     List<OpeningHour> getAvailableTimeSlots(Long stationId, String date);
 
 }

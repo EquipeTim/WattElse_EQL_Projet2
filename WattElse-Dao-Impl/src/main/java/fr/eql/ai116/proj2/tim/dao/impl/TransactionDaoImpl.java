@@ -6,6 +6,7 @@ import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.PaymentRefusalType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
@@ -96,6 +97,13 @@ public class TransactionDaoImpl implements TransactionDao {
     private static final String REQ_GET_CANCEL_RESERVATION =
             "UPDATE transaction SET id_cancellation_type = ?, reservation_cancellation_date = ? " +
             "WHERE id_transaction = ? AND start_date_charging IS NULL";
+    private static final String REQ_GET_REVENUES =
+            "SELECT t.id_charging_station,SUM(monetary_amount) AS revenue FROM transaction t " +
+            "JOIN charging_station cs ON cs.id_charging_station = t.id_charging_station " +
+            "JOIN session s ON s.id_user = cs.id_user " +
+            "WHERE cs.id_user = ? AND t.reservation_date >= ? AND s.token = ?" +
+            "GROUP BY t.id_charging_station";
+
     /**
      * Reserve a charging station
      * @param reservationDto
@@ -601,5 +609,24 @@ public class TransactionDaoImpl implements TransactionDao {
             }
         }
         return paymentId;
+    }
+
+    @Override
+    public List<Revenue> getUserRevenues(Long userId, String date, String token) {
+        List<Revenue> revenues = new ArrayList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(REQ_GET_REVENUES);
+            statement.setLong(1, userId);
+            statement.setString(2, date);
+            statement.setString(3, token);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                revenues.add(new Revenue(resultSet.getLong("id_charging_station"),
+                        resultSet.getFloat("revenue")));
+            }
+        } catch (SQLException e) {
+            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        }
+        return revenues;
     }
 }
