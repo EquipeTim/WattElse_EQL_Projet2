@@ -4,7 +4,16 @@ import fr.eql.ai116.proj2.tim.dao.ComponentsDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
 import fr.eql.ai116.proj2.tim.entity.AccountCloseType;
 import fr.eql.ai116.proj2.tim.entity.Car;
+import fr.eql.ai116.proj2.tim.entity.CarBrand;
+import fr.eql.ai116.proj2.tim.entity.CarWithdrawalType;
+import fr.eql.ai116.proj2.tim.entity.EvaluationType;
+import fr.eql.ai116.proj2.tim.entity.PaymentRefusalType;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
+import fr.eql.ai116.proj2.tim.entity.PricingType;
+import fr.eql.ai116.proj2.tim.entity.ReservationCancelType;
+import fr.eql.ai116.proj2.tim.entity.StationClosingType;
+import fr.eql.ai116.proj2.tim.entity.Unavailability;
+import fr.eql.ai116.proj2.tim.entity.UnavailabilityType;
 import fr.eql.ai116.proj2.tim.entity.WeekDay;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +57,7 @@ public class ComponentsDaoImpl implements ComponentsDao {
     @Override
     public List<ChoicesDto> getAllPlug() {
         return getList(REQ_SELECT_PLUG,
-                "id_plug_type", "plug_type");
+                "id_plug_type", "plug_type", PlugType.class);
     }
 
     /**
@@ -79,7 +89,7 @@ public class ComponentsDaoImpl implements ComponentsDao {
     @Override
     public List<ChoicesDto> getCarBrands() {
         return getList(REQ_GET_CAR_BRANDS,
-                "id_brand", "brand_label");
+                "id_brand", "brand_label", CarBrand.class);
     }
 
     /**
@@ -120,83 +130,78 @@ public class ComponentsDaoImpl implements ComponentsDao {
         return choices;
     }
 
-    private  List<ChoicesDto> getList(String request, String idColumn,
-                                                          String labelColumn){
+    private <T extends Enum<T>> List<ChoicesDto> getList(String request, String idColumn,
+                                                         String labelColumn,  Class<T> enumClass){
         List<ChoicesDto> choices = new ArrayList<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(request);
             while (resultSet.next()) {
+                T enumValue = Enum.valueOf(enumClass, resultSet.getString(labelColumn));
                 choices.add(new ChoicesDto(resultSet.getLong(idColumn),
-                        resultSet.getString(labelColumn)));
+                        (String) enumClass.getMethod("getLabel").invoke(enumValue)));
             }
         } catch (SQLException e) {
             logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
+            logger.error("Une erreur s'est produite lors de conversation vers labels d'Enum", e);
         }
         return choices;
     }
 
     @Override
     public List<ChoicesDto> getAccountCloseReasons() {
-        List<ChoicesDto> reasons = getList(REQ_GET_ACC_CLOSE_REASONS,
-                "id_label_closing_account_user", "label_closing_account_user");
-        List<ChoicesDto> fixedReasons = new ArrayList<>();
-        for (ChoicesDto reason : reasons) {
-            fixedReasons.add(new ChoicesDto(reason.getChoiceId(), AccountCloseType.valueOf(reason.getChoice()).getLabel()));
-        }
-        return fixedReasons;
+        return getList(REQ_GET_ACC_CLOSE_REASONS,
+                "id_label_closing_account_user", "label_closing_account_user",
+                AccountCloseType.class);
     }
 
     @Override
     public List<ChoicesDto> getCarWithdrawalReasons() {
         return getList(REQ_GET_CAR_WITHDRAW_REASONS,
-                "id_car_withdrawal", "car_withdrawal_label");
+                "id_car_withdrawal", "car_withdrawal_label", CarWithdrawalType.class);
     }
 
     @Override
     public List<ChoicesDto> getEvaluationTypes() {
         return getList(REQ_GET_EVALUATION_TYPES,
-                "id_type_evaluation", "evaluation_label");
+                "id_type_evaluation", "evaluation_label", EvaluationType.class);
     }
 
     @Override
     public List<ChoicesDto> getPaymentRefusalReasons() {
         return getList(REQ_GET_PAYMENT_REFUSAL_REASONS,
-                "id_payment_refuse_type", "refuse_payment_label");
+                "id_payment_refuse_type", "refuse_payment_label", PaymentRefusalType.class);
     }
 
     @Override
     public List<ChoicesDto> getPricingType() {
         return getList(REQ_GET_PRICING_REASONS,
-                "id_type_pricing","type_pricing");
+                "id_type_pricing","type_pricing", PricingType.class);
     }
 
     @Override
     public List<ChoicesDto> getReservationCancelType() {
         return getList(REQ_GET_RESERVATION_CANCEL_REASONS,
-                "id_cancellation_type","cancellation_label");
+                "id_cancellation_type","cancellation_label", ReservationCancelType.class);
     }
 
     @Override
     public List<ChoicesDto> getStationClosingType() {
         return getList(REQ_GET_STATION_CLOSING_REASONS,
-                "id_station_closing_type","station_closing_type");
+                "id_station_closing_type","station_closing_type", StationClosingType.class);
     }
 
     @Override
     public List<ChoicesDto> getUnavailabilityType() {
         return getList(REQ_GET_UNAVAILABILITY_REASONS,
-                "id_unavailability_type", "unavailability_type");
+                "id_unavailability_type", "unavailability_type", UnavailabilityType.class);
     }
 
     @Override
     public List<ChoicesDto> getWeekDay() {
-        List<ChoicesDto> days = getList(REQ_GET_WEEKDAY,"id_day","day");
-        List<ChoicesDto> fixedDays = new ArrayList<>();
-        for (ChoicesDto day : days) {
-            fixedDays.add(new ChoicesDto(day.getChoiceId(), WeekDay.valueOf(day.getChoice()).getLabel()));
-        }
-        return fixedDays;
+        return getList(REQ_GET_WEEKDAY,"id_day","day", WeekDay.class);
+
     }
 
 
