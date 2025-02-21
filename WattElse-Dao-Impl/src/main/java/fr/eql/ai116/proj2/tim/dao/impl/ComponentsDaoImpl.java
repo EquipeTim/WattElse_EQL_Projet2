@@ -2,6 +2,7 @@ package fr.eql.ai116.proj2.tim.dao.impl;
 
 import fr.eql.ai116.proj2.tim.dao.ComponentsDao;
 import fr.eql.ai116.proj2.tim.dao.impl.connection.WattElseDataSource;
+import fr.eql.ai116.proj2.tim.entity.AccountCloseType;
 import fr.eql.ai116.proj2.tim.entity.Car;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.WeekDay;
@@ -137,8 +138,13 @@ public class ComponentsDaoImpl implements ComponentsDao {
 
     @Override
     public List<ChoicesDto> getAccountCloseReasons() {
-        return getList(REQ_GET_ACC_CLOSE_REASONS,
+        List<ChoicesDto> reasons = getList(REQ_GET_ACC_CLOSE_REASONS,
                 "id_label_closing_account_user", "label_closing_account_user");
+        List<ChoicesDto> fixedReasons = new ArrayList<>();
+        for (ChoicesDto reason : reasons) {
+            fixedReasons.add(new ChoicesDto(reason.getChoiceId(), AccountCloseType.valueOf(reason.getChoice()).getLabel()));
+        }
+        return fixedReasons;
     }
 
     @Override
