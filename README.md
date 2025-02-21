@@ -267,6 +267,15 @@ POST\
 */terminals/info/day/occupied/{id}\
 GET\
 
+7.7 Get available time slots for the particular station on the particular day.\ 
+The next reservation or the closing hour is 30 min for the ending limit of the interval\
+*/terminals/info/day/available\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-26"
+}
+
 
 ## TRANSACTIONS
 8.1 Reserve a charging station\
