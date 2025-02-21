@@ -21,6 +21,7 @@ public class Transaction implements Serializable {
     private LocalDateTime startDateCharging;
     private LocalDateTime endDateCharging;
     private LocalDateTime reservationDate;
+    private LocalDateTime reservationCancelDate;
     private Float consumeQuantity;
     private String priceType;
     private Float price;
@@ -39,20 +40,21 @@ public class Transaction implements Serializable {
     }
 
     public Transaction(Long idPayment, long idTransaction, Long idUser, Long idOwner, LocalDateTime reservationDate,
-                       LocalDateTime startDateCharging,
+                       LocalDateTime reservationCancelDate, LocalDateTime startDateCharging,
                        LocalDateTime endDateCharging, Float consumeQuantity,
-                       String priceType, Float price) {
+                       String priceType, Float price, Float amountToPay) {
         this.idPayment = idPayment;
         this.idTransaction = idTransaction;
         this.idUser = idUser;
         this.idOwner = idOwner;
         this.startDateCharging = startDateCharging;
         this.reservationDate = reservationDate;
+        this.reservationCancelDate = reservationCancelDate;
         this.endDateCharging = endDateCharging;
         this.consumeQuantity = consumeQuantity;
         this.priceType = priceType;
         this.price = price;
-        this.monetaryAmount = price * consumeQuantity;
+        this.monetaryAmount = amountToPay;
         if (startDateCharging != null && endDateCharging != null) {
             chargeDurationMin = calculateDuration(endDateCharging, startDateCharging);
         }
@@ -126,6 +128,14 @@ public class Transaction implements Serializable {
 
     public LocalTime getChargeDurationMin() {
         return chargeDurationMin;
+    }
+
+    public LocalDateTime getReservationCancelDate() {
+        return reservationCancelDate;
+    }
+
+    public void setChargeDurationMin(LocalTime chargeDurationMin) {
+        this.chargeDurationMin = chargeDurationMin;
     }
 
     @Override

@@ -87,7 +87,10 @@ private static final String REQ_GET_STATION_CLOSE_DAYS =
     public List<ChargingStation> findChargingStation(SearchDto searchDto) {
         List<ChargingStation> stations = new ArrayList<>();
         LocalTime now = LocalTime.now(ZoneId.of(searchDto.getTimeZone()));
-        LocalTime time = searchDto.getTime() != null ? LocalTime.parse(searchDto.getTime()) : now;
+        LocalTime time = LocalTime.parse("00:00");
+        if (searchDto.getDate().equals(LocalDate.now())){
+            time = searchDto.getTime() != null ? LocalTime.parse(searchDto.getTime()) : now;
+        }
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(REQ_FIND_TERMINAL);
             statement.setFloat(1, searchDto.getStartingLat());

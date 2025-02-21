@@ -7,6 +7,7 @@ import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
+import fr.eql.ai116.proj2.tim.entity.dto.ReservationCancelDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 
@@ -49,12 +50,23 @@ public class TransactionController {
     }
 
     @POST
+    @Path("/cancel")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response cancelReservation(ReservationCancelDto reservationCancelDto) {
+        boolean status = transactionBusiness.cancelReservation(reservationCancelDto);
+        return Response.ok(status).build();
+    }
+
+    @POST
     @Path("/start")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response startCharge(ReservationDto reservationDto) {
-        Transaction status = transactionBusiness.indicateStartCharging(reservationDto);
-        return Response.ok(status).build();
+        Transaction state = transactionBusiness.indicateStartCharging(reservationDto);
+        if (state.getStatusId() == 1) {
+            return Response.ok(state).build();
+        }
+        return Response.status(Response.Status.BAD_REQUEST).entity(state).build();
     }
 
     @POST
