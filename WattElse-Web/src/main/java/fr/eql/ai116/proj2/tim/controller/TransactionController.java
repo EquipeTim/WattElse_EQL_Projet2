@@ -3,6 +3,7 @@ package fr.eql.ai116.proj2.tim.controller;
 import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.FullUserDto;
@@ -19,6 +20,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
@@ -119,6 +122,16 @@ public class TransactionController {
                 return Response.ok(payment).build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    @POST
+    @Path("/info/revenue")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getRevenues(@Context HttpHeaders headers, SearchDto searchDto) {
+        String authorizationHeader = headers.getHeaderString("Authorization");
+        String token = authorizationHeader.substring("Bearer ".length());
+        List<Revenue> revenues = transactionBusiness.getUserRevenues(searchDto, token);
+        return Response.ok(revenues).build();
 
     }
 

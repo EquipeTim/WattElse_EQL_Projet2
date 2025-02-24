@@ -82,12 +82,6 @@ private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "AND (una.start_date_unavailability IS NULL OR ? > una.end_date_unavailability)";
 private static final String REQ_GET_STATION_CLOSE_DAYS =
         "SELECT * FROM unavailability WHERE id_charging_station = ?";
-private static final String REQ_GET_REVENUES =
-        "SELECT t.id_charging_station,SUM(monetary_amount) AS revenue FROM transaction t " +
-        "JOIN charging_station cs ON cs.id_charging_station = t.id_charging_station " +
-        "JOIN session s ON s.id_user = cs.id_user " +
-        "WHERE cs.id_user = ? AND t.reservation_date >= ? AND s.token = ?" +
-        "GROUP BY t.id_charging_station";
 
 
     @Override
@@ -251,7 +245,7 @@ private static final String REQ_GET_REVENUES =
             statement.setString(4, date);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
-                openingHours.add(new OpeningHour(resultSet.getString("day"),
+                openingHours.add(new OpeningHour(WeekDay.valueOf(resultSet.getString("day")).getLabel(),
                                                 resultSet.getTimestamp("start_hour").toLocalDateTime().toLocalTime(),
                                                 resultSet.getTimestamp("end_hour").toLocalDateTime().toLocalTime(),
                                                 null,
@@ -285,25 +279,6 @@ private static final String REQ_GET_REVENUES =
     }
 
     @Override
-    public List<Revenue> getUserRevenues(Long userId, String date, String token) {
-        List<Revenue> revenues = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(REQ_GET_REVENUES);
-            statement.setLong(1, userId);
-            statement.setString(2, date);
-            statement.setString(3, token);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                revenues.add(new Revenue(resultSet.getLong("id_charging_station"),
-                        resultSet.getFloat("revenue")));
-            }
-        } catch (SQLException e) {
-            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
-        }
-        return revenues;
-    }
-
-    @Override
     public List<OpeningHour> getAvailableTimeSlots(Long stationId, String date) {
         int minimul_interval = 30;
         List<OpeningHour> availableSlots = new ArrayList<>();
@@ -311,31 +286,31 @@ private static final String REQ_GET_REVENUES =
         List<OpeningHour> reservedSlots = getReservedTimeSlots(stationId, date);
         Collections.sort(openingHours, Comparator.comparing(OpeningHour::getStartHour));
         Collections.sort(reservedSlots, Comparator.comparing(OpeningHour::getStartHour));
-        System.out.println(openingHours);
-        System.out.println(reservedSlots);
-        for (int i = 0; i < openingHours.size(); i++) {
-            LocalTime intervalStartTime = openingHours.get(i).getStartHour();
-            LocalTime intervalEndTime = openingHours.get(i).getEndHour();
-            for (int j = 0; j < reservedSlots.size(); j++) {
-                LocalTime reservedStart = reservedSlots.get(j).getStartHour();
-                LocalTime reservedEnd = reservedSlots.get(j).getEndHour();
-                int comparisonStartAfterStart = reservedStart.compareTo(intervalStartTime);
-                int comparisonStartBeforeEnd = reservedStart.compareTo(intervalEndTime);
-                if (comparisonStartAfterStart > 0 && comparisonStartBeforeEnd < 0) {
-                    LocalTime availableEndTime = reservedStart;
 
-                    availableSlots.add(new OpeningHour(
-                            null, intervalStartTime, availableEndTime,
-                            null, null));
-                    intervalStartTime = reservedEnd.plusMinutes(Reservation.OVERDUE_ALLOWED);
-                    // interval between reservations
+        for (OpeningHour openHour : openingHours) {
+            LocalTime availableStart = openHour.getStartHour();
+            LocalTime availableEnd = openHour.getEndHour();
+            for (OpeningHour reservedSlot : reservedSlots) {
+                LocalTime reservedStart = reservedSlot.getStartHour();
+                LocalTime reservedEnd = reservedSlot.getEndHour();
+                if (reservedStart.isBefore(availableEnd) && reservedEnd.isAfter(availableStart)) {
 
+                    if (availableStart.isBefore(reservedStart)) {
+                        long duration = Duration.between(availableStart, reservedStart).toMinutes();
+                        if (duration >= minimul_interval) {
+                            availableSlots.add(new OpeningHour(null, availableStart,
+                                    reservedStart.minusMinutes(minimul_interval),
+                                    null, null));
+                        }
+                    }
+
+
+                    availableStart = reservedEnd.plusMinutes(Reservation.OVERDUE_ALLOWED);
                 }
             }
-            if (Duration.between(intervalStartTime, intervalEndTime).toMinutes() >= minimul_interval) {
-                availableSlots.add(new OpeningHour(null, intervalStartTime, intervalEndTime, null, null));
+            if (availableStart.isBefore(availableEnd) && Duration.between(availableStart, availableEnd).toMinutes() >= minimul_interval) {
+                availableSlots.add(new OpeningHour(null, availableStart, availableEnd.minusMinutes(minimul_interval), null, null));
             }
-            break;
         }
         return availableSlots;
     }

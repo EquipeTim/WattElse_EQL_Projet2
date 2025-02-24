@@ -87,15 +87,4 @@ public class TerminalController {
         return Response.ok(available).build();
     }
 
-    @POST
-    @Path("/info/revenue")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getRevenues(@Context HttpHeaders headers, SearchDto searchDto) {
-        String authorizationHeader = headers.getHeaderString("Authorization");
-        String token = authorizationHeader.substring("Bearer ".length());
-        List<Revenue> revenues = terminalBusiness.getUserRevenues(searchDto, token);
-        return Response.ok(revenues).build();
-
-    }
-
 }

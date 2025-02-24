@@ -18,5 +18,4 @@ public interface TerminalBusiness {
     List<OpeningHour> getAvailableTimeSlots(SearchDto searchDto);
     List<OpeningHour> getSpecificDayOpeningHours(SearchDto searchDto);
     List<Unavailability> getUnavailableDays(Long stationId);
-    List<Revenue> getUserRevenues(SearchDto searchDto, String token);
 }

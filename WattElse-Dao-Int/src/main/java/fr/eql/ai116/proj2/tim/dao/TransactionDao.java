@@ -3,6 +3,7 @@ package fr.eql.ai116.proj2.tim.dao;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
 import fr.eql.ai116.proj2.tim.entity.dto.ReservationDto;
@@ -20,6 +21,7 @@ public interface TransactionDao {
     Payment pay(PaymentDto paymentDto);
     boolean cancelReservation(Long reservationId, Long reasonId);
     List<Payment> getPayments(Long userId, String date);
+    List<Revenue> getUserRevenues(Long userId, String date, String token);
 
 
 }
