@@ -340,7 +340,8 @@ public class TransactionDaoImpl implements TransactionDao {
                         resultSet.getFloat("price"),
                         resultSet.getFloat("monetary_amount"),
                         resultSet.getLong("id_payment_refuse_type"),
-                        paymentDate,refuseReason);
+                        paymentDate,refuseReason,
+                        resultSet.getString("address_charging_station"));
                 return transaction;
 
             }
