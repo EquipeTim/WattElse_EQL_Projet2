@@ -3,6 +3,7 @@ package fr.eql.ai116.proj2.tim.business;
 
 import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
@@ -22,6 +23,6 @@ public interface TransactionBusiness {
     List<Transaction> getUserTransactions(SearchDto searchDto);
     Payment pay(PaymentDto paymentDto);
     List<Payment> getUserPayments(SearchDto searchDto);
-    //void cancelReservation(ReservationCancelDto reservationCancelDto);
+    List<Revenue> getUserRevenues(SearchDto searchDto, String token);
 
 }

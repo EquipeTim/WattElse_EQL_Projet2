@@ -24,7 +24,7 @@ POST:\
 "surname":"mySillySurname",
 "birthdate":"1990-08-01",
 "email":"example@mail.mdr",
-"password":"theSecretWord",
+"password":"theSecretWord", // pour les autres utilisateurs password : form330
 "address":"141 Boulevard Mortier",
 "phone_number":"123456-89",
 "city":"Paris",
@@ -159,6 +159,7 @@ POST\
 }
 
 5.4 Delete a car\
+*Header must contain token\
 /car/remove
 POST\
 {
@@ -265,6 +266,15 @@ POST\
 7.6 Get closed days of the charging station
 */terminals/info/day/occupied/{id}\
 GET\
+
+7.7 Get available time slots for the particular station on the particular day.\ 
+The next reservation or the closing hour is 30 min for the ending limit of the interval\
+*/terminals/info/day/available\
+POST\
+{
+"stationId" :1,
+"date" : "2025-02-26"
+}
 
 
 ## TRANSACTIONS

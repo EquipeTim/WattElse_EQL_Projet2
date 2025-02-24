@@ -4,6 +4,7 @@ import fr.eql.ai116.proj2.tim.business.TransactionBusiness;
 import fr.eql.ai116.proj2.tim.dao.TransactionDao;
 import fr.eql.ai116.proj2.tim.entity.Payment;
 import fr.eql.ai116.proj2.tim.entity.Reservation;
+import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Transaction;
 import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
 import fr.eql.ai116.proj2.tim.entity.dto.PaymentDto;
@@ -66,5 +67,10 @@ public class TransactionBusinessImpl implements TransactionBusiness {
     @Override
     public List<Payment> getUserPayments(SearchDto searchDto) {
         return transactionDao.getPayments(searchDto.getUserId(), searchDto.getDate());
+    }
+
+    @Override
+    public List<Revenue> getUserRevenues(SearchDto searchDto, String token) {
+        return transactionDao.getUserRevenues(searchDto.getUserId(), searchDto.getDate(), token);
     }
 }

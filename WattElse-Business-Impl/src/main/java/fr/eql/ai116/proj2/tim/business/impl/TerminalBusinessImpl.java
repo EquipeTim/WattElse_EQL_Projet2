@@ -46,6 +46,11 @@ public class TerminalBusinessImpl implements TerminalBusiness {
     }
 
     @Override
+    public List<OpeningHour> getAvailableTimeSlots(SearchDto searchDto) {
+        return chargingStationDao.getAvailableTimeSlots(searchDto.getStationId(), searchDto.getDate());
+    }
+
+    @Override
     public List<OpeningHour> getSpecificDayOpeningHours(SearchDto searchDto) {
         return chargingStationDao.getSpecificDayOpeningHours(searchDto.getStationId(), searchDto.getDate());
     }
@@ -55,8 +60,4 @@ public class TerminalBusinessImpl implements TerminalBusiness {
         return chargingStationDao.getUnavailableDays(stationId);
     }
 
-    @Override
-    public List<Revenue> getUserRevenues(SearchDto searchDto, String token) {
-        return chargingStationDao.getUserRevenues(searchDto.getUserId(), searchDto.getDate(), token);
-    }
 }

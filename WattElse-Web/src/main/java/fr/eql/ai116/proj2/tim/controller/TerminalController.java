@@ -79,14 +79,12 @@ public class TerminalController {
     }
 
     @POST
-    @Path("/info/revenue")
+    @Path("/info/day/available")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getRevenues(@Context HttpHeaders headers, SearchDto searchDto) {
-        String authorizationHeader = headers.getHeaderString("Authorization");
-        String token = authorizationHeader.substring("Bearer ".length());
-        List<Revenue> revenues = terminalBusiness.getUserRevenues(searchDto, token);
-        return Response.ok(revenues).build();
-
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getAvailableSlots(SearchDto searchDto) {
+        List<OpeningHour> available = terminalBusiness.getAvailableTimeSlots(searchDto);
+        return Response.ok(available).build();
     }
 
 }

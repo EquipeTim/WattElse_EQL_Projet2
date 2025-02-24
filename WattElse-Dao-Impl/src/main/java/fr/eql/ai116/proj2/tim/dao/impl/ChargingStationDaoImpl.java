@@ -6,9 +6,10 @@ import fr.eql.ai116.proj2.tim.entity.ChargingStation;
 import fr.eql.ai116.proj2.tim.entity.OpeningHour;
 import fr.eql.ai116.proj2.tim.entity.PlugType;
 import fr.eql.ai116.proj2.tim.entity.PricingType;
+import fr.eql.ai116.proj2.tim.entity.Reservation;
 import fr.eql.ai116.proj2.tim.entity.Revenue;
 import fr.eql.ai116.proj2.tim.entity.Unavailability;
-import fr.eql.ai116.proj2.tim.entity.dto.ChoicesDto;
+import fr.eql.ai116.proj2.tim.entity.WeekDay;
 import fr.eql.ai116.proj2.tim.entity.dto.SearchDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,13 +22,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Remote(ChargingStationDao.class)
@@ -80,12 +82,6 @@ private static final String REQ_GET_STATION_OPENING_HOURS_ON_DAY =
         "AND (una.start_date_unavailability IS NULL OR ? > una.end_date_unavailability)";
 private static final String REQ_GET_STATION_CLOSE_DAYS =
         "SELECT * FROM unavailability WHERE id_charging_station = ?";
-private static final String REQ_GET_REVENUES =
-        "SELECT t.id_charging_station,SUM(monetary_amount) AS revenue FROM transaction t " +
-        "JOIN charging_station cs ON cs.id_charging_station = t.id_charging_station " +
-        "JOIN session s ON s.id_user = cs.id_user " +
-        "WHERE cs.id_user = ? AND t.reservation_date >= ? AND s.token = ?" +
-        "GROUP BY t.id_charging_station";
 
 
     @Override
@@ -208,7 +204,7 @@ private static final String REQ_GET_REVENUES =
                 } else {
                     endDate = LocalDate.parse(resultSet.getDate("end_validity_date_opening_hour").toString());
                 }
-                openingHours.add(new OpeningHour(day,LocalTime.parse(startHour),
+                openingHours.add(new OpeningHour(WeekDay.valueOf(day).getLabel(),LocalTime.parse(startHour),
                         LocalTime.parse(endHour),startDate,endDate));
             }
         } catch (SQLException e) {
@@ -249,7 +245,7 @@ private static final String REQ_GET_REVENUES =
             statement.setString(4, date);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()){
-                openingHours.add(new OpeningHour(resultSet.getString("day"),
+                openingHours.add(new OpeningHour(WeekDay.valueOf(resultSet.getString("day")).getLabel(),
                                                 resultSet.getTimestamp("start_hour").toLocalDateTime().toLocalTime(),
                                                 resultSet.getTimestamp("end_hour").toLocalDateTime().toLocalTime(),
                                                 null,
@@ -283,22 +279,40 @@ private static final String REQ_GET_REVENUES =
     }
 
     @Override
-    public List<Revenue> getUserRevenues(Long userId, String date, String token) {
-        List<Revenue> revenues = new ArrayList<>();
-        try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(REQ_GET_REVENUES);
-            statement.setLong(1, userId);
-            statement.setString(2, date);
-            statement.setString(3, token);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()){
-                revenues.add(new Revenue(resultSet.getLong("id_charging_station"),
-                        resultSet.getFloat("revenue")));
+    public List<OpeningHour> getAvailableTimeSlots(Long stationId, String date) {
+        int minimul_interval = 30;
+        List<OpeningHour> availableSlots = new ArrayList<>();
+        List<OpeningHour> openingHours = getSpecificDayOpeningHours(stationId, date);
+        List<OpeningHour> reservedSlots = getReservedTimeSlots(stationId, date);
+        Collections.sort(openingHours, Comparator.comparing(OpeningHour::getStartHour));
+        Collections.sort(reservedSlots, Comparator.comparing(OpeningHour::getStartHour));
+
+        for (OpeningHour openHour : openingHours) {
+            LocalTime availableStart = openHour.getStartHour();
+            LocalTime availableEnd = openHour.getEndHour();
+            for (OpeningHour reservedSlot : reservedSlots) {
+                LocalTime reservedStart = reservedSlot.getStartHour();
+                LocalTime reservedEnd = reservedSlot.getEndHour();
+                if (reservedStart.isBefore(availableEnd) && reservedEnd.isAfter(availableStart)) {
+
+                    if (availableStart.isBefore(reservedStart)) {
+                        long duration = Duration.between(availableStart, reservedStart).toMinutes();
+                        if (duration >= minimul_interval) {
+                            availableSlots.add(new OpeningHour(null, availableStart,
+                                    reservedStart.minusMinutes(minimul_interval),
+                                    null, null));
+                        }
+                    }
+
+
+                    availableStart = reservedEnd.plusMinutes(Reservation.OVERDUE_ALLOWED);
+                }
             }
-        } catch (SQLException e) {
-            logger.error("Une erreur s'est produite lors de la connexion avec la base de données", e);
+            if (availableStart.isBefore(availableEnd) && Duration.between(availableStart, availableEnd).toMinutes() >= minimul_interval) {
+                availableSlots.add(new OpeningHour(null, availableStart, availableEnd.minusMinutes(minimul_interval), null, null));
+            }
         }
-        return revenues;
+        return availableSlots;
     }
 
 }
