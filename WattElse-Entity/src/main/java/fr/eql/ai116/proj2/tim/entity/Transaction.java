@@ -32,6 +32,7 @@ public class Transaction implements Serializable {
     private Long idPaymentRefuseReason;
     private LocalDateTime paymentDate;
     private String paymentRefuseReason;
+    private String address;
 
 
 
@@ -47,7 +48,7 @@ public class Transaction implements Serializable {
                        LocalDateTime reservationCancelDate, LocalDateTime startDateCharging,
                        LocalDateTime endDateCharging, Float consumeQuantity,
                        String priceType, Float price, Float amountToPay,
-                       Long idPaymentRefuseReason, LocalDateTime paymentDate, String paymentRefuseReason) {
+                       Long idPaymentRefuseReason, LocalDateTime paymentDate, String paymentRefuseReason, String address) {
         this.idPayment = idPayment;
         this.idTransaction = idTransaction;
         this.idUser = idUser;
@@ -63,6 +64,7 @@ public class Transaction implements Serializable {
         this.idPaymentRefuseReason = idPaymentRefuseReason;
         this.paymentDate = paymentDate;
         this.paymentRefuseReason = paymentRefuseReason;
+        this.address = address;
         if (startDateCharging != null && endDateCharging != null) {
             chargeDurationMin = calculateDuration(endDateCharging, startDateCharging);
         }
@@ -96,6 +98,10 @@ public class Transaction implements Serializable {
 
     public LocalDateTime getStartDateCharging() {
         return startDateCharging;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     public LocalDateTime getEndDateCharging() {
